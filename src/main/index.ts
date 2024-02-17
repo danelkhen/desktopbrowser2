@@ -88,11 +88,13 @@ const getWindowPosition = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
-    app.setLoginItemSettings({
-        openAtLogin: true,
-        path: updateExe,
-        args: ["--processStart", `"${exeName}"`, "--process-start-args", '"--hidden"'],
-    })
+    if (app.isPackaged) {
+        app.setLoginItemSettings({
+            openAtLogin: true,
+            path: updateExe,
+            args: ["--processStart", `"${exeName}"`, "--process-start-args", '"--hidden"'],
+        })
+    }
 
     // Set app user model id for windows
     electronApp.setAppUserModelId("com.electron")

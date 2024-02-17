@@ -39,6 +39,7 @@ export async function main() {
         // mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"])
     } else {
         exp.use("/", express.static(join(__dirname, "../renderer")))
+        exp.use("/resources", express.static(join(__dirname, "../../resources")))
         // mainWindow.loadFile(join(__dirname, "../renderer/index.html"))
     }
 
