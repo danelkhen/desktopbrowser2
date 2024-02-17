@@ -1,10 +1,14 @@
 import { electronApp, optimizer } from "@electron-toolkit/utils"
 import { BrowserWindow, Tray, app, ipcMain, shell } from "electron"
-import { join } from "path"
+import path, { join } from "path"
 import icon from "../../resources/icon.png?asset"
 import { main } from "./main"
 
 import trayIcon from "../../resources/clapperboard-16x16.png?asset"
+
+const appFolder = path.dirname(process.execPath)
+const updateExe = path.resolve(appFolder, "..", "Update.exe")
+const exeName = path.basename(process.execPath)
 
 let mainWindow: BrowserWindow = null!
 let tray: Tray = null!
@@ -84,6 +88,12 @@ const getWindowPosition = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+    app.setLoginItemSettings({
+        openAtLogin: true,
+        path: updateExe,
+        args: ["--processStart", `"${exeName}"`, "--process-start-args", '"--hidden"'],
+    })
+
     // Set app user model id for windows
     electronApp.setAppUserModelId("com.electron")
     app.dock?.hide()
