@@ -30,7 +30,7 @@ export function createApi(db: AppDb): FileService {
             win?.webContents.openDevTools({ mode: "detach" })
         },
         appOpen() {
-            return shell.openExternal("http://localhost:7778")
+            return shell.openExternal("http://localhost:7779")
         },
         async appExit() {
             return app.quit()

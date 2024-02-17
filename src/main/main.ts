@@ -31,6 +31,7 @@ export async function main() {
     const exp = express()
     exp.use(express.json())
     exp.use("/api/:service/:action", handleServiceRequest(services))
+    console.log("renderer dir", join(__dirname, "../renderer"))
 
     if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
         console.log("using proxy", process.env["ELECTRON_RENDERER_URL"])
@@ -54,7 +55,7 @@ export async function main() {
     const server = http.createServer(exp)
     setupWebsockets(server, { fileService })
 
-    await new Promise<void>(resolve => server.listen(7778, resolve))
+    await new Promise<void>(resolve => server.listen(7779, resolve))
 
-    console.log("server started: http://localhost:7778")
+    console.log("server started: http://localhost:7779")
 }
