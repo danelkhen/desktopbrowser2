@@ -53,7 +53,7 @@ async function main2() {
             fullscreenable: false,
         })
 
-        myWindow.loadURL("http://localhost:7777/tray")
+        myWindow.loadURL("http://localhost:7778/tray")
 
         myWindow.once("ready-to-show", () => {
             const position = getWindowPosition()

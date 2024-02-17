@@ -54,7 +54,7 @@ export async function main() {
     const server = http.createServer(exp)
     setupWebsockets(server, { fileService })
 
-    await new Promise<void>(resolve => server.listen(7777, resolve))
+    await new Promise<void>(resolve => server.listen(7778, resolve))
 
-    console.log("server started: http://localhost:7777")
+    console.log("server started: http://localhost:7778")
 }
