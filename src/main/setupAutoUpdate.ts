@@ -123,7 +123,7 @@ export async function setupAutoUpdate() {
         sendStatusToWindow(app.getVersion())
         log.info("checkForUpdatesAndNotify")
         const res = await autoUpdater.checkForUpdatesAndNotify()
-        log.info("checkForUpdatesAndNotify res", res)
+        log.info("checkForUpdatesAndNotify result", res)
         sendStatusToWindow(JSON.stringify(res || "no res"))
         // await sleep(10000)
         // win?.close()
