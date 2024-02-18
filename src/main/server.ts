@@ -1,3 +1,3 @@
-import { main } from "./main"
+import { setupWebServer } from "./setupWebServer"
 
-void main()
+void setupWebServer()

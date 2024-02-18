@@ -11,7 +11,7 @@ import { LevelDb } from "./utils/LevelDb"
 import { handleServiceRequest } from "./utils/handleServiceRequest"
 import { setupWebsockets } from "./utils/websocket"
 
-export async function main() {
+export async function setupWebServer() {
     console.log(dataDir)
 
     console.log("os", JSON.stringify(os.platform()))

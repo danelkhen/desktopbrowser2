@@ -1,7 +1,7 @@
 import { app, BrowserWindow, Tray } from "electron"
 import log from "electron-log"
 import path from "path"
-import { main } from "./main"
+import { setupWebServer } from "./setupWebServer"
 import { dataDir, rootDir } from "./rootDir"
 
 Object.assign(console, log.functions)
@@ -75,7 +75,7 @@ async function main2() {
         myWindow.on("blur", () => {
             myWindow.hide()
         })
-        await main()
+        await setupWebServer()
     }
 }
 // Wait until the app is ready

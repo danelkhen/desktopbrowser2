@@ -1,9 +1,9 @@
 import { electronApp, optimizer } from "@electron-toolkit/utils"
 import { app, ipcMain } from "electron"
 import path from "path"
-import { main } from "./main"
-
+import { setupWebServer } from "./setupWebServer"
 import { setupTray } from "./setupTray"
+import { setupAutoUpdate } from "./setupAutoUpdate"
 
 const appFolder = path.dirname(process.execPath)
 const updateExe = path.resolve(appFolder, "..", "Update.exe")
@@ -43,7 +43,8 @@ app.whenReady().then(async () => {
     //     // dock icon is clicked and there are no other windows open.
     //     if (BrowserWindow.getAllWindows().length === 0) createWindow()
     // })
-    await main()
+    await setupWebServer()
+    setupAutoUpdate()
 })
 
 // Quit when all windows are closed, except on macOS. There, it's common
