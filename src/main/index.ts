@@ -88,6 +88,9 @@ const getWindowPosition = () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(async () => {
+    // Set app user model id for windows
+    electronApp.setAppUserModelId("com.electron")
+
     if (app.isPackaged) {
         app.setLoginItemSettings({
             openAtLogin: true,
@@ -96,8 +99,6 @@ app.whenReady().then(async () => {
         })
     }
 
-    // Set app user model id for windows
-    electronApp.setAppUserModelId("com.electron")
     app.dock?.hide()
 
     // Default open or close DevTools by F12 in development
