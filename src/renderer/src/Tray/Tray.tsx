@@ -2,6 +2,7 @@ import { css } from "@emotion/css"
 import { useCallback, useEffect, useState } from "react"
 import { api } from "../services/api"
 import { injectGlobalStyle } from "./GlobalStyle"
+import { Version } from "@renderer/Version"
 
 const TrayDiv = css`
     display: flex;
@@ -41,6 +42,7 @@ export function Tray() {
                 <button onClick={() => checkForUpdates()}>Check for updates</button>
                 <div>{version}</div>
                 <div>{status}</div>
+                <Version />
             </div>
         </>
     )

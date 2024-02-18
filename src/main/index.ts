@@ -4,6 +4,9 @@ import path from "path"
 import { setupWebServer } from "./setupWebServer"
 import { setupTray } from "./setupTray"
 import { setupAutoUpdate } from "./setupAutoUpdate"
+import log from "electron-log/main"
+
+log.initialize()
 
 const appFolder = path.dirname(process.execPath)
 const updateExe = path.resolve(appFolder, "..", "Update.exe")

@@ -2,8 +2,9 @@ import { BrowserWindow, Tray, shell } from "electron"
 import path from "path"
 import trayIcon from "../../resources/clapperboard-16x16.png?asset"
 import icon from "../../resources/icon.png?asset"
+import { baseUrl } from "./baseUrl"
 
-let mainWindow: BrowserWindow = null!
+export let mainWindow: BrowserWindow = null!
 let tray: Tray = null!
 
 export function setupTray() {
@@ -39,7 +40,7 @@ export function createWindow(): void {
         return { action: "deny" }
     })
 
-    mainWindow.loadURL("http://localhost:7779/tray")
+    mainWindow.loadURL(`${baseUrl}/tray`)
 
     // // HMR for renderer base on electron-vite cli.
     // // Load the remote URL for development or the local html file for production.

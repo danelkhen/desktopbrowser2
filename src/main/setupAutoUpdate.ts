@@ -1,12 +1,12 @@
 // This is free and unencumbered software released into the public domain.
 // See LICENSE for details
 
-import { app, BrowserWindow, Menu, MenuItemConstructorOptions } from "electron"
-import log from "electron-log"
+import { app, Menu, MenuItemConstructorOptions } from "electron"
+import log from "electron-log/main"
 import { autoUpdater } from "electron-updater"
-import path from "path"
+import { mainWindow } from "./setupTray"
 
-export function setupAutoUpdate() {
+export async function setupAutoUpdate() {
     //-------------------------------------------------------------------
     // Logging
     //
@@ -55,26 +55,28 @@ export function setupAutoUpdate() {
     // for the app to show a window than to have to click "About" to see
     // that updates are working.
     //-------------------------------------------------------------------
-    let win: BrowserWindow | null = null
+    // let win: BrowserWindow | null = null
 
     function sendStatusToWindow(text: string) {
         log.info(text)
-        win?.webContents.send("message", text)
+        mainWindow?.webContents.send("message", text)
     }
-    function createDefaultWindow() {
-        win = new BrowserWindow({
-            webPreferences: {
-                nodeIntegration: true,
-                contextIsolation: false,
-            },
-        })
-        win.webContents.openDevTools()
-        win.on("closed", () => {
-            win = null
-        })
-        win.loadURL(`file://${path.join(__dirname, "../renderer/version.html")}#v${app.getVersion()}`)
-        return win
-    }
+    // function createDefaultWindow() {
+    //     win = new BrowserWindow({
+    //         webPreferences: {
+    //             nodeIntegration: true,
+    //             contextIsolation: false,
+    //         },
+    //     })
+    //     // win.webContents.openDevTools()
+    //     win.on("closed", () => {
+    //         win = null
+    //     })
+    //     const url = `${baseUrl}/tray#v${app.getVersion()}`
+    //     log.info(url)
+    //     win.loadURL(url)
+    //     return win
+    // }
     autoUpdater.on("checking-for-update", () => {
         sendStatusToWindow("Checking for update...")
     })
@@ -96,16 +98,16 @@ export function setupAutoUpdate() {
     autoUpdater.on("update-downloaded", () => {
         sendStatusToWindow("Update downloaded")
     })
-    app.on("ready", function () {
+    app.whenReady().then(() => {
         // Create the Menu
         const menu = Menu.buildFromTemplate(template)
         Menu.setApplicationMenu(menu)
 
-        createDefaultWindow()
+        // createDefaultWindow()
     })
-    app.on("window-all-closed", () => {
-        app.quit()
-    })
+    // app.on("window-all-closed", () => {
+    //     app.quit()
+    // })
 
     //
     // CHOOSE one of the following options for Auto updates
@@ -117,8 +119,15 @@ export function setupAutoUpdate() {
     // This will immediately download an update, then install when the
     // app quits.
     //-------------------------------------------------------------------
-    app.on("ready", function () {
-        autoUpdater.checkForUpdatesAndNotify()
+    app.whenReady().then(async () => {
+        sendStatusToWindow(app.getVersion())
+        log.info("checkForUpdatesAndNotify")
+        const res = await autoUpdater.checkForUpdatesAndNotify()
+        log.info("checkForUpdatesAndNotify res", res)
+        sendStatusToWindow(JSON.stringify(res || "no res"))
+        // await sleep(10000)
+        // win?.close()
+        // win = null
     })
 
     //-------------------------------------------------------------------
