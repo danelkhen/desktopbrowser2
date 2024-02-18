@@ -56,7 +56,6 @@ export function Files({
                 dispatcher.hasInnerSelection(file) && HasInnerSelection,
                 selectedFiles.includes(file) && Selected
             )
-            console.log(s)
             return s
             // const s = `${FileRow} ${file.IsFolder ? IsFolder : IsFile} ${
             //     dispatcher.hasInnerSelection(file) && HasInnerSelection
