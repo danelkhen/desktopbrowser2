@@ -34,7 +34,7 @@ app.whenReady().then(async () => {
     })
 
     // IPC test
-    ipcMain.on("ping", () => console.log("pong"))
+    ipcMain.on("ping", () => console.log("pong2"))
 
     await setupTray()
 
