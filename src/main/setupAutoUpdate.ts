@@ -1,12 +1,12 @@
 // This is free and unencumbered software released into the public domain.
 // See LICENSE for details
 
-import { app, Menu, MenuItemConstructorOptions } from "electron"
+import { app } from "electron"
 import log from "electron-log/main"
 import { autoUpdater } from "electron-updater"
-import { mainWindow } from "./setupTray"
+import { showMainWindow } from "./setupMainWindow"
 
-export async function setupAutoUpdate() {
+export function setupAutoUpdate() {
     //-------------------------------------------------------------------
     // Logging
     //
@@ -19,32 +19,32 @@ export async function setupAutoUpdate() {
     log.transports.file.level = "info"
     log.info("App starting...")
 
-    //-------------------------------------------------------------------
-    // Define the menu
-    //
-    // THIS SECTION IS NOT REQUIRED
-    //-------------------------------------------------------------------
-    const template: MenuItemConstructorOptions[] = []
-    if (process.platform === "darwin") {
-        // OS X
-        const name = app.getName()
-        template.unshift({
-            label: name,
-            submenu: [
-                {
-                    label: "About " + name,
-                    role: "about",
-                },
-                {
-                    label: "Quit",
-                    accelerator: "Command+Q",
-                    click() {
-                        app.quit()
-                    },
-                },
-            ],
-        })
-    }
+    // //-------------------------------------------------------------------
+    // // Define the menu
+    // //
+    // // THIS SECTION IS NOT REQUIRED
+    // //-------------------------------------------------------------------
+    // const template: MenuItemConstructorOptions[] = []
+    // if (process.platform === "darwin") {
+    //     // OS X
+    //     const name = app.getName()
+    //     template.unshift({
+    //         label: name,
+    //         submenu: [
+    //             {
+    //                 label: "About " + name,
+    //                 role: "about",
+    //             },
+    //             {
+    //                 label: "Quit",
+    //                 accelerator: "Command+Q",
+    //                 click() {
+    //                     app.quit()
+    //                 },
+    //             },
+    //         ],
+    //     })
+    // }
 
     //-------------------------------------------------------------------
     // Open a window that displays the version
@@ -57,9 +57,10 @@ export async function setupAutoUpdate() {
     //-------------------------------------------------------------------
     // let win: BrowserWindow | null = null
 
-    function sendStatusToWindow(text: string) {
+    async function sendStatusToWindow(text: string) {
         log.info(text)
-        mainWindow?.webContents.send("message", text)
+        const win = await showMainWindow()
+        win.webContents.send("message", text)
     }
     // function createDefaultWindow() {
     //     win = new BrowserWindow({
@@ -98,13 +99,13 @@ export async function setupAutoUpdate() {
     autoUpdater.on("update-downloaded", () => {
         sendStatusToWindow("Update downloaded")
     })
-    app.whenReady().then(() => {
-        // Create the Menu
-        const menu = Menu.buildFromTemplate(template)
-        Menu.setApplicationMenu(menu)
+    // app.whenReady().then(() => {
+    //     // Create the Menu
+    //     const menu = Menu.buildFromTemplate(template)
+    //     Menu.setApplicationMenu(menu)
 
-        // createDefaultWindow()
-    })
+    //     // createDefaultWindow()
+    // })
     // app.on("window-all-closed", () => {
     //     app.quit()
     // })

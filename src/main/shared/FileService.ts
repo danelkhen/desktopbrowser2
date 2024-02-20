@@ -1,3 +1,4 @@
+import { UpdateCheckResult } from "electron-updater"
 import { removeLast } from "./removeLast"
 
 export interface FileService {
@@ -12,7 +13,7 @@ export interface FileService {
     trash(req: PathRequest): Promise<void>
 
     appInspect(): Promise<void>
-    checkForUpdates(): Promise<{ isLatest: boolean; latest: string; current: string }>
+    checkForUpdates(): Promise<UpdateCheckResult | null> // { isLatest: boolean; latest: string; current: string }>
     appOpen(): Promise<void>
     appExit(): Promise<void>
     appGetVersion(): Promise<string>

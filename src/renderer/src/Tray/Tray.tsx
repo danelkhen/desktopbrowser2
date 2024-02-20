@@ -1,8 +1,8 @@
 import { css } from "@emotion/css"
-import { useCallback, useEffect, useState } from "react"
+import { Version } from "@renderer/Version"
+import { useCallback, useState } from "react"
 import { api } from "../services/api"
 import { injectGlobalStyle } from "./GlobalStyle"
-import { Version } from "@renderer/Version"
 
 const TrayDiv = css`
     display: flex;
@@ -14,37 +14,23 @@ const TrayDiv = css`
 `
 injectGlobalStyle()
 export function Tray() {
-    const [version, setVersion] = useState<string | undefined>()
     const [status, setStatus] = useState<string | undefined>()
-    useEffect(() => {
-        document.body.addEventListener("keydown", e => {
-            if (e.key === "F12") {
-                api.appInspect()
-            }
-        })
-        ;(async () => {
-            setVersion(await api.appGetVersion())
-        })()
-    }, [])
 
     const checkForUpdates = useCallback(async () => {
         const res = await api.checkForUpdates()
-        setStatus(res.isLatest ? "you have the latest version" : `there's a newer version ${res.latest}`)
+        setStatus(JSON.stringify(res))
     }, [])
 
     return (
-        <>
-            <div className={TrayDiv}>
-                {false && <button onClick={() => api.appInspect()}>Inspect</button>}
-                <button onClick={() => open()}>Open</button>
-                <button onClick={() => api.appHide()}>Close</button>
-                <button onClick={() => exit()}>Exit</button>
-                <button onClick={() => checkForUpdates()}>Check for updates</button>
-                <div>{version}</div>
-                <div>{status}</div>
-                <Version />
-            </div>
-        </>
+        <div className={TrayDiv}>
+            <button onClick={() => open()}>Open</button>
+            <button onClick={() => api.appHide()}>Close</button>
+            <button onClick={() => exit()}>Exit</button>
+            <button onClick={() => checkForUpdates()}>Check for updates</button>
+            <div>{APP_VERSION}</div>
+            <div>{status}</div>
+            <Version />
+        </div>
     )
 }
 
@@ -54,3 +40,5 @@ async function open() {
 async function exit() {
     await api.appExit()
 }
+
+// window.electron.ipcRenderer.send("ping")

@@ -18,7 +18,7 @@ module.exports = {
         "@typescript-eslint/no-unused-vars": "warn",
         // "@typescript-eslint/no-non-null-assertion": "off",
         // "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
-        // "prefer-const": "warn",
+        "prefer-const": "warn",
         // // "@typescript-eslint/no-floating-promises": "warn",
     },
 }

@@ -1,6 +1,5 @@
 import { injectGlobal } from "@emotion/css"
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const lightTheme = {
     fg1: "#333",
     fg2: "#666",

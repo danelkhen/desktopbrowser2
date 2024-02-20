@@ -3,7 +3,7 @@ import { ListFiles } from "./ListFiles"
 import { AppDb } from "../AppDb"
 import { Delete, Execute, Explore, trash } from "./api"
 import { app, BrowserWindow, shell } from "electron"
-import { checkForUpdates } from "./checkForUpdates"
+import { autoUpdater } from "electron-updater"
 
 export function createApi(db: AppDb): FileService {
     return {
@@ -35,8 +35,9 @@ export function createApi(db: AppDb): FileService {
         async appExit() {
             return app.quit()
         },
-        checkForUpdates() {
-            return checkForUpdates()
+        async checkForUpdates() {
+            const res = await autoUpdater.checkForUpdatesAndNotify()
+            return res
         },
         async appGetVersion() {
             return app.getVersion()

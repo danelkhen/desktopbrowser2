@@ -1,24 +1,23 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 export function Version() {
+    const [messages, setMessages] = useState<string[]>([])
     useEffect(() => {
-        // Display the current version
-        const version = window.location.hash.substring(1)
-        document.getElementById("version")!.innerText = version
-
-        // Listen for messages
-        // const { ipcRenderer } = require("electron")
-        window.electron.ipcRenderer.on("message", function (event, text) {
-            const container = document.getElementById("messages")!
-            const message = document.createElement("div")!
-            message.innerHTML = text
-            container.appendChild(message)
+        const off = window.electron.ipcRenderer.on("message", (event, text) => {
+            setMessages(t => [...t, text])
         })
+        return () => {
+            off()
+        }
     }, [])
     return (
         <div>
-            Current version: <span id="version">vX.Y.Z</span>
-            <div id="messages"></div>
+            Current version: <span id="version">v{APP_VERSION}</span>
+            <div>
+                {messages.map((message, i) => (
+                    <div key={i}>{message}</div>
+                ))}
+            </div>
         </div>
     )
 }

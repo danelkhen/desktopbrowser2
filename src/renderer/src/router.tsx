@@ -1,13 +1,13 @@
 import { createBrowserRouter } from "react-router-dom"
 import { FileBrowser } from "./components/FileBrowser"
 import { Tray } from "./Tray/Tray"
-import { AppComponent } from "./AppComponent"
+import { App } from "./App"
 import { Version } from "./Version"
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <AppComponent />,
+        element: <App />,
         children: [
             {
                 index: true,
