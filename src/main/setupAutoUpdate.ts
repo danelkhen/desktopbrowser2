@@ -36,6 +36,9 @@ export function setupAutoUpdate() {
     })
     autoUpdater.on("update-downloaded", () => {
         sendStatusToWindow("Update downloaded")
+        if (process.platform === "darwin") {
+            return
+        }
         sendStatusToWindow("Quitting and installing...")
         autoUpdater.quitAndInstall(true, true)
     })

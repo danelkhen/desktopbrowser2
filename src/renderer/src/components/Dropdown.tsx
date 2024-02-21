@@ -1,33 +1,23 @@
-import React, { ReactComponentElement, ReactElement, useCallback, useEffect, useState } from "react"
+import { css, cx } from "@emotion/css"
+import React, {
+    ReactComponentElement,
+    ReactElement,
+    ReactNode,
+    useCallback,
+    useEffect,
+    useLayoutEffect,
+    useRef,
+    useState,
+} from "react"
+import { createPortal } from "react-dom"
 import { colors } from "../GlobalStyle"
-import { cx, css } from "@emotion/css"
 
-export const DropdownDiv = css`
-    display: flex;
-
-    .menu {
-        display: none;
-        flex-direction: column;
-        position: absolute;
-        border: 1px solid ${colors.bg2};
-        background-color: ${colors.bg1};
-        top: 40px;
-        z-index: 10000;
-    }
-    &.show {
-        .menu {
-            display: flex;
-        }
-    }
-`
 export interface DropdownProps {
     children: [ReactComponentElement<"button">, ReactElement]
 }
-export function Dropdown(props: DropdownProps) {
-    const { children } = props
+export function Dropdown({ toggler, popup }: { toggler: ReactComponentElement<"button">; popup: ReactNode }) {
     const [show, setShow] = useState(false)
     const [ignore, setIgnore] = useState(false)
-    const [toggler, popup] = children
 
     const toggle = useCallback(
         (e: React.MouseEvent | Event) => {
@@ -52,10 +42,26 @@ export function Dropdown(props: DropdownProps) {
     }, [toggle])
 
     const updatedToggler = React.cloneElement(toggler, { className: cx(toggler.props.className, "dropdown-toggle") })
+    const ref = useRef<HTMLDivElement>(null)
+    const ref2 = useRef<HTMLDivElement>(null)
+    useLayoutEffect(() => {
+        if (!ref.current) return
+        if (!ref2.current) return
+        const el = ref.current
+        const rect = el?.getBoundingClientRect()
+        ref2.current.style.left = `${rect.left}px`
+        ref2.current.style.top = `${rect.bottom}px`
+    }, [show])
     return (
-        <div className={cx(DropdownDiv, { show })} onClick={toggle}>
+        <div ref={ref} className={cx(DropdownDiv, { show })} onClick={toggle}>
             {updatedToggler}
-            {popup}
+            {show &&
+                createPortal(
+                    <div ref={ref2} className={popupStyle}>
+                        {popup}
+                    </div>,
+                    document.body
+                )}
         </div>
     )
 }
@@ -68,3 +74,33 @@ function shouldToggleDropDown(e: React.MouseEvent | Event) {
 
     return { isInDropDown, isInToggleBtn }
 }
+
+const popupStyle = css`
+    label: popup;
+    flex-direction: column;
+    position: absolute;
+    border: 1px solid ${colors.bg2};
+    background-color: ${colors.bg1};
+    top: 40px;
+    z-index: 10000;
+    left: 0;
+`
+const DropdownDiv = css`
+    display: flex;
+
+    .menu {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        border: 1px solid ${colors.bg2};
+        background-color: ${colors.bg1};
+        top: 40px;
+        z-index: 10000;
+        left: 0;
+    }
+    &.show {
+        .menu {
+            display: flex;
+        }
+    }
+`

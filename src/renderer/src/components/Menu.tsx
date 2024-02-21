@@ -64,44 +64,48 @@ export function Menu({ selectedFile, dispatcher }: { state: AppState; selectedFi
                 </div>
                 <div className={ButtonGroup}>
                     <MenuButton icon={<TrashIcon />} action={Delete} label="Delete" />
-                    <Dropdown>
-                        <MenuButton icon={<SortIcon />} label="Sort" />
-                        <div className="menu">
-                            <ToggleMenuButton
-                                action={OrderByInnerSelection}
-                                isActive={isOrderedByInnerSelection}
-                                label="Watched"
-                            />
-                            <ToggleMenuButton
-                                action={toggle.foldersFirst}
-                                isActive={isToggled.foldersFirst}
-                                label="Folders first"
-                            />
-                            <ToggleMenuButton
-                                action={disableSorting}
-                                isActive={isSortingDisabled}
-                                label="Disable sort"
-                            />
-                        </div>
-                    </Dropdown>
-                    <Dropdown>
-                        <MenuButton icon={<MoreIcon />} label="More" />
-                        <div className="menu">
-                            <ToggleMenuButton
-                                action={toggle.Folders}
-                                isActive={isToggled.Folders}
-                                label="Hide Folders"
-                            />
-                            <ToggleMenuButton action={toggle.Files} isActive={isToggled.Files} label="Hide Files" />
-                            <ToggleMenuButton
-                                action={toggle.Recursive}
-                                isActive={isToggled.Recursive}
-                                label="Recursive"
-                            />
-                            <ToggleMenuButton action={toggle.Keep} isActive={isToggled.Keep} label="Keep" />
-                            <ToggleMenuButton action={toggle.Hidden} isActive={isToggled.Hidden} label="Hidden" />
-                        </div>
-                    </Dropdown>
+                    <Dropdown
+                        toggler={<MenuButton icon={<SortIcon />} label="Sort" />}
+                        popup={
+                            <div className="menu">
+                                <ToggleMenuButton
+                                    action={OrderByInnerSelection}
+                                    isActive={isOrderedByInnerSelection}
+                                    label="Watched"
+                                />
+                                <ToggleMenuButton
+                                    action={toggle.foldersFirst}
+                                    isActive={isToggled.foldersFirst}
+                                    label="Folders first"
+                                />
+                                <ToggleMenuButton
+                                    action={disableSorting}
+                                    isActive={isSortingDisabled}
+                                    label="Disable sort"
+                                />
+                            </div>
+                        }
+                    />
+                    <Dropdown
+                        toggler={<MenuButton icon={<MoreIcon />} label="More" />}
+                        popup={
+                            <div className="menu">
+                                <ToggleMenuButton
+                                    action={toggle.Folders}
+                                    isActive={isToggled.Folders}
+                                    label="Hide Folders"
+                                />
+                                <ToggleMenuButton action={toggle.Files} isActive={isToggled.Files} label="Hide Files" />
+                                <ToggleMenuButton
+                                    action={toggle.Recursive}
+                                    isActive={isToggled.Recursive}
+                                    label="Recursive"
+                                />
+                                <ToggleMenuButton action={toggle.Keep} isActive={isToggled.Keep} label="Keep" />
+                                <ToggleMenuButton action={toggle.Hidden} isActive={isToggled.Hidden} label="Hidden" />
+                            </div>
+                        }
+                    />
                 </div>
             </div>
         </div>

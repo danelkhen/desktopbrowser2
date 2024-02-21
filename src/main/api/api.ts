@@ -1,9 +1,10 @@
 ﻿import * as child_process from "child_process"
+import { shell } from "electron"
 import * as os from "os"
-import { FileService } from "../shared/FileService"
-import { quote } from "./ListFiles"
 import { IoDir } from "../io/IoDir"
 import { IoFile } from "../io/IoFile"
+import { FileService } from "../shared/FileService"
+import { quote } from "./ListFiles"
 
 export const Execute: FileService["execute"] = async req => {
     const filename = req.Path
@@ -33,7 +34,9 @@ export const Delete: FileService["del"] = async req => {
 }
 
 export const trash: FileService["trash"] = async req => {
-    const trash2 = await import("trash")
+    // const trash2 = await import("trash")
     const path = req.Path
-    await trash2.default([path])
+    console.log("trash", path)
+    await shell.trashItem(path)
+    // await trash2(path)
 }
