@@ -32,7 +32,7 @@ export interface FileInfo {
 }
 
 export interface ListFilesRequest {
-    readonly sort?: SortColumn[]
+    // readonly sort?: SortColumn[]
     readonly foldersFirst?: boolean
     readonly ByInnerSelection?: boolean
     readonly SearchPattern?: string

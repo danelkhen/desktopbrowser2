@@ -92,10 +92,10 @@ export interface SortColumn {
 export function sortToUrl(cols: SortColumn[]): string {
     return cols.map(t => (t.Descending ? `${t.Name}_` : t.Name)).join(",")
 }
-export function urlToSort(sort: string | undefined): SortColumn[] {
+export function urlToSort(sort: string): SortColumn[] {
     return (
         sort
-            ?.split(",")
+            .split(",")
             .map(t =>
                 t.endsWith("_")
                     ? ({ Name: stringRemoveLast(t, 1) as Column, Descending: true } as SortColumn)
