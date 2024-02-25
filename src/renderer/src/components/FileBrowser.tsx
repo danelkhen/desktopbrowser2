@@ -65,7 +65,7 @@ export function FileBrowser() {
         <>
             <header>
                 <div className={navStyle}>
-                    <Menu selectedFile={selectedFile} state={state} dispatcher={dispatcher} />
+                    <Menu selectedFile={selectedFile} req={state.req} dispatcher={dispatcher} />
                     <Clock />
                 </div>
                 <AddressBar

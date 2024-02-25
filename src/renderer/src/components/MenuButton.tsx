@@ -57,14 +57,14 @@ export function ToggleMenuButton({
     className,
     icon,
 }: {
-    action(): void
-    isActive(): boolean
+    action: () => void
+    isActive: boolean
     label?: string
     className?: string
     icon?: ReactNode
 }) {
     return (
-        <button className={cx(className, StyledButton, { active: isActive() })} onClick={action}>
+        <button className={cx(className, StyledButton, { active: isActive })} onClick={action}>
             {icon}
             {label}
         </button>

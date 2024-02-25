@@ -1,23 +1,30 @@
+import { css } from "@emotion/css"
 import React, { useCallback } from "react"
-import { FsFile } from "../services/FileService"
 import ExploreIcon from "../assets/icons/explore.svg?react"
 import FolderIcon from "../assets/icons/folder.svg?react"
 import GoogleIcon from "../assets/icons/google.svg?react"
 import MoreIcon from "../assets/icons/more.svg?react"
+import NewIcon from "../assets/icons/new.svg?react"
 import NextIcon from "../assets/icons/next.svg?react"
 import PrevIcon from "../assets/icons/prev.svg?react"
 import SortIcon from "../assets/icons/sort.svg?react"
 import SubtitleIcon from "../assets/icons/subtitle.svg?react"
 import TrashIcon from "../assets/icons/trash.svg?react"
 import UpIcon from "../assets/icons/up.svg?react"
-import NewIcon from "../assets/icons/new.svg?react"
+import { Dispatcher } from "../services/Dispatcher"
+import { FsFile, ListFilesRequest } from "../services/FileService"
 import { Dropdown } from "./Dropdown"
 import { MenuButton, ToggleMenuButton } from "./MenuButton"
-import { Dispatcher } from "../services/Dispatcher"
-import { AppState } from "../services/AppState"
-import { css } from "@emotion/css"
 
-export function Menu({ selectedFile, dispatcher }: { state: AppState; selectedFile?: FsFile; dispatcher: Dispatcher }) {
+export function Menu({
+    req,
+    selectedFile,
+    dispatcher,
+}: {
+    req: ListFilesRequest
+    selectedFile?: FsFile
+    dispatcher: Dispatcher
+}) {
     const Delete = useCallback(
         (e?: React.KeyboardEvent) =>
             selectedFile && dispatcher.deleteOrTrash({ file: selectedFile, isShiftDown: e?.shiftKey ?? false }),
@@ -26,8 +33,6 @@ export function Menu({ selectedFile, dispatcher }: { state: AppState; selectedFi
     )
 
     const {
-        isToggled,
-        toggle,
         goto,
         google,
         subs,
@@ -48,8 +53,8 @@ export function Menu({ selectedFile, dispatcher }: { state: AppState; selectedFi
                 <div className={ButtonGroup}>
                     <ToggleMenuButton
                         icon={<FolderIcon />}
-                        action={toggle.FolderSize}
-                        isActive={isToggled.FolderSize}
+                        action={() => dispatcher.updateReq({ FolderSize: !req.FolderSize })}
+                        isActive={!!req.FolderSize}
                         label="Folder"
                     />
                     <MenuButton icon={<GoogleIcon />} action={google} label="Google" />
@@ -57,8 +62,8 @@ export function Menu({ selectedFile, dispatcher }: { state: AppState; selectedFi
                     <MenuButton icon={<ExploreIcon />} action={Explore} label="Explore" />
                     <ToggleMenuButton
                         icon={<NewIcon />}
-                        action={toggle.hideWatched}
-                        isActive={isToggled.hideWatched}
+                        action={() => dispatcher.updateReq({ hideWatched: !req.hideWatched })}
+                        isActive={!!req.hideWatched}
                         label="New"
                     />
                 </div>
@@ -70,17 +75,17 @@ export function Menu({ selectedFile, dispatcher }: { state: AppState; selectedFi
                             <div className="menu">
                                 <ToggleMenuButton
                                     action={OrderByInnerSelection}
-                                    isActive={isOrderedByInnerSelection}
+                                    isActive={isOrderedByInnerSelection()}
                                     label="Watched"
                                 />
                                 <ToggleMenuButton
-                                    action={toggle.foldersFirst}
-                                    isActive={isToggled.foldersFirst}
+                                    action={() => dispatcher.updateReq({ foldersFirst: !req.foldersFirst })}
+                                    isActive={!!req.foldersFirst}
                                     label="Folders first"
                                 />
                                 <ToggleMenuButton
                                     action={disableSorting}
-                                    isActive={isSortingDisabled}
+                                    isActive={isSortingDisabled()}
                                     label="Disable sort"
                                 />
                             </div>
@@ -91,18 +96,30 @@ export function Menu({ selectedFile, dispatcher }: { state: AppState; selectedFi
                         popup={
                             <div className="menu">
                                 <ToggleMenuButton
-                                    action={toggle.Folders}
-                                    isActive={isToggled.Folders}
+                                    action={() => dispatcher.updateReq({ HideFolders: !req.HideFolders })}
+                                    isActive={!!req.HideFolders}
                                     label="Hide Folders"
                                 />
-                                <ToggleMenuButton action={toggle.Files} isActive={isToggled.Files} label="Hide Files" />
                                 <ToggleMenuButton
-                                    action={toggle.Recursive}
-                                    isActive={isToggled.Recursive}
+                                    action={() => dispatcher.updateReq({ HideFiles: !req.HideFiles })}
+                                    isActive={!!req.HideFiles}
+                                    label="Hide Files"
+                                />
+                                <ToggleMenuButton
+                                    action={() => dispatcher.updateReq({ IsRecursive: !req.IsRecursive })}
+                                    isActive={!!req.IsRecursive}
                                     label="Recursive"
                                 />
-                                <ToggleMenuButton action={toggle.Keep} isActive={isToggled.Keep} label="Keep" />
-                                <ToggleMenuButton action={toggle.Hidden} isActive={isToggled.Hidden} label="Hidden" />
+                                <ToggleMenuButton
+                                    action={() => dispatcher.updateReq({ KeepView: !req.KeepView })}
+                                    isActive={!!req.KeepView}
+                                    label="Keep"
+                                />
+                                <ToggleMenuButton
+                                    action={() => dispatcher.updateReq({ ShowHiddenFiles: !req.ShowHiddenFiles })}
+                                    isActive={!!req.ShowHiddenFiles}
+                                    label="Hidden"
+                                />
                             </div>
                         }
                     />

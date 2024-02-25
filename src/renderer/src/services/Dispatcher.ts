@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { produce } from "immer"
 import { NavigateFunction } from "react-router"
 import { ColumnKey } from "../components/Grid"
@@ -67,7 +65,7 @@ export class Dispatcher {
         return order.indexOf(type)
     }
 
-    private updateReq(v: Partial<ListFilesRequest>) {
+    updateReq(v: Partial<ListFilesRequest>) {
         return this.setReq({ ...store._state.req, ...v })
     }
     private setReq(v: ListFilesRequest) {
@@ -102,7 +100,7 @@ export class Dispatcher {
             }
         }
         console.log("setSorting", active)
-        const sorting: Pick<SortConfig, "active" | "isDescending"> = { active, isDescending }
+        const sorting: SortConfig = { active, isDescending }
         return sorting
     }
 
@@ -185,13 +183,10 @@ export class Dispatcher {
     }
 
     orderBy = (column: ColumnKey) => {
-        // const sorting = store._state.sorting
         const sort = produce(store._state.req.sort ?? [], sort => {
-            // let sort = _.cloneDeep(store._state.req.sort ?? [])
             const index = sort.findIndex(t => t.Name === column)
             if (index === 0) {
                 if (!!sort[index].Descending === !!gridColumns[column].descendingFirst) {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     sort[index].Descending = !sort[index].Descending
                 } else {
                     sort.shift()
@@ -223,26 +218,6 @@ export class Dispatcher {
         prev: () => !!store._state.res?.Relatives?.PreviousSibling,
         next: () => !!store._state.res?.Relatives?.NextSibling,
     }
-    toggle = {
-        FolderSize: () => this.updateReq({ FolderSize: !store._state.req.FolderSize }),
-        foldersFirst: () => this.updateReq({ foldersFirst: !store._state.req.foldersFirst }),
-        Folders: () => this.updateReq({ HideFolders: !store._state.req.HideFolders }),
-        Files: () => this.updateReq({ HideFiles: !store._state.req.HideFiles }),
-        Recursive: () => this.updateReq({ IsRecursive: !store._state.req.IsRecursive }),
-        Keep: () => this.updateReq({ KeepView: !store._state.req.KeepView }),
-        Hidden: () => this.updateReq({ ShowHiddenFiles: !store._state.req.ShowHiddenFiles }),
-        hideWatched: () => this.updateReq({ hideWatched: !store._state.req.hideWatched }),
-    }
-    isToggled = {
-        FolderSize: () => !!store._state.req.FolderSize,
-        foldersFirst: () => !!store._state.req.foldersFirst,
-        Folders: () => !!store._state.req.HideFolders,
-        Files: () => !!store._state.req.HideFiles,
-        Recursive: () => !!store._state.req.IsRecursive,
-        Keep: () => !!store._state.req.KeepView,
-        Hidden: () => !!store._state.req.ShowHiddenFiles,
-        hideWatched: () => !!store._state.req.hideWatched,
-    }
 
     disableSorting = () =>
         this.updateReq({
@@ -261,7 +236,12 @@ export class Dispatcher {
 
     subs = () => store._state.res?.File && openInNewWindow(getSubtitleSearchLink(store._state.res?.File))
 
-    Explore = () => store._state.res?.File && this.explore(store._state.res?.File)
+    Explore = () => {
+        console.log(store._state)
+        const file = store._state.selectedFiles[0] ?? store._state.res?.File
+        if (!file) return
+        this.explore(file)
+    }
     _setSelectedFiles = (v: FsFile[]) => {
         if (arrayItemsEqual(v, store._state.selectedFiles)) return
         store.update({ selectedFiles: v })
