@@ -18,9 +18,10 @@ import { QuickFind } from "./QuickFind"
 import { gridColumns } from "./gridColumns"
 import { css } from "@emotion/css"
 
+const pageSize = 200
+
 export function FileBrowser() {
     console.log("FileBrowser render")
-
     const state = useAppState()
     const navigate = useNavigate()
     dispatcher.navigate = navigate
@@ -43,7 +44,6 @@ export function FileBrowser() {
     const [theme, setTheme] = useState("dark")
 
     const allFiles = res.Files ?? []
-    const pageSize = 200
 
     const sorted = useSorting(allFiles, sorting)
     const filtered2 = useFilter(req, sorted)
@@ -57,7 +57,7 @@ export function FileBrowser() {
         setPath(req.Path ?? "")
     }, [req.Path])
 
-    const { setSelectedFiles, selectedFiles, selectedFile } = useSelection()
+    const { setSelectedFiles, selectedFiles, selectedFile } = useSelection(state)
 
     const gotoPath = useCallback(() => dispatcher.GotoPath(path), [path])
 

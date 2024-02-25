@@ -1,34 +1,38 @@
 import { useCallback, useEffect, useMemo } from "react"
-import { dispatcher } from "../services/Dispatcher"
-import { FsFile } from "../services/FileService"
-import { Selection } from "../services/Selection"
 import { sleep } from "../lib/sleep"
-import { useAppState } from "./useAppState"
 import { Selected } from "../services/Classes"
+import { dispatcher } from "../services/Dispatcher"
+import { FileInfo, FsFile, ListFilesResponse } from "../services/FileService"
+import { Selection } from "../services/Selection"
 
-export function useSelection() {
-    const { filesMd, res, selectedFiles } = useAppState()
-    const { saveSelectedFile, up, _setSelectedFiles } = dispatcher
-
+export function useSelection({
+    filesMd,
+    res,
+    selectedFiles,
+}: {
+    readonly res: ListFilesResponse
+    readonly filesMd: { [key: string]: FileInfo }
+    readonly selectedFiles: FsFile[]
+}) {
     useEffect(() => {
         const selectedFileName = res.File?.Name ? filesMd?.[res.File.Name]?.selectedFiles?.[0] : null
         const files = res?.Files?.filter(t => t.Name == selectedFileName) ?? []
         const selection = files
-        _setSelectedFiles(selection)
-    }, [_setSelectedFiles, filesMd, res?.File?.Name, res?.Files])
+        dispatcher._setSelectedFiles(selection)
+    }, [filesMd, res?.File?.Name, res?.Files])
 
     const setSelectedFiles = useCallback(
         (v: FsFile[]) => {
             const file = v[v.length - 1]
             if (res?.File?.Name) {
                 console.log("saveSelectionAndSetSelectedItems", res.File.Name, file?.Name)
-                saveSelectedFile(res.File.Name, file?.Name)
+                dispatcher.saveSelectedFile(res.File.Name, file?.Name)
             }
             console.log("selectedFiles", v)
-            _setSelectedFiles(v)
+            dispatcher._setSelectedFiles(v)
             verifySelectionInView()
         },
-        [_setSelectedFiles, res?.File?.Name, saveSelectedFile]
+        [res?.File?.Name]
     )
 
     // Keyboard selection
@@ -49,12 +53,12 @@ export function useSelection() {
                 e.preventDefault()
                 dispatcher.Open(selectedFile)
             } else if (e.key == "Backspace") {
-                up()
+                dispatcher.up()
             }
         }
         window.addEventListener("keydown", Win_keydown)
         return () => window.removeEventListener("keydown", Win_keydown)
-    }, [res, selectedFiles, setSelectedFiles, up])
+    }, [res, selectedFiles, setSelectedFiles])
 
     const service = useMemo(() => {
         return {
