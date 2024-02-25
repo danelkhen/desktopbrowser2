@@ -1,6 +1,17 @@
-# desktopbrowser2
+# DesktopBrowser2
 
-An Electron application with React and TypeScript
+Web based file explorer, runs locally on your browser, designed for media desktops.
+
+## Features
+
+* Quick find
+* Sorting by any column(s)
+* Folder size calculation
+* Next / previous sibling folder navigation
+* Browser navigation and bookmarks
+* Columns: Name, Last Modified, Size, Extension
+* File/Folder operations: Delete
+
 
 ## Recommended IDE Setup
 
@@ -32,3 +43,5 @@ $ npm run build:mac
 # For Linux
 $ npm run build:linux
 ```
+
+
