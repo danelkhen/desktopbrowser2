@@ -23,7 +23,10 @@ export function Tray() {
 
     return (
         <div className={TrayDiv}>
-            <button onClick={() => open()}>Open</button>
+            <a href="/" target="_blank" rel="noreferrer">
+                Open
+            </a>
+            {/* <button onClick={() => open()}>Open</button> */}
             <button onClick={() => api.appHide()}>Close</button>
             <button onClick={() => exit()}>Exit</button>
             <button onClick={() => checkForUpdates()}>Check for updates</button>
@@ -34,9 +37,9 @@ export function Tray() {
     )
 }
 
-async function open() {
-    await api.appOpen()
-}
+// async function open() {
+//     await api.appOpen()
+// }
 async function exit() {
     await api.appExit()
 }

@@ -15,6 +15,7 @@ export interface IoFile {
     Length?: number
     Extension?: string
 }
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace IoFile {
     export async function getChildren(path2: string): Promise<IoFile[]> {
         const list = await fse.readdir(path2)
@@ -53,7 +54,7 @@ export namespace IoFile {
             Extension,
         }
         try {
-            x.stats = await fse.lstatSync(path2)
+            x.stats = await fse.lstat(path2)
             x.Length = x.stats.size
             x.isFile = x.stats.isFile()
             x.isDir = x.stats.isDirectory()

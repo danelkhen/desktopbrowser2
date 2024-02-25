@@ -173,7 +173,7 @@ export function ToFile(file: IoFile): FsFile {
         IsFolder: !!file.isDir,
         Modified: file.LastWriteTime != null ? dateToDefaultString(file.LastWriteTime) : undefined,
         Size: file.isFile ? file.Length : undefined,
-        IsHidden: false, // TODO:
+        IsHidden: file.Name?.startsWith("."),
         Extension: file?.Extension,
     }
     if (file.isDir) {

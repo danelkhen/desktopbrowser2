@@ -23,6 +23,7 @@ export function Dropdown({ toggler, popup }: { toggler: ReactComponentElement<"b
         (e: React.MouseEvent | Event) => {
             if (e.defaultPrevented || ignore) return
             const { isInDropDown, isInToggleBtn } = shouldToggleDropDown(e)
+            console.log({ isInDropDown, isInToggleBtn })
             if (e.currentTarget == window) {
                 if (isInDropDown || isInToggleBtn || !show) return
                 setShow(false)
@@ -38,7 +39,9 @@ export function Dropdown({ toggler, popup }: { toggler: ReactComponentElement<"b
     )
     useEffect(() => {
         window.addEventListener("mousedown", toggle)
-        return () => window.addEventListener("mousedown", toggle)
+        return () => {
+            window.removeEventListener("mousedown", toggle)
+        }
     }, [toggle])
 
     const updatedToggler = React.cloneElement(toggler, { className: cx(toggler.props.className, "dropdown-toggle") })
@@ -68,7 +71,7 @@ export function Dropdown({ toggler, popup }: { toggler: ReactComponentElement<"b
 
 function shouldToggleDropDown(e: React.MouseEvent | Event) {
     const el = e.target as HTMLElement
-    const dropDownEl = el.closest(".dropdown")
+    const dropDownEl = el.closest(`.${popupStyle}`)
     const isInDropDown = dropDownEl != null
     const isInToggleBtn = el.closest(".dropdown-toggle") != null
 
@@ -78,7 +81,7 @@ function shouldToggleDropDown(e: React.MouseEvent | Event) {
 const popupStyle = css`
     label: popup;
     flex-direction: column;
-    position: absolute;
+    position: fixed;
     border: 1px solid ${colors.bg2};
     background-color: ${colors.bg1};
     top: 40px;
