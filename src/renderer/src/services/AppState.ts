@@ -19,7 +19,7 @@ export const sortingDefaults: SortConfig = {
     active: [FileColumnKeys.type],
 }
 
-const reqSorting: AppState["reqSorting"] = { active: [], isDescending: {} }
+const reqSorting: SortConfig = { active: [], isDescending: {} }
 export const initialAppState: AppState = {
     res: { Relatives: {} },
     req: {},

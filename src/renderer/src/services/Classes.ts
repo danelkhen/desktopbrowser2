@@ -44,6 +44,3 @@ export const Classes = {
     asc,
     desc,
 } as const
-
-console.log({ FileRow })
-// console.log({ css, cx, classnames })
