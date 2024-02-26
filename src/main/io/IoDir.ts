@@ -18,10 +18,10 @@ export namespace IoDir {
         try {
             const list = await IoFile.getChildren(path)
             for (const item of list) {
-                if (item.isFile) {
-                    size += item.Length!
-                } else if (item.isDir) {
-                    const dirSize = await getSize(item.FullName!, cache)
+                if (item.isFile && item.Length) {
+                    size += item.Length
+                } else if (item.isDir && item.FullName) {
+                    const dirSize = await getSize(item.FullName, cache)
                     size += dirSize
                 }
             }

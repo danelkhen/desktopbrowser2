@@ -7,6 +7,7 @@ export interface ProxyCall<T> {
 
 export function extractFunctionCall(code: string): { target: string[]; funcName: string; args: any[] } {
     const parsed = parseFunctionCall(code)
+    if (!parsed) throw new Error("Invalid function call: " + code)
     const target = parsed.target
     const args = JSON.parse("[" + parsed.args + "]")
     const funcName = parsed.funcName
@@ -14,14 +15,15 @@ export function extractFunctionCall(code: string): { target: string[]; funcName:
     return res
 }
 
-function parseFunctionCall(code: string): { target: string[]; funcName: string; args: string } {
+function parseFunctionCall(code: string): { target: string[]; funcName: string; args: string } | null {
     const match = /^([a-zA-Z0-9_.]+)\((.*)\)$/.exec(code)
     console.log("extractFunctionCall", code)
-    if (!match) return null!
+    if (!match) return null
     if (match) console.log("extractFunctionCall", match[0], match[1], match[2])
     const target = match[1].split(".")
     const args = match[2]
     const funcName = target.pop()
-    const res = { target: target!, funcName: funcName!, args }
+    if (!funcName) throw new Error("Invalid function call: " + code)
+    const res = { target: target, funcName, args }
     return res
 }

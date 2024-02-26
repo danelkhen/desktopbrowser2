@@ -1,7 +1,14 @@
 /* eslint-disable no-empty */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { equalsIgnoreCase } from "../shared/equalsIgnoreCase"
-import { FsFile, FileRelativesInfo, FileService, ListFilesRequest, PathRequest } from "../shared/FileService"
+import {
+    FsFile,
+    FileRelativesInfo,
+    FileService,
+    ListFilesRequest,
+    PathRequest,
+    ListFilesResponse,
+} from "../shared/FileService"
 import { IoFile } from "../io/IoFile"
 import { IoPath } from "../io/IoPath"
 import { DirSizeCache, IoDir } from "../io/IoDir"
@@ -11,14 +18,18 @@ import { isWindows } from "../utils/isWindows"
 import * as _ from "lodash"
 
 export const ListFiles: FileService["listFiles"] = async req => {
-    const Relatives = await GetFileRelatives(req.Path!)
-    const File = await GetFile({ Path: req.Path! })
+    if (!req.Path) {
+        throw new Error("Path is required")
+    }
+    const Relatives = await GetFileRelatives(req.Path)
+    const File = await GetFile({ Path: req.Path })
     let Files: FsFile[] | undefined
 
     if (File?.IsFolder) {
         Files = await GetFiles(req)
     }
-    return { Relatives, File, Files }
+    const res: ListFilesResponse = { Relatives, File: File ?? undefined, Files }
+    return res
 }
 
 async function GetFiles(req: ListFilesRequest): Promise<FsFile[]> {
@@ -26,7 +37,7 @@ async function GetFiles(req: ListFilesRequest): Promise<FsFile[]> {
         return []
     }
     let files = await _listFiles({
-        path: req.Path!,
+        path: req.Path ?? "/",
         recursive: req.IsRecursive,
         files: !req.HideFiles,
         folders: !req.HideFolders,
@@ -41,20 +52,22 @@ async function GetFileRelatives(path: string): Promise<FileRelativesInfo> {
     if (!path || path === "/") return {}
     const pathInfo = new IoPath(path)
     const info: FileRelativesInfo = {}
-    info.ParentFolder = await GetFile({ Path: pathInfo.ParentPath.Value })
-    const files = await _listFiles({ path: info.ParentFolder.Path!, files: false, folders: true })
+    info.ParentFolder = (await GetFile({ Path: pathInfo.ParentPath.Value })) ?? undefined
+    if (!info.ParentFolder?.Path) {
+        return info
+    }
+    const files = await _listFiles({ path: info.ParentFolder.Path, files: false, folders: true })
     const parentFiles = _.orderBy(
         files.filter(t => t.IsFolder),
         [t => t.Name]
     )
-
     const index = parentFiles.findIndex(t => equalsIgnoreCase(t.Name, pathInfo.Name))
     info.NextSibling = index >= 0 && index + 1 < parentFiles.length ? parentFiles[index + 1] : undefined
     info.PreviousSibling = index > 0 ? parentFiles[index - 1] : undefined
     return info
 }
 
-async function GetFile(req: PathRequest): Promise<FsFile> {
+async function GetFile(req: PathRequest): Promise<FsFile | null> {
     const path = normalizePath(req.Path)
     if (!path) {
         return /*new File*/ { IsFolder: true, Path: "", Name: "Home" }
@@ -65,7 +78,7 @@ async function GetFile(req: PathRequest): Promise<FsFile> {
     } else if ((await absPath.IsDirectory) || absPath.IsRoot) {
         return ToFile(await IoFile.get(absPath.Value))
     }
-    return null!
+    return null
 }
 
 export interface ListFilesOptions {
@@ -226,8 +239,8 @@ async function calculateFoldersSize(folders: FsFile[]): Promise<FsFile[]> {
     for (const file of folders) {
         try {
             //console.log("CalculateFoldersSize", file);
-            if (file.IsFolder) {
-                file.Size = await IoDir.getSize(file.Path!, cache)
+            if (file.IsFolder && file.Path) {
+                file.Size = await IoDir.getSize(file.Path, cache)
             }
         } catch (e) {}
         list.push(file)

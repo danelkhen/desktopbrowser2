@@ -64,8 +64,7 @@ export class IoPath {
     }
     async ToAbsoluteExact(): Promise<IoPath> {
         if (this.IsEmpty) return this
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return new IoPath((await IoFile.get(this.Value)).FullName!)
+        return new IoPath(path.resolve(this.Value))
     }
 
     toString(): string {

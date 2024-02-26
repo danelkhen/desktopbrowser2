@@ -26,15 +26,15 @@ export function getWebSocketInvoker<T>(...target: string[]): Invoker<T> {
         return invoke({ target, funcName: method, args: prms }) as any
     }
 }
-export async function invoke<T>(pc: InvokeInfo): Promise<T> {
+export async function invoke<T>(pc: InvokeInfo): Promise<T | undefined> {
     for await (const res of invokeStreaming(pc)) return res as any
-    return undefined!
+    return undefined
 }
 
 export async function* invokeStreaming<T>(pc: InvokeInfo): AsyncIterableIterator<T> {
     // let pc = extractInstanceFunctionCall2(func)
     console.log(pc)
-    const cmd = `${pc!.target.join(".")}.${pc!.funcName}(${pc!.args!.map(t => JSON.stringify(t)).join(",")})`
+    const cmd = `${pc.target.join(".")}.${pc.funcName}(${pc.args.map(t => JSON.stringify(t)).join(",")})`
     const events = send(cmd)
     for await (const data of events) {
         if (0) {
