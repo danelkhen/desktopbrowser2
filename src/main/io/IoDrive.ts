@@ -9,13 +9,12 @@ export interface IoDrive extends IoFile {
     Capacity: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace IoDrive {
-    export async function getDrives(): Promise<IoDrive[]> {
+export const IoDrive = {
+    async getDrives(): Promise<IoDrive[]> {
         const list = await getDiskInfo()
         const drives = list.map(t => toDriveInfo(t))
         return drives
-    }
+    },
 }
 
 function toDriveInfo(x: Drive) {
