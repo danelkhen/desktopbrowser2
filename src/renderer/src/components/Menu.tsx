@@ -12,7 +12,7 @@ import SubtitleIcon from "../assets/icons/subtitle.svg?react"
 import TrashIcon from "../assets/icons/trash.svg?react"
 import UpIcon from "../assets/icons/up.svg?react"
 import { Dispatcher } from "../services/Dispatcher"
-import { FsFile, ListFilesRequest } from "../services/FileService"
+import { FsFile, ListFilesRequest } from "../../../shared/FileService"
 import { Dropdown } from "./Dropdown"
 import { MenuButton, ToggleMenuButton } from "./MenuButton"
 

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo } from "react"
 import { sleep } from "../lib/sleep"
 import { Selected } from "../services/Classes"
 import { dispatcher } from "../services/Dispatcher"
-import { FileInfo, FsFile, ListFilesResponse } from "../services/FileService"
+import { FileInfo, FsFile, ListFilesResponse } from "../../../shared/FileService"
 import { Selection } from "../services/Selection"
 
 export function useSelection({

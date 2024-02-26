@@ -1,4 +1,4 @@
-import { FsFile } from "../services/FileService"
+import { FsFile } from "../../../shared/FileService"
 import { getFilenameForSearch } from "./getFilenameForSearch"
 
 export function getGoogleSearchLink(file: FsFile): string {

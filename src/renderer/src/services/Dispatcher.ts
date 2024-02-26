@@ -13,7 +13,7 @@ import { queryToReq } from "../lib/queryToReq"
 import { reqToQuery } from "../lib/reqToQuery"
 import { sortingDefaults } from "./AppState"
 import { FileColumnKeys } from "./Columns"
-import { FileInfo, FsFile, ListFilesRequest } from "./FileService"
+import { Column, FileInfo, FsFile, ListFilesRequest } from "../../../shared/FileService"
 import { api } from "./api"
 import { store } from "./store"
 
@@ -194,10 +194,10 @@ export class Dispatcher {
                 return
             }
             if (index > 0) {
-                sort = [{ Name: column, Descending: gridColumns[column].descendingFirst }]
+                sort = [{ Name: column as Column, Descending: gridColumns[column].descendingFirst }]
                 return sort
             }
-            sort.unshift({ Name: column, Descending: gridColumns[column].descendingFirst })
+            sort.unshift({ Name: column as Column, Descending: gridColumns[column].descendingFirst })
         })
         this.updateReq({ sort })
     }

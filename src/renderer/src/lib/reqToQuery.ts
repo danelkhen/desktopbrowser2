@@ -1,4 +1,5 @@
-import { ListFilesRequest, sortToUrl } from "../services/FileService"
+import { ListFilesRequest } from "../../../shared/FileService"
+import { sortToUrl } from "@renderer/lib/sortToUrl"
 
 export function reqToQuery(rest: ListFilesRequest) {
     console.log("reqToQuery", rest)

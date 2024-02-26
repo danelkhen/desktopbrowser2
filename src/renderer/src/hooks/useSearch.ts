@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { FsFile } from "../services/FileService"
+import { FsFile } from "../../../shared/FileService"
 
 export function useSearch(search: string, list: FsFile[]) {
     return useMemo(() => {

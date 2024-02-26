@@ -1,5 +1,5 @@
-import { ColumnKey } from "../components/Grid"
-import { stringRemoveLast } from "../lib/stringRemoveLast"
+import { UpdateCheckResult } from "electron-updater"
+// import { removeLast } from "../main/shared/removeLast"
 
 export interface FileService {
     saveFileMetadata(md: FileInfo): Promise<void>
@@ -13,7 +13,7 @@ export interface FileService {
     trash(req: PathRequest): Promise<void>
 
     appInspect(): Promise<void>
-    checkForUpdates(): Promise<{ isLatest: boolean; latest: string; current: string }>
+    checkForUpdates(): Promise<UpdateCheckResult | null> // { isLatest: boolean; latest: string; current: string }>
     appOpen(): Promise<void>
     appExit(): Promise<void>
     appGetVersion(): Promise<string>
@@ -85,21 +85,6 @@ export interface SortRequest {
 
 export type Column = "Name" | "Modified" | "Extension" | "Size" | "type" | "hasInnerSelection"
 export interface SortColumn {
-    readonly Name: ColumnKey
+    readonly Name: Column
     readonly Descending?: boolean
-}
-
-export function sortToUrl(cols: SortColumn[]): string {
-    return cols.map(t => (t.Descending ? `${t.Name}_` : t.Name)).join(",")
-}
-export function urlToSort(sort: string): SortColumn[] {
-    return (
-        sort
-            .split(",")
-            .map(t =>
-                t.endsWith("_")
-                    ? ({ Name: stringRemoveLast(t, 1) as Column, Descending: true } as SortColumn)
-                    : ({ Name: t as Column } as SortColumn)
-            ) ?? []
-    )
 }

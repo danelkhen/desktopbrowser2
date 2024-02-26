@@ -1,7 +1,7 @@
 import { shell } from "electron"
 import { IoDir } from "../io/IoDir"
 import { IoFile } from "../io/IoFile"
-import { FileService } from "../shared/FileService"
+import { FileService } from "../../shared/FileService"
 
 export const Execute: FileService["execute"] = async req => {
     const filename = req.Path

@@ -1,6 +1,6 @@
 import { httpInvoke } from "../lib/getHttpInvoker"
 import { wsInvoke } from "../lib/webSocket"
-import { FileService } from "./FileService"
+import { FileService } from "../../../shared/FileService"
 
 function proxyForFileService() {
     const proxy: FileService = {

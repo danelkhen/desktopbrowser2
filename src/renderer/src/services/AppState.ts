@@ -1,7 +1,7 @@
 import { GridColumns } from "../components/Grid"
 import { SortConfig } from "../hooks/useSorting"
 import { FileColumnKeys } from "./Columns"
-import { FileInfo, FsFile, ListFilesRequest, ListFilesResponse } from "./FileService"
+import { FileInfo, FsFile, ListFilesRequest, ListFilesResponse } from "../../../shared/FileService"
 
 export interface AppState {
     readonly res: ListFilesResponse

@@ -6,7 +6,7 @@ import {
     ListFilesRequest,
     PathRequest,
     ListFilesResponse,
-} from "../shared/FileService"
+} from "../../shared/FileService"
 import { IoFile } from "../io/IoFile"
 import { IoPath } from "../io/IoPath"
 import { DirSizeCache, IoDir } from "../io/IoDir"

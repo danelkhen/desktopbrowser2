@@ -1,4 +1,5 @@
-import { ListFilesRequest, urlToSort } from "../services/FileService"
+import { ListFilesRequest } from "../../../shared/FileService"
+import { urlToSort } from "@renderer/lib/sortToUrl"
 
 export function queryToReq(s: string): ListFilesRequest {
     const rest = new URLSearchParams(s)
