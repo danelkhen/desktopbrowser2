@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { iterateDomEvent } from "./iterateEvent"
 import { Invoker } from "./Proxy"
 import ReconnectingWebSocket from "reconnecting-websocket"
@@ -20,12 +21,12 @@ export interface InvokeInfo {
 }
 export function getWebSocketInvoker<T>(...target: string[]): Invoker<T> {
     return (method, ...prms) => {
-        return invoke({ target, funcName: method, args: prms }) as any
+        return wsInvoke({ target, funcName: method, args: prms }) as any
     }
 }
-export async function invoke<T>(pc: InvokeInfo): Promise<T | undefined> {
+export async function wsInvoke<T>(pc: InvokeInfo): Promise<T> {
     for await (const res of invokeStreaming(pc)) return res as any
-    return undefined
+    return undefined as any
 }
 
 export async function* invokeStreaming<T>(pc: InvokeInfo): AsyncIterableIterator<T> {
@@ -34,7 +35,9 @@ export async function* invokeStreaming<T>(pc: InvokeInfo): AsyncIterableIterator
     const cmd = `${pc.target.join(".")}.${pc.funcName}(${pc.args.map(t => JSON.stringify(t)).join(",")})`
     const events = send(cmd)
     for await (const data of events) {
+        // eslint-disable-next-line no-constant-condition
         if (0) {
+            //
         } else if (data.startsWith("ERROR: ")) {
             const json = data.substring("ERROR ".length)
             if (json.length > 0) {
@@ -42,6 +45,7 @@ export async function* invokeStreaming<T>(pc: InvokeInfo): AsyncIterableIterator
             }
             throw new Error(data)
         } else if (data == "[") {
+            //
         } else if (data.endsWith(",")) {
             const item = JSON.parse(data.substr(0, data.length - 1))
             yield item

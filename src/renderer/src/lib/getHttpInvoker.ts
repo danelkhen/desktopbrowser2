@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Invoker } from "./Proxy"
 
-async function httpInvoke(url: string, prms?: any): Promise<any> {
+export async function httpInvoke(url: string, prms?: any): Promise<any> {
     const req: RequestInit = {
         method: "GET",
     }

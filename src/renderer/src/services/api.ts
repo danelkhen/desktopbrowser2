@@ -1,27 +1,24 @@
+import { httpInvoke } from "../lib/getHttpInvoker"
+import { wsInvoke } from "../lib/webSocket"
 import { FileService } from "./FileService"
-import { getHttpInvoker } from "../lib/getHttpInvoker"
-import { getWebSocketInvoker } from "../lib/webSocket"
 
 function proxyForFileService() {
-    const http = getHttpInvoker<FileService>("/api/fs")
-    const ws = getWebSocketInvoker<FileService>("fileService")
-
     const proxy: FileService = {
-        listFiles: req => ws("listFiles", req),
-        saveFileMetadata: req => http("saveFileMetadata", req),
-        getFileMetadata: req => http("getFileMetadata", req),
-        deleteFileMetadata: req => http("deleteFileMetadata", req),
-        getAllFilesMetadata: () => http("getAllFilesMetadata"),
-        execute: req => http("execute", req),
-        explore: req => http("explore", req),
-        del: req => http("del", req),
-        trash: req => http("trash", req),
-        appInspect: () => http("appInspect"),
-        appOpen: () => http("appOpen"),
-        appExit: () => http("appExit"),
-        checkForUpdates: () => http("checkForUpdates"),
-        appGetVersion: () => http("appGetVersion"),
-        appHide: () => http("appHide"),
+        listFiles: req => wsInvoke({ target: ["fileService"], funcName: "listFiles", args: [req] }),
+        saveFileMetadata: req => httpInvoke("/api/fs/saveFileMetadata", req),
+        getFileMetadata: req => httpInvoke("/api/fs/getFileMetadata", req),
+        deleteFileMetadata: req => httpInvoke("/api/fs/deleteFileMetadata", req),
+        getAllFilesMetadata: () => httpInvoke("/api/fs/getAllFilesMetadata"),
+        execute: req => httpInvoke("/api/fs/execute", req),
+        explore: req => httpInvoke("/api/fs/explore", req),
+        del: req => httpInvoke("/api/fs/del", req),
+        trash: req => httpInvoke("/api/fs/trash", req),
+        appInspect: () => httpInvoke("/api/fs/appInspect"),
+        appOpen: () => httpInvoke("/api/fs/appOpen"),
+        appExit: () => httpInvoke("/api/fs/appExit"),
+        checkForUpdates: () => httpInvoke("/api/fs/checkForUpdates"),
+        appGetVersion: () => httpInvoke("/api/fs/appGetVersion"),
+        appHide: () => httpInvoke("/api/fs/appHide"),
     }
 
     return proxy
