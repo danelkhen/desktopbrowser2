@@ -1,16 +1,14 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import * as fse from "fs-extra"
 import { rimraf } from "rimraf"
 import { IoFile } from "./IoFile"
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace IoDir {
-    export async function Exists(s: string): Promise<boolean | undefined> {
+export const IoDir = {
+    async Exists(s: string): Promise<boolean | undefined> {
         if (!(await fse.pathExists(s))) return
         const stat = await fse.stat(s)
         return stat.isDirectory()
-    }
-    export async function getSize(path: string, cache: DirSizeCache = {}): Promise<number> {
+    },
+    async getSize(path: string, cache: DirSizeCache = {}): Promise<number> {
         if (cache[path] !== undefined) {
             return cache[path]
         }
@@ -21,7 +19,7 @@ export namespace IoDir {
                 if (item.isFile && item.Length) {
                     size += item.Length
                 } else if (item.isDir && item.FullName) {
-                    const dirSize = await getSize(item.FullName, cache)
+                    const dirSize = await IoDir.getSize(item.FullName, cache)
                     size += dirSize
                 }
             }
@@ -30,10 +28,10 @@ export namespace IoDir {
         }
         cache[path] = size
         return size
-    }
-    export async function del(path: string) {
+    },
+    async del(path: string) {
         return await rimraf(path, { glob: false })
-    }
+    },
 }
 
 export type DirSizeCache = { [path: string]: number }

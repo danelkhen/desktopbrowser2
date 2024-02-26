@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-types */
 import { css, cx } from "@emotion/css"
 import React, { ReactNode } from "react"
 import { colors } from "../GlobalStyle"
@@ -9,7 +7,7 @@ export interface GridColumn<T, V> {
     getter?: (item: T, index: number) => V
     cell?: (item: T, index: number) => ReactNode
     header?: () => ReactNode
-    sortGetter?: (item: T) => any
+    sortGetter?: (item: T) => unknown
     descendingFirst?: boolean
 }
 export type GridColumns<T> = {
@@ -73,7 +71,7 @@ export function Grid<T>({
                             {visibleColumns?.map(column => (
                                 <td key={column} className={getCellClass?.(column, item)}>
                                     {columns[column].cell?.(item, itemIndex) ?? (
-                                        <span>{columns[column].getter?.(item, itemIndex) as any}</span>
+                                        <span>{columns[column].getter?.(item, itemIndex) as ReactNode}</span>
                                     )}
                                 </td>
                             ))}

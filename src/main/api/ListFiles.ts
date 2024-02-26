@@ -1,5 +1,3 @@
-/* eslint-disable no-empty */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { equalsIgnoreCase } from "../shared/equalsIgnoreCase"
 import {
     FsFile,
@@ -198,7 +196,9 @@ export function ToFile(file: IoFile): FsFile {
     }
     try {
         file2.Path = file.FullName
-    } catch (e) {}
+    } catch (e) {
+        console.log("ToFile error", e, file)
+    }
     return file2
 }
 
@@ -242,7 +242,9 @@ async function calculateFoldersSize(folders: FsFile[]): Promise<FsFile[]> {
             if (file.IsFolder && file.Path) {
                 file.Size = await IoDir.getSize(file.Path, cache)
             }
-        } catch (e) {}
+        } catch (e) {
+            console.log("calculateFoldersSize error", e)
+        }
         list.push(file)
     }
     return list

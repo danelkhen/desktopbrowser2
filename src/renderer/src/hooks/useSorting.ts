@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import _ from "lodash"
 import { useMemo } from "react"
 import { ColumnKey } from "../components/Grid"
@@ -26,6 +24,7 @@ export function useSorting<T>(items: T[], config: SortConfig) {
         // const sorted = items[orderBy](...by)
         const sorted = _.orderBy<T>(
             items,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             by.keys as any,
             by.order.map(t => (t ? "desc" : "asc"))
         )

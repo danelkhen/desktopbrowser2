@@ -1,5 +1,4 @@
-﻿/* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface ProxyCall<T> {
     name: keyof T
     args: any[] | null

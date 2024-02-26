@@ -1,11 +1,9 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-types */
-export interface EventMutator<T> {
+﻿export interface EventMutator<T> {
     (handler: (e: T) => void): void
 }
 export async function* iterateEvent<T>(on: EventMutator<T>, off: EventMutator<T>): AsyncIterableIterator<T> {
     const queue: Promise<T>[] = []
-    let pResolve: Function
+    let pResolve: (v: T) => void
     let p = new Promise<T>(resolve => (pResolve = resolve))
     queue.push(p)
     const handler = (e: T) => {
@@ -28,7 +26,7 @@ export async function* iterateEvent<T>(on: EventMutator<T>, off: EventMutator<T>
 
 export function iterateDomEvent<T>(target: EventTarget, name: string): AsyncIterableIterator<T> {
     return iterateEvent(
-        handler => target.addEventListener(name, handler as any),
-        handler => target.removeEventListener(name, handler as any)
+        handler => target.addEventListener(name, handler as () => void),
+        handler => target.removeEventListener(name, handler as () => void)
     )
 }

@@ -1,5 +1,3 @@
-/* eslint-disable no-empty */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as fse from "fs-extra"
 import * as path from "path"
 
@@ -41,9 +39,6 @@ export namespace IoFile {
     }
 
     export async function get(path2: string): Promise<IoFile> {
-        if (path2 == null) {
-            return {} as any // TODO:
-        }
         const FullName = path.resolve(path2)
         const Name = path.basename(path2)
         const Extension = path.extname(path2)
@@ -60,7 +55,9 @@ export namespace IoFile {
             x.isDir = x.stats.isDirectory()
             x.LastWriteTime = x.stats.mtime
             x.isLink = x.stats.isSymbolicLink()
-        } catch (e) {}
+        } catch (e) {
+            console.log("IoFile.get() error", e, path2)
+        }
         if (x.Name == null || x.Name == "") {
             x.Name = path2
         }

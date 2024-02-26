@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as path from "path"
 import { removeLast } from "../shared/removeLast"
 import { IoFile } from "./IoFile"
@@ -8,23 +7,23 @@ export class IoPath {
     static GetDirectoryName(path2: string): string {
         return path.dirname(path2)
     }
-    static Combine(...args: string[]): string {
-        throw new Error()
-    }
+    // static Combine(...args: string[]): string {
+    //     throw new Error()
+    // }
     static GetFileName(s: string): string {
         return path.basename(s)
     }
-    static GetFullPath(s: string): string {
-        throw new Error()
-    }
+    // static GetFullPath(s: string): string {
+    //     throw new Error()
+    // }
     static IsPathRooted(s: string): boolean {
         return path.isAbsolute(s)
     }
-    static GetExtension(s: string): string {
-        throw new Error()
-    }
+    // static GetExtension(s: string): string {
+    //     throw new Error()
+    // }
     static GetPathRoot(s: string): string | null {
-        const max = 1000
+        // const max = 1000
         let i = 0
         let s2 = path.dirname(s)
         do {
@@ -49,18 +48,18 @@ export class IoPath {
     get IsEmpty(): boolean {
         return !this.Value
     }
-    Combine(path: IoPath | string): IoPath {
-        if (typeof path == "string") {
-            if (this.IsEmpty) return new IoPath(path)
-            return new IoPath(IoPath.Combine(this.Value, path))
-        }
-        return this.Combine(path.Value)
-    }
+    // Combine(path: IoPath | string): IoPath {
+    //     if (typeof path == "string") {
+    //         if (this.IsEmpty) return new IoPath(path)
+    //         return new IoPath(IoPath.Combine(this.Value, path))
+    //     }
+    //     return this.Combine(path.Value)
+    // }
 
     ToAbsolute(): IoPath {
         if (this.IsEmpty) return this
         if (IoPath.IsPathRooted(this.Value)) return this
-        return new IoPath(IoPath.GetFullPath(this.Value))
+        return new IoPath(path.resolve(this.Value))
     }
     async ToAbsoluteExact(): Promise<IoPath> {
         if (this.IsEmpty) return this
@@ -90,7 +89,7 @@ export class IoPath {
         return IoPath.GetFileName(this.Value)
     }
 
-    get Extension(): string {
-        return IoPath.GetExtension(this.Value)
-    }
+    // get Extension(): string {
+    //     return IoPath.GetExtension(this.Value)
+    // }
 }

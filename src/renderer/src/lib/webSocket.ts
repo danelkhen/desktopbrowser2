@@ -1,6 +1,3 @@
-/* eslint-disable no-empty */
-/* eslint-disable no-constant-condition */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { iterateDomEvent } from "./iterateEvent"
 import { Invoker } from "./Proxy"
 import ReconnectingWebSocket from "reconnecting-websocket"
