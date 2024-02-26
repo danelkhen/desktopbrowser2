@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Invoker } from "./Proxy"
-
-export async function httpInvoke(url: string, prms?: any): Promise<any> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function httpInvoke(url: string, prms?: unknown): Promise<any> {
     const req: RequestInit = {
         method: "GET",
     }
@@ -14,7 +12,4 @@ export async function httpInvoke(url: string, prms?: any): Promise<any> {
     const res = await fetch(url, req)
     const resObj = await res.json()
     return resObj
-}
-export function getHttpInvoker<T>(url: string): Invoker<T> {
-    return (method, ...prms) => httpInvoke(`${url}/${method}`, prms[0]) as any
 }
