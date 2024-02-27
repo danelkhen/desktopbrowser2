@@ -1,10 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as http from "http"
-import * as https from "https"
 import * as ws from "ws"
-import { objectTryGet } from "./objectTryGet"
-import { extractFunctionCall } from "./ProxyCall"
+import { IWsReq } from "../../shared/IWsReq"
 
-export function setupWebsockets<T>(server: http.Server | https.Server, services: T) {
+export function setupWebsockets(server: http.Server, service: any) {
     console.log("setupWebsockets")
     const wss = new ws.WebSocketServer({ path: "/api", server })
 
@@ -14,9 +13,8 @@ export function setupWebsockets<T>(server: http.Server | https.Server, services:
             try {
                 const data = String(message)
                 console.log("ws.message received", data)
-                const pc = extractFunctionCall(data)
-                const target = objectTryGet(services, pc.target)
-                const res = await target[pc.funcName](...pc.args)
+                const pc = JSON.parse(data) as IWsReq // extractFunctionCall(data)
+                const res = await service[pc.funcName](...pc.args)
                 if (isIterable(res)) {
                     console.log("sending iterable!!!!!!!!!!!!!!!!")
                     ws.send("[")

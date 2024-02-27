@@ -9,7 +9,6 @@ import { IoDrive } from "../io/IoDrive"
 import { IoFile } from "../io/IoFile"
 import { IoPath } from "../io/IoPath"
 import { equalsIgnoreCase } from "../shared/equalsIgnoreCase"
-import { dateToDefaultString } from "../utils/dateToDefaultString"
 import { isWindows } from "../utils/isWindows"
 
 export const ListFiles: Api["listFiles"] = async req => {
@@ -180,7 +179,7 @@ export function ToFile(file: IoFile): IFile {
         type: undefined,
         Name: file.Name,
         IsFolder: !!file.isDir,
-        Modified: file.LastWriteTime != null ? dateToDefaultString(file.LastWriteTime) : undefined,
+        Modified: file.LastWriteTime?.toJSON(),
         Size: file.isFile ? file.Length : undefined,
         IsHidden: file.Name?.startsWith("."),
         Extension: file?.Extension,

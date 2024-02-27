@@ -1,5 +1,4 @@
 import express from "express"
-import proxy from "express-http-proxy"
 import http from "http"
 import os from "os"
 import path, { join } from "path"
@@ -29,7 +28,7 @@ export async function setupWebServer() {
 
     if (config.dev && config.ELECTRON_RENDERER_URL) {
         console.log("using proxy", config.ELECTRON_RENDERER_URL)
-        exp.use(proxy(config.ELECTRON_RENDERER_URL))
+        // exp.use(proxy(config.ELECTRON_RENDERER_URL))
         // mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"])
     } else {
         exp.use("/", express.static(join(__dirname, "../renderer")))
@@ -43,7 +42,7 @@ export async function setupWebServer() {
     })
 
     const server = http.createServer(exp)
-    setupWebsockets(server, { fileService })
+    setupWebsockets(server, fileService)
 
     await new Promise<void>(resolve => server.listen(7779, resolve))
 

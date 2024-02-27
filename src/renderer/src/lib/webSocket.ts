@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { iterateDomEvent } from "./iterateEvent"
-import { Invoker } from "./Proxy"
 import ReconnectingWebSocket from "reconnecting-websocket"
+import { IWsReq } from "../../../shared/IWsReq"
+import { iterateDomEvent } from "./iterateEvent"
 
 let webSocket: ReconnectingWebSocket
 
@@ -14,31 +14,16 @@ export function main() {
     webSocket = new ReconnectingWebSocket(url.toString(), ["protocolOne", "protocolTwo"])
 }
 
-export interface InvokeInfo {
-    target: string[]
-    funcName: string
-    args: any[]
-}
-export function getWebSocketInvoker<T>(...target: string[]): Invoker<T> {
-    return (method, ...prms) => {
-        return wsInvoke({ target, funcName: method, args: prms }) as any
-    }
-}
-export async function wsInvoke<T>(pc: InvokeInfo): Promise<T> {
+export async function wsInvoke<T>(pc: IWsReq): Promise<T> {
     for await (const res of invokeStreaming(pc)) return res as any
     return undefined as any
 }
 
-export async function* invokeStreaming<T>(pc: InvokeInfo): AsyncIterableIterator<T> {
-    // let pc = extractInstanceFunctionCall2(func)
+export async function* invokeStreaming<T>(pc: IWsReq): AsyncIterableIterator<T> {
     console.log(pc)
-    const cmd = `${pc.target.join(".")}.${pc.funcName}(${pc.args.map(t => JSON.stringify(t)).join(",")})`
-    const events = send(cmd)
+    const events = send(JSON.stringify(pc))
     for await (const data of events) {
-        // eslint-disable-next-line no-constant-condition
-        if (0) {
-            //
-        } else if (data.startsWith("ERROR: ")) {
+        if (data.startsWith("ERROR: ")) {
             const json = data.substring("ERROR ".length)
             if (json.length > 0) {
                 // TODO: const x = JSON.parse(json)
