@@ -12,7 +12,6 @@ import { pathToUrl } from "../lib/pathToUrl"
 import { queryToReq } from "../lib/queryToReq"
 import { reqToQuery } from "../lib/reqToQuery"
 import { sortingDefaults } from "./AppState"
-import { FileColumnKeys } from "./Columns"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
@@ -90,11 +89,11 @@ export class Dispatcher {
         const active: ColumnKey[] = []
         const isDescending: Record<ColumnKey, boolean> = {}
         const cols = req.sort ?? []
-        if (req.foldersFirst && !cols.find(t => t.Name === FileColumnKeys.type)) {
-            active.push(FileColumnKeys.type)
+        if (req.foldersFirst && !cols.find(t => t.Name === Column.type)) {
+            active.push(Column.type)
         }
-        if (req.ByInnerSelection && !cols.find(t => t.Name === FileColumnKeys.hasInnerSelection)) {
-            active.push(FileColumnKeys.hasInnerSelection)
+        if (req.ByInnerSelection && !cols.find(t => t.Name === Column.hasInnerSelection)) {
+            active.push(Column.hasInnerSelection)
         }
         for (const col of cols ?? []) {
             active.push(col.Name)
@@ -232,8 +231,8 @@ export class Dispatcher {
     isSortingDisabled = () =>
         !store._state.req.sort && !store._state.req.foldersFirst && store._state.req.ByInnerSelection == null
 
-    OrderByInnerSelection = () => this.orderBy(FileColumnKeys.hasInnerSelection)
-    isOrderedByInnerSelection = () => this.isSortedBy(FileColumnKeys.hasInnerSelection)
+    OrderByInnerSelection = () => this.orderBy(Column.hasInnerSelection)
+    isOrderedByInnerSelection = () => this.isSortedBy(Column.hasInnerSelection)
 
     google = () => store._state.res?.File && openInNewWindow(getGoogleSearchLink(store._state.res?.File))
 

@@ -1,6 +1,6 @@
 import { GridColumns } from "../components/Grid"
 import { SortConfig } from "../hooks/useSorting"
-import { FileColumnKeys } from "./Columns"
+import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
@@ -19,7 +19,7 @@ export type FileColumns = GridColumns<IFile>
 
 export const sortingDefaults: SortConfig = {
     isDescending: {},
-    active: [FileColumnKeys.type],
+    active: [Column.type],
 }
 
 const reqSorting: SortConfig = { active: [], isDescending: {} }

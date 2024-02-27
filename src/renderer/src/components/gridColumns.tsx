@@ -6,7 +6,7 @@ import LinkIcon from "../assets/linearicons/svg/link.svg?react"
 import { formatFriendlySize } from "../lib/formatFriendlySize"
 import { formatFriendlyDate } from "../lib/formatFriendlyDate"
 import { dispatcher } from "../services/Dispatcher"
-import { FileColumnKeys } from "../services/Columns"
+import { Column } from "../../../shared/Column"
 
 export const gridColumns: FileColumns = {
     type: {
@@ -36,13 +36,7 @@ export const gridColumns: FileColumns = {
     },
 }
 
-export const visibleGridColumns = [
-    FileColumnKeys.type,
-    FileColumnKeys.Name,
-    FileColumnKeys.Modified,
-    FileColumnKeys.Size,
-    FileColumnKeys.Extension,
-]
+export const visibleGridColumns = [Column.type, Column.Name, Column.Modified, Column.Size, Column.Extension]
 
 export const icons: { [key: string]: ReactElement } = {
     folder: <LayersIcon />,

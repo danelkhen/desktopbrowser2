@@ -1,5 +1,5 @@
 import { httpInvoke } from "../lib/getHttpInvoker"
-import { wsInvoke } from "../lib/webSocket"
+import { wsInvoke } from "../lib/wsInvoke"
 import { Api } from "../../../shared/Api"
 
 function proxyForFileService() {
