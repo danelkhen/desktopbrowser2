@@ -156,7 +156,7 @@ export class Dispatcher {
     up = () => {
         const parent = store._state.res?.Relatives?.ParentFolder?.Path
         const current = store._state.req.Path
-        if (!parent || current === parent) {
+        if (!parent || current === parent || pathToUrl(current) === pathToUrl(parent)) {
             this.GotoPath("/")
             return
         }
