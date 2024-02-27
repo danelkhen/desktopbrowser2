@@ -1,7 +1,7 @@
 import { electronApp, is } from "@electron-toolkit/utils"
 import { app } from "electron"
 import log from "electron-log/main"
-import { baseUrl } from "./baseUrl"
+import { baseUrl } from "./config"
 import { setupAutoStart } from "./setup/setupAutoStart"
 import { setupMainWindow } from "./setup/setupMainWindow"
 import { setupSingleInstance } from "./setup/setupSingleInstance"

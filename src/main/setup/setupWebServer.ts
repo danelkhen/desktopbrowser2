@@ -3,8 +3,8 @@ import http from "http"
 import os from "os"
 import { join } from "path"
 import { config } from "../config"
-import { handleServiceRequest } from "../utils/handleServiceRequest"
-import { setupWebsockets } from "../utils/websocket"
+import { handleServiceRequest } from "../lib/handleServiceRequest"
+import { setupWebsockets } from "../lib/websocket"
 import { api } from "../api/api"
 
 export async function setupWebServer() {

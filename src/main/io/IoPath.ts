@@ -1,5 +1,5 @@
 import * as path from "path"
-import { removeLast } from "../shared/removeLast"
+import { removeLast } from "../lib/removeLast"
 import { IoFile } from "./IoFile"
 import { IoDir } from "./IoDir"
 

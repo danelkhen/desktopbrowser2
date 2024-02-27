@@ -1,6 +1,6 @@
 import { IFile } from "../../shared/IFile"
 import { IoFile } from "../io/IoFile"
-import { isWindows } from "../utils/isWindows"
+import { isWindows } from "../lib/isWindows"
 import { ListFilesOptions } from "./ListFilesOptions"
 import { normalizePath } from "./normalizePath"
 import { getHomeFiles } from "./getHomeFiles"

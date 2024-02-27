@@ -2,7 +2,7 @@ import { BrowserWindow, app, shell } from "electron"
 import log from "electron-log/main"
 import path from "path"
 import icon from "../../resources/icon.png?asset"
-import { baseUrl } from "../baseUrl"
+import { baseUrl } from "../config"
 
 let quitting = false
 

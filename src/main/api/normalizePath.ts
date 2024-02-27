@@ -1,4 +1,4 @@
-import { isWindows } from "../utils/isWindows"
+import { isWindows } from "../lib/isWindows"
 
 export function normalizePath(path: string | undefined): string {
     if (!path) {

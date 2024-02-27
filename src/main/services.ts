@@ -1,7 +1,7 @@
 import path from "path"
 import { AppDb } from "./AppDb"
 import { config } from "./config"
-import { LevelDb } from "./utils/LevelDb"
+import { LevelDb } from "./lib/LevelDb"
 
 const database2 = path.join(config.userDataDir, "db.level")
 const levelDb = new LevelDb(database2)

@@ -1,5 +1,5 @@
 import { IFileMeta } from "../shared/IFileMeta"
-import { LevelDbCollection, LevelDb } from "./utils/LevelDb"
+import { LevelDbCollection, LevelDb } from "./lib/LevelDb"
 
 export class AppDb {
     readonly files: LevelDbCollection<IFileMeta>
