@@ -74,7 +74,7 @@ export class Dispatcher {
         const navigateToReq = (req: IListFilesReq) => {
             console.log("navigateToReq", req)
             const { Path, ...rest } = req
-            this.navigate?.({ pathname: `/${pathToUrl(Path)}`, search: reqToQuery(rest) })
+            this.navigate?.({ pathname: pathToUrl(Path), search: reqToQuery(rest) })
         }
         const prev = store._state.req
         if (v === prev) return
