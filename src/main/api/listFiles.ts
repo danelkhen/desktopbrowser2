@@ -2,12 +2,21 @@ import { glob } from "glob"
 import Path from "path"
 import { IFile } from "../../shared/IFile"
 import { isWindows } from "../lib/isWindows"
-import { ListFilesOptions } from "./ListFilesOptions"
 import { getHomeFiles } from "./getHomeFiles"
 import { normalizePath } from "./normalizePath"
 import { toFile2 } from "./toFile2"
 
-export async function listFiles({ path, recursive, files, folders }: ListFilesOptions): Promise<IFile[]> {
+export async function listFiles({
+    path,
+    recursive,
+    files,
+    folders,
+}: {
+    path: string
+    recursive?: boolean
+    files?: boolean
+    folders?: boolean
+}): Promise<IFile[]> {
     console.log(path)
     path = normalizePath(path)
     const nodir = !folders
