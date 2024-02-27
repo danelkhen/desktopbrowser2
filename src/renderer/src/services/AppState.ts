@@ -9,7 +9,6 @@ import { IFileMeta } from "../../../shared/IFileMeta"
 export interface AppState {
     readonly res: IListFilesRes
     readonly req: IListFilesReq
-    readonly reqSorting: SortConfig
     readonly sorting: SortConfig
     readonly filesMd: { [key: string]: IFileMeta }
     readonly selectedFiles: IFile[]
@@ -26,7 +25,6 @@ const reqSorting: SortConfig = { active: [], isDescending: {} }
 export const initialAppState: AppState = {
     res: { Relatives: {} },
     req: {},
-    reqSorting,
     sorting: { ...sortingDefaults, ...reqSorting },
     filesMd: {},
     selectedFiles: [],

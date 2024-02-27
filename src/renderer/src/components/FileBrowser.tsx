@@ -1,18 +1,24 @@
 import { css } from "@emotion/css"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router"
 import { useLocation } from "react-router-dom"
+import { Column } from "../../../shared/Column"
+import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { colors } from "../GlobalStyle"
 import { useAppState } from "../hooks/useAppState"
 import { useFilter } from "../hooks/useFilter"
 import { usePaging } from "../hooks/usePaging"
 import { useSearch } from "../hooks/useSearch"
 import { useSelection } from "../hooks/useSelection"
-import { useSorting } from "../hooks/useSorting"
+import { SortConfig, useSorting } from "../hooks/useSorting"
+import { queryToReq } from "../lib/queryToReq"
+import { sortingDefaults } from "../services/AppState"
 import { dispatcher } from "../services/Dispatcher"
+import { store } from "../services/store"
 import { AddressBar } from "./AddressBar"
 import { Clock } from "./Clock"
 import { Files } from "./Files"
+import { ColumnKey } from "./Grid"
 import { Menu } from "./Menu"
 import { QuickFind } from "./QuickFind"
 import { gridColumns } from "./gridColumns"
@@ -21,20 +27,26 @@ const pageSize = 200
 
 export function FileBrowser() {
     console.log("FileBrowser render")
-    const state = useAppState()
     const navigate = useNavigate()
     dispatcher.navigate = navigate
 
     const { pathname, search } = useLocation()
+    const req = useMemo(() => parseRequest(pathname, search), [pathname, search])
+    const sorting = useMemo(() => getSortConfig(req), [req])
     useEffect(() => {
-        void dispatcher.parseRequest(pathname, search)
-    }, [pathname, search])
+        store.update({
+            req,
+            sorting: { ...sortingDefaults, ...sorting },
+        })
+        void dispatcher.reloadFiles()
+    }, [req, sorting])
 
     useEffect(() => {
         void dispatcher.fetchAllFilesMetadata()
     }, [])
 
-    const { req, res, sorting } = state
+    const { res, filesMd, selectedFiles } = useAppState()
+
     const [search2, setSearch2] = useState("")
     const [path, setPath] = useState("")
     const [theme, setTheme] = useState("dark")
@@ -53,7 +65,7 @@ export function FileBrowser() {
         setPath(req.Path ?? "")
     }, [req.Path])
 
-    const { setSelectedFiles, selectedFiles, selectedFile } = useSelection(state)
+    const { setSelectedFiles, selectedFile } = useSelection({ res, selectedFiles, filesMd })
 
     const gotoPath = useCallback(() => dispatcher.GotoPath(path), [path])
 
@@ -61,7 +73,7 @@ export function FileBrowser() {
         <>
             <header>
                 <div className={navStyle}>
-                    <Menu selectedFile={selectedFile} req={state.req} dispatcher={dispatcher} />
+                    <Menu selectedFile={selectedFile} req={req} dispatcher={dispatcher} />
                     <Clock />
                 </div>
                 <AddressBar
@@ -127,3 +139,30 @@ const navStyle = css`
         color: #999;
     }
 `
+
+function getSortConfig(req: IListFilesReq) {
+    const active: ColumnKey[] = []
+    const isDescending: Record<ColumnKey, boolean> = {}
+    const cols = req.sort ?? []
+    if (req.foldersFirst && !cols.find(t => t.Name === Column.type)) {
+        active.push(Column.type)
+    }
+    if (req.ByInnerSelection && !cols.find(t => t.Name === Column.hasInnerSelection)) {
+        active.push(Column.hasInnerSelection)
+    }
+    for (const col of cols ?? []) {
+        active.push(col.Name)
+        if (col.Descending) {
+            isDescending[col.Name] = true
+        }
+    }
+    console.log("setSorting", active)
+    const sorting: SortConfig = { active, isDescending }
+    return sorting
+}
+
+function parseRequest(path: string, search: string) {
+    const req2: IListFilesReq = queryToReq(search)
+    const req: IListFilesReq = { ...req2, Path: path }
+    return req
+}

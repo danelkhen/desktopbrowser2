@@ -65,7 +65,6 @@ export function useSelection({
     const service = useMemo(() => {
         return {
             setSelectedFiles,
-            selectedFiles,
             selectedFile: selectedFiles[selectedFiles.length - 1],
         }
     }, [selectedFiles, setSelectedFiles])

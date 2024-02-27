@@ -6,16 +6,13 @@ import { IFileMeta } from "../../../shared/IFileMeta"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { ColumnKey } from "../components/Grid"
 import { gridColumns } from "../components/gridColumns"
-import { SortConfig } from "../hooks/useSorting"
 import { arrayItemsEqual } from "../lib/arrayItemsEqual"
 import { getGoogleSearchLink } from "../lib/getGoogleSearchLink"
 import { getSubtitleSearchLink } from "../lib/getSubtitleSearchLink"
 import { isExecutable } from "../lib/isExecutable"
 import { openInNewWindow } from "../lib/openInNewWindow"
 import { pathToUrl } from "../lib/pathToUrl"
-import { queryToReq } from "../lib/queryToReq"
 import { reqToQuery } from "../lib/reqToQuery"
-import { sortingDefaults } from "./AppState"
 import { api } from "./api"
 import { store } from "./store"
 
@@ -85,35 +82,6 @@ export class Dispatcher {
         navigateToReq(v)
     }
 
-    private useReqSorting(req: IListFilesReq) {
-        const active: ColumnKey[] = []
-        const isDescending: Record<ColumnKey, boolean> = {}
-        const cols = req.sort ?? []
-        if (req.foldersFirst && !cols.find(t => t.Name === Column.type)) {
-            active.push(Column.type)
-        }
-        if (req.ByInnerSelection && !cols.find(t => t.Name === Column.hasInnerSelection)) {
-            active.push(Column.hasInnerSelection)
-        }
-        for (const col of cols ?? []) {
-            active.push(col.Name)
-            if (col.Descending) {
-                isDescending[col.Name] = true
-            }
-        }
-        console.log("setSorting", active)
-        const sorting: SortConfig = { active, isDescending }
-        return sorting
-    }
-
-    parseRequest = async (path: string, s: string) => {
-        const req2: IListFilesReq = queryToReq(s)
-        const req = { ...req2, Path: path }
-        const reqSorting = this.useReqSorting(req)
-        store.update({ req, reqSorting, sorting: { ...sortingDefaults, ...reqSorting } })
-        await this.reloadFiles()
-    }
-
     private deleteAndRefresh = async (file: IFile) => {
         if (!file.Path) return
         const fileOrFolder = file.IsFolder ? "folder" : "file"
@@ -145,7 +113,7 @@ export class Dispatcher {
         const res = await api.listFiles(req)
         store.update({ res })
     }
-    private reloadFiles = async () => {
+    reloadFiles = async () => {
         if (store._state.req.FolderSize) {
             const req2 = { ...store._state.req, FolderSize: false }
             await this.fetchFiles(req2)
