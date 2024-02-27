@@ -154,7 +154,13 @@ export class Dispatcher {
     }
 
     up = () => {
-        store._state.res?.Relatives?.ParentFolder && this.GotoFolder(store._state.res.Relatives.ParentFolder)
+        const parent = store._state.res?.Relatives?.ParentFolder?.Path
+        const current = store._state.req.Path
+        if (!parent || current === parent) {
+            this.GotoPath("/")
+            return
+        }
+        this.GotoPath(parent)
     }
     GotoFolder = (file?: IFile) => {
         if (!file) return
