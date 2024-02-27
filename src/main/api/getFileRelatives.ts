@@ -2,7 +2,7 @@ import * as _ from "lodash"
 import { FileRelativesInfo } from "../../shared/FileRelativesInfo"
 import { IoPath } from "../io/IoPath"
 import { equalsIgnoreCase } from "../lib/equalsIgnoreCase"
-import { listFiles } from "./listFiles.1"
+import { listFiles } from "./listFiles"
 import { normalizePath } from "./normalizePath"
 import { getFile } from "./getFile"
 

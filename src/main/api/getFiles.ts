@@ -2,7 +2,7 @@ import { IFile } from "../../shared/IFile"
 import { IListFilesReq } from "../../shared/IListFilesReq"
 import { applyPaging } from "./applyPaging"
 import { applyRequest } from "./applyRequest"
-import { listFiles } from "./listFiles.1"
+import { listFiles } from "./listFiles"
 
 export async function getFiles(req: IListFilesReq): Promise<IFile[]> {
     if (req.HideFiles && req.HideFolders) {

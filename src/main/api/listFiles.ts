@@ -2,11 +2,15 @@ import { IFile } from "../../shared/IFile"
 import { io } from "../io/io"
 import { isWindows } from "../lib/isWindows"
 import { ListFilesOptions } from "./ListFilesOptions"
-import { normalizePath } from "./normalizePath"
 import { getHomeFiles } from "./getHomeFiles"
+import { listFiles2 } from "./listFiles2"
+import { normalizePath } from "./normalizePath"
 import { toFile } from "./toFile"
 
 export async function listFiles({ path, recursive, files, folders }: ListFilesOptions): Promise<IFile[]> {
+    return listFiles2({ path, recursive, files, folders })
+}
+export async function _listFiles({ path, recursive, files, folders }: ListFilesOptions): Promise<IFile[]> {
     console.log(path)
     path = normalizePath(path)
     //: string, searchPattern: string, recursive: boolean, files: boolean, folders: boolean
@@ -16,12 +20,7 @@ export async function listFiles({ path, recursive, files, folders }: ListFilesOp
         files2 = await getHomeFiles()
     } else if (!files && !folders) {
         files2 = []
-    }
-
-    //var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-    //if (searchPattern.IsNullOrEmpty())
-    //    searchPattern = "*";
-    else if (recursive) {
+    } else if (recursive) {
         const dir = await io.get(path)
         files2 = (await io.getDescendants(dir.path)).map(t => toFile(t))
     } else {

@@ -15,7 +15,9 @@ export function main() {
 }
 
 export async function wsInvoke<T>(pc: IWsReq): Promise<T> {
-    for await (const res of invokeStreaming(pc)) return res as any
+    for await (const res of invokeStreaming(pc)) {
+        return res as any
+    }
     return undefined as any
 }
 
@@ -32,7 +34,7 @@ export async function* invokeStreaming<T>(pc: IWsReq): AsyncIterableIterator<T> 
         } else if (data == "[") {
             //
         } else if (data.endsWith(",")) {
-            const item = JSON.parse(data.substr(0, data.length - 1))
+            const item = JSON.parse(data.substring(0, data.length - 1))
             yield item
         } else if (data == "]") {
             break

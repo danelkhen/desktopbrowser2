@@ -30,6 +30,7 @@ export function FileBrowser() {
     const reqPath = urlToPath(match?.params["*"] ?? "")
     console.log("match", match, match?.params["*"] ?? "", reqPath)
     const p = useQuery().toString() // get("p") ?? ""
+    console.log({ p })
     useEffect(() => {
         dispatcher.parseRequest(reqPath, p)
     }, [p, reqPath])

@@ -2,7 +2,7 @@ import { DateTime } from "luxon"
 
 export function formatFriendlyDate(value: string | null): string {
     if (!value) return ""
-    return toFriendlyRelative2(toDefaultDate(value))
+    return toFriendlyRelative2(new Date(value))
 }
 
 export function tryParseExactLuxon(s: string, format: string) {
