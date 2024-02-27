@@ -1,35 +1,88 @@
-import { shell } from "electron"
+import { BrowserWindow, app, shell } from "electron"
+import { autoUpdater } from "electron-updater"
+import { Api } from "../../shared/Api"
+import { IListFilesRes } from "../../shared/IListFilesRes"
 import { IoDir } from "../io/IoDir"
 import { IoFile } from "../io/IoFile"
-import { Api } from "../../shared/Api"
+import { appDb } from "../services"
+import { getFile } from "./getFile"
+import { getFileRelatives } from "./getFileRelatives"
+import { getFiles } from "./getFiles"
 
-export const Execute: Api["execute"] = async req => {
-    const filename = req.path
-    await shell.openExternal(filename)
-}
+export const api: Api = {
+    async getFileMeta({ key }) {
+        return appDb.files.get(key)
+    },
+    async getAllFilesMeta() {
+        return appDb.files.getAll()
+    },
+    async saveFileMeta(req) {
+        appDb.files.set(req)
+    },
+    async deleteFileMeta({ key }) {
+        appDb.files.del(key)
+    },
+    listFiles: async req => {
+        if (!req.Path) {
+            throw new Error("Path is required")
+        }
+        const file = await getFile({ path: req.Path })
 
-export const Explore: Api["explore"] = async req => {
-    console.log("shell.showItemInFolder", req.path)
-    await shell.showItemInFolder(req.path)
-}
+        if (file?.IsFolder) {
+            const files = await getFiles(req)
+            const relatives = await getFileRelatives(req.Path)
+            const res: IListFilesRes = { Relatives: relatives, File: file ?? undefined, Files: files }
+            return res
+        }
+        const res: IListFilesRes = { File: file ?? undefined, Relatives: {} }
+        return res
+    },
+    execute: async req => {
+        const filename = req.path
+        await shell.openExternal(filename)
+    },
+    explore: async req => {
+        console.log("shell.showItemInFolder", req.path)
+        await shell.showItemInFolder(req.path)
+    },
+    del: async req => {
+        const path = req.path
+        if (await IoFile.Exists(path)) {
+            await IoFile.Delete(path)
+            return
+        }
+        if (await IoDir.Exists(path)) {
+            if (path.split("\\").length <= 2)
+                throw new Error(
+                    "Delete protection, cannot delete path so short, should be at least depth of 3 levels or more"
+                )
+            await IoDir.del(path)
+        }
+    },
+    trash: async req => {
+        const path = req.path
+        console.log("trash", path)
+        await shell.trashItem(path)
+    },
 
-export const Delete: Api["del"] = async req => {
-    const path = req.path
-    if (await IoFile.Exists(path)) {
-        await IoFile.Delete(path)
-        return
-    }
-    if (await IoDir.Exists(path)) {
-        if (path.split("\\").length <= 2)
-            throw new Error(
-                "Delete protection, cannot delete path so short, should be at least depth of 3 levels or more"
-            )
-        await IoDir.del(path)
-    }
-}
-
-export const trash: Api["trash"] = async req => {
-    const path = req.path
-    console.log("trash", path)
-    await shell.trashItem(path)
+    async appInspect() {
+        const win = BrowserWindow.getFocusedWindow()
+        win?.webContents.openDevTools({ mode: "detach" })
+    },
+    appOpen() {
+        return shell.openExternal("http://localhost:7779")
+    },
+    async appExit() {
+        return app.quit()
+    },
+    async checkForUpdates() {
+        const res = await autoUpdater.checkForUpdatesAndNotify()
+        return res
+    },
+    async appGetVersion() {
+        return app.getVersion()
+    },
+    async appHide() {
+        BrowserWindow.getAllWindows().forEach(t => t.hide())
+    },
 }

@@ -1,7 +1,7 @@
 import { app } from "electron"
 import { showMainWindow } from "./setupMainWindow"
 
-export function setupSecondInstance() {
+export function setupSingleInstance() {
     const gotTheLock = app.requestSingleInstanceLock()
 
     if (!gotTheLock) {

@@ -1,13 +1,11 @@
 import express from "express"
 import http from "http"
 import os from "os"
-import path, { join } from "path"
-import { AppDb } from "./AppDb"
-import { createApi } from "./api/createApi"
-import { config } from "./config"
-import { LevelDb } from "./utils/LevelDb"
-import { handleServiceRequest } from "./utils/handleServiceRequest"
-import { setupWebsockets } from "./utils/websocket"
+import { join } from "path"
+import { config } from "../config"
+import { handleServiceRequest } from "../utils/handleServiceRequest"
+import { setupWebsockets } from "../utils/websocket"
+import { api } from "../api/api"
 
 export async function setupWebServer() {
     console.log(config)
@@ -15,15 +13,9 @@ export async function setupWebServer() {
     console.log("os", JSON.stringify(os.platform()))
     process.on("uncaughtException", e => console.log("uncaughtException", e))
 
-    const database2 = path.join(config.userDataDir, "db.level")
-
-    const levelDb = new LevelDb(database2)
-    const appDb = new AppDb(levelDb)
-    const fileService = createApi(appDb)
-
     const exp = express()
     exp.use(express.json())
-    exp.use("/api/:action", handleServiceRequest(fileService))
+    exp.use("/api/:action", handleServiceRequest(api))
     console.log("renderer dir", join(__dirname, "../renderer"))
 
     if (config.dev && config.ELECTRON_RENDERER_URL) {
@@ -42,7 +34,7 @@ export async function setupWebServer() {
     })
 
     const server = http.createServer(exp)
-    setupWebsockets(server, fileService)
+    setupWebsockets(server, api)
 
     await new Promise<void>(resolve => server.listen(7779, resolve))
 
