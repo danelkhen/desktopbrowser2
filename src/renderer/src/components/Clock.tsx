@@ -6,7 +6,7 @@ export function Clock() {
     const [time, setTime] = useState(DateTime.now().toFormat("HH:mm\n ccc, MMM d"))
     useEffect(() => {
         let run = true
-        ;(async () => {
+        void (async () => {
             while (run) {
                 await sleep(5000)
                 if (!run) return

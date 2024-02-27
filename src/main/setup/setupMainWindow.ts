@@ -27,7 +27,7 @@ export async function setupMainWindow() {
         log.info("show")
     })
     win.webContents.setWindowOpenHandler(details => {
-        shell.openExternal(details.url)
+        void shell.openExternal(details.url)
         return { action: "deny" }
     })
 
@@ -51,7 +51,7 @@ export async function setupMainWindow() {
     await win.loadURL(`${baseUrl}/tray`)
     console.log("loadURL finished")
     app.on("activate", () => {
-        showMainWindow()
+        void showMainWindow()
     })
     return win
 }

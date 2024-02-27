@@ -28,11 +28,11 @@ export function useSelection({
             const file = v[v.length - 1]
             if (res?.File?.Name) {
                 console.log("saveSelectionAndSetSelectedItems", res.File.Name, file?.Name)
-                dispatcher.saveSelectedFile(res.File.Name, file?.Name)
+                void dispatcher.saveSelectedFile(res.File.Name, file?.Name)
             }
             console.log("selectedFiles", v)
             dispatcher._setSelectedFiles(v)
-            verifySelectionInView()
+            void verifySelectionInView()
         },
         [res?.File?.Name]
     )
@@ -53,7 +53,7 @@ export function useSelection({
                 const file = selectedFile
                 if (!file) return
                 e.preventDefault()
-                dispatcher.Open(selectedFile)
+                void dispatcher.Open(selectedFile)
             } else if (e.key == "Backspace") {
                 dispatcher.up()
             }

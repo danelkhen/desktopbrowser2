@@ -26,13 +26,8 @@ export function FileBrowser() {
     dispatcher.navigate = navigate
 
     const { pathname, search } = useLocation()
-    // const match = useMatch("/*")
-    // const reqPath = urlToPath(match?.params["*"] ?? "")
-    // console.log("match", match, match?.params["*"] ?? "", reqPath)
-    // const p = pathname // useQuery().toString() // get("p") ?? ""
-    // console.log({ p })
     useEffect(() => {
-        dispatcher.parseRequest(pathname, search)
+        void dispatcher.parseRequest(pathname, search)
     }, [pathname, search])
 
     useEffect(() => {

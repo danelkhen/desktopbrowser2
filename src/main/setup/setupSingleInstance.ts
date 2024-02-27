@@ -10,7 +10,7 @@ export function setupSingleInstance() {
     }
 
     app.on("second-instance", () => {
-        showMainWindow()
+        void showMainWindow()
     })
     return true
 }

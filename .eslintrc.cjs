@@ -7,6 +7,7 @@ module.exports = {
         "@electron-toolkit/eslint-config-ts/recommended",
         "@electron-toolkit/eslint-config-prettier",
     ],
+    parserOptions: { project: ["./tsconfig.web.json", "./tsconfig.node.json"] },
     rules: {
         // "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
         // "react/react-in-jsx-scope": "off",
@@ -20,6 +21,6 @@ module.exports = {
         // "@typescript-eslint/no-non-null-assertion": "off",
         // "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
         "prefer-const": "warn",
-        // // "@typescript-eslint/no-floating-promises": "warn",
+        "@typescript-eslint/no-floating-promises": "warn",
     },
 }

@@ -244,11 +244,11 @@ export class Dispatcher {
 
     subs = () => store._state.res?.File && openInNewWindow(getSubtitleSearchLink(store._state.res?.File))
 
-    Explore = () => {
+    Explore = async () => {
         console.log(store._state)
         const file = store._state.selectedFiles[0] ?? store._state.res?.File
         if (!file) return
-        this.explore(file)
+        await this.explore(file)
     }
     _setSelectedFiles = (v: IFile[]) => {
         if (arrayItemsEqual(v, store._state.selectedFiles)) return

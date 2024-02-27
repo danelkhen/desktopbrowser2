@@ -37,7 +37,7 @@ export function Files({
             return
         }
         e.preventDefault()
-        dispatcher.Open(file)
+        void dispatcher.Open(file)
     }, [])
 
     const onItemDoubleClick = useCallback((e: React.MouseEvent, file: IFile) => {
@@ -45,7 +45,7 @@ export function Files({
             return
         }
         e.preventDefault()
-        dispatcher.Open(file)
+        void dispatcher.Open(file)
     }, [])
 
     const getRowClass = useCallback(

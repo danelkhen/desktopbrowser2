@@ -11,7 +11,7 @@ import { setupWebServer } from "./setup/setupWebServer"
 import { setupDock } from "./setup/setupDock"
 import { setupAutoUpdate } from "./setup/setupAutoUpdate"
 
-app.whenReady().then(async () => {
+void app.whenReady().then(async () => {
     // Set app user model id for windows
     electronApp.setAppUserModelId("danelkhen.desktopbrowser2")
     log.initialize()
@@ -30,6 +30,6 @@ app.whenReady().then(async () => {
     await setupWebServer()
     await setupMainWindow()
     await setupTray()
-    setupDock()
+    await setupDock()
     setupAutoUpdate()
 })

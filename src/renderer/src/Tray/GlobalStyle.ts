@@ -7,4 +7,6 @@ injectGlobal`
         -webkit-font-smoothing: antialiased;
     }
 `
-export function injectGlobalStyle() {}
+export function injectGlobalStyle() {
+    //
+}

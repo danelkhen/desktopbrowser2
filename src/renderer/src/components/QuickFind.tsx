@@ -13,7 +13,7 @@ export function QuickFind({ allFiles, onFindFiles }: QuickFindProps) {
         setValue(value)
         if (!value) return
         quickFind(value)
-        scheduleClear()
+        void scheduleClear()
     }
     async function scheduleClear() {
         const version = versionRef.current
