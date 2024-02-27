@@ -51,7 +51,7 @@ export const api: Api = {
             return
         }
         if (await io.dirExists(path)) {
-            if (path.split("\\").length <= 2)
+            if (path.split("/").length <= 2)
                 throw new Error(
                     "Delete protection, cannot delete path so short, should be at least depth of 3 levels or more"
                 )
