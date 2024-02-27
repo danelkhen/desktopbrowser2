@@ -11,7 +11,7 @@ export function queryToReq(s: string): IListFilesReq {
         FolderSize: rest.has("FolderSize") ? true : undefined,
         HideFolders: rest.has("HideFolders") ? true : undefined,
         HideFiles: rest.has("HideFiles") ? true : undefined,
-        Path: rest.get("Path") ?? undefined,
+        // Path: rest.get("Path") ?? undefined,
         sort: rest.get("sort") ? urlToSort(rest.get("sort")!) : undefined,
         ShowHiddenFiles: rest.has("ShowHiddenFiles") ? true : undefined,
         NoCache: rest.has("NoCache") ? true : undefined,

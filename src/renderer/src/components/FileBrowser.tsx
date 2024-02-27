@@ -17,6 +17,7 @@ import { Menu } from "./Menu"
 import { QuickFind } from "./QuickFind"
 import { gridColumns } from "./gridColumns"
 import { css } from "@emotion/css"
+import { useLocation } from "react-router-dom"
 
 const pageSize = 200
 
@@ -26,10 +27,11 @@ export function FileBrowser() {
     const navigate = useNavigate()
     dispatcher.navigate = navigate
 
+    const { pathname } = useLocation()
     const match = useMatch("/*")
     const reqPath = urlToPath(match?.params["*"] ?? "")
     console.log("match", match, match?.params["*"] ?? "", reqPath)
-    const p = useQuery().toString() // get("p") ?? ""
+    const p = pathname // useQuery().toString() // get("p") ?? ""
     console.log({ p })
     useEffect(() => {
         dispatcher.parseRequest(reqPath, p)
