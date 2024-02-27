@@ -5,10 +5,10 @@ import { Api } from "../../../shared/Api"
 function proxyForFileService() {
     const proxy: Api = {
         listFiles: req => wsInvoke({ funcName: "listFiles", args: [req] }),
-        saveFileMeta: req => httpInvoke("/api/saveFileMetadata", req),
-        getFileMeta: req => httpInvoke("/api/getFileMetadata", req),
-        deleteFileMeta: req => httpInvoke("/api/deleteFileMetadata", req),
-        getAllFilesMeta: () => httpInvoke("/api/getAllFilesMetadata"),
+        saveFileMeta: req => httpInvoke("/api/saveFileMeta", req),
+        getFileMeta: req => httpInvoke("/api/getFileMeta", req),
+        deleteFileMeta: req => httpInvoke("/api/deleteFileMeta", req),
+        getAllFilesMeta: () => httpInvoke("/api/getAllFilesMeta"),
         execute: req => httpInvoke("/api/execute", req),
         explore: req => httpInvoke("/api/explore", req),
         del: req => httpInvoke("/api/del", req),
