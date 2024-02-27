@@ -2,9 +2,9 @@ import * as _ from "lodash"
 import { FileRelativesInfo } from "../../shared/FileRelativesInfo"
 import { IoPath } from "../io/IoPath"
 import { equalsIgnoreCase } from "../lib/equalsIgnoreCase"
-import { listFiles } from "./listFiles"
 import { normalizePath } from "./normalizePath"
 import { getFile } from "./getFile"
+import { listFiles2 } from "./listFiles2"
 
 export async function getFileRelatives(path: string): Promise<FileRelativesInfo> {
     path = normalizePath(path)
@@ -15,7 +15,7 @@ export async function getFileRelatives(path: string): Promise<FileRelativesInfo>
     if (!info.ParentFolder?.Path) {
         return info
     }
-    const files = await listFiles({ path: info.ParentFolder.Path, files: false, folders: true })
+    const files = await listFiles2({ path: info.ParentFolder.Path, files: false, folders: true })
     const parentFiles = _.orderBy(
         files.filter(t => t.IsFolder),
         [t => t.Name]
