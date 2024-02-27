@@ -21,12 +21,17 @@ export const io = {
         }
         let size = 0
         try {
-            const list = await glob(`${path}/*`, { stat: true, withFileTypes: true })
+            const list = await glob(`${path}/*`, {
+                stat: true,
+                withFileTypes: true,
+                posix: true,
+            })
             for (const item of list) {
+                if (typeof item === "string") continue
                 if (item.isFile() && item.size !== undefined) {
                     size += item.size
-                } else if (item.isDirectory() && item.fullpath()) {
-                    const dirSize = await io.getSize(item.fullpath(), cache)
+                } else if (item.isDirectory() && item.fullpathPosix()) {
+                    const dirSize = await io.getSize(item.fullpathPosix(), cache)
                     size += dirSize
                 }
             }

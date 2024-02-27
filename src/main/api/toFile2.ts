@@ -24,7 +24,7 @@ export function toFile2(file: Path | string): IFile {
         Size: file.isFile() ? file.size : undefined,
         IsHidden: file.name?.startsWith("."),
         Extension: path.posix.extname(file.name),
-        Path: file.fullpath(),
+        Path: file.fullpathPosix(),
     }
     return file2
 }
