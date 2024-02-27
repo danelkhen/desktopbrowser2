@@ -46,9 +46,9 @@ export const io = {
     },
 
     async get(path2: string): Promise<IoFile> {
-        const FullName = path.resolve(path2)
-        const Name = path.basename(path2)
-        const Extension = path.extname(path2)
+        const FullName = path.posix.resolve(path2)
+        const Name = path.posix.basename(path2)
+        const Extension = path.posix.extname(path2)
         const x: IoFile = {
             path: path2,
             FullName,

@@ -6,7 +6,7 @@ import { Stats } from "fs"
 export function toFile2(file: Path | string): IFile {
     if (typeof file === "string") {
         const file2: IFile = {
-            Name: path.basename(file),
+            Name: path.posix.basename(file),
             IsFolder: true, // !!file.isDirectory(),
             // Modified: file.mtime?.toJSON(),
             // Size: file.isFile() ? file.size : undefined,
@@ -23,14 +23,14 @@ export function toFile2(file: Path | string): IFile {
         Modified: file.mtime?.toJSON(),
         Size: file.isFile() ? file.size : undefined,
         IsHidden: file.name?.startsWith("."),
-        Extension: path.extname(file.name),
+        Extension: path.posix.extname(file.name),
         Path: file.fullpath(),
     }
     return file2
 }
 
 export function toFile3(p: string, stat: Stats | null) {
-    const parsed = path.parse(p)
+    const parsed = path.posix.parse(p)
     const file2: IFile = {
         type: getType(stat),
         Name: parsed.name,
@@ -38,7 +38,7 @@ export function toFile3(p: string, stat: Stats | null) {
         Modified: stat?.mtime?.toJSON(),
         Size: stat?.isFile() ? stat.size : undefined,
         IsHidden: parsed.name.startsWith("."),
-        Extension: path.extname(parsed.name),
+        Extension: path.posix.extname(parsed.name),
         Path: p,
     }
     return file2

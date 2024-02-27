@@ -10,7 +10,7 @@ export async function getFile({ path }: { path: string }): Promise<IFile | null>
         const x: IFile = { IsFolder: true, Path: "", Name: "Home" }
         return x
     }
-    const absPath = Path.resolve(p)
+    const absPath = Path.posix.resolve(p)
     const stat = await fs.lstat(absPath).catch(() => null)
 
     return toFile3(absPath, stat)

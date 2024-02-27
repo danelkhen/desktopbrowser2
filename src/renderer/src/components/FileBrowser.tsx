@@ -1,11 +1,12 @@
+import { css } from "@emotion/css"
 import { useCallback, useEffect, useState } from "react"
 import { useMatch, useNavigate } from "react-router"
+import { useLocation } from "react-router-dom"
 import { colors } from "../GlobalStyle"
 import { urlToPath } from "../hooks/urlToPath"
 import { useAppState } from "../hooks/useAppState"
 import { useFilter } from "../hooks/useFilter"
 import { usePaging } from "../hooks/usePaging"
-import { useQuery } from "../hooks/useQuery"
 import { useSearch } from "../hooks/useSearch"
 import { useSelection } from "../hooks/useSelection"
 import { useSorting } from "../hooks/useSorting"
@@ -16,8 +17,6 @@ import { Files } from "./Files"
 import { Menu } from "./Menu"
 import { QuickFind } from "./QuickFind"
 import { gridColumns } from "./gridColumns"
-import { css } from "@emotion/css"
-import { useLocation } from "react-router-dom"
 
 const pageSize = 200
 
