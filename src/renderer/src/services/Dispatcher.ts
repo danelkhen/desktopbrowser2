@@ -217,12 +217,12 @@ export class Dispatcher {
     }
 
     goto = {
-        up: () => this.GotoFolder(store._state.res?.Relatives?.ParentFolder),
+        up: () => this.up(),
         prev: () => this.GotoFolder(store._state.res?.Relatives?.PreviousSibling),
         next: () => this.GotoFolder(store._state.res?.Relatives?.NextSibling),
     }
     canGoto = {
-        up: () => !!store._state.res?.Relatives?.ParentFolder,
+        up: () => store._state.req.Path !== "/",
         prev: () => !!store._state.res?.Relatives?.PreviousSibling,
         next: () => !!store._state.res?.Relatives?.NextSibling,
     }
