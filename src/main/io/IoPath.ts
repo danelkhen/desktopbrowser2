@@ -1,7 +1,6 @@
 import * as path from "path"
 import { removeLast } from "../lib/removeLast"
-import { IoFile } from "./IoFile"
-import { IoDir } from "./IoDir"
+import { io } from "./io"
 
 export class IoPath {
     Value: string
@@ -34,10 +33,10 @@ export class IoPath {
     }
 
     get IsFile(): Promise<boolean | undefined> {
-        return IoFile.Exists(this.Value)
+        return io.fileExists(this.Value)
     }
     get IsDirectory(): Promise<boolean | undefined> {
-        return IoDir.Exists(this.Value)
+        return io.dirExists(this.Value)
     }
     get ParentPath(): IoPath {
         if (this.IsEmpty) return this

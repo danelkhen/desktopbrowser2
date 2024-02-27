@@ -1,5 +1,5 @@
 import { IFile } from "../../shared/IFile"
-import { IoFile } from "../io/IoFile"
+import { io } from "../io/io"
 import { isWindows } from "../lib/isWindows"
 import { ListFilesOptions } from "./ListFilesOptions"
 import { normalizePath } from "./normalizePath"
@@ -22,11 +22,11 @@ export async function listFiles({ path, recursive, files, folders }: ListFilesOp
     //if (searchPattern.IsNullOrEmpty())
     //    searchPattern = "*";
     else if (recursive) {
-        const dir = await IoFile.get(path)
-        files2 = (await IoFile.getDescendants(dir.path)).map(t => toFile(t))
+        const dir = await io.get(path)
+        files2 = (await io.getDescendants(dir.path)).map(t => toFile(t))
     } else {
-        const dir = await IoFile.get(path)
-        const children = await IoFile.getChildren(dir.path)
+        const dir = await io.get(path)
+        const children = await io.getChildren(dir.path)
         if (files && !folders) {
             files2 = children.filter(t => t.isFile).map(t => toFile(t))
         } else if (folders && !files) {

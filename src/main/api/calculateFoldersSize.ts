@@ -1,5 +1,5 @@
 import { IFile } from "../../shared/IFile"
-import { DirSizeCache, IoDir } from "../io/IoDir"
+import { DirSizeCache, io } from "../io/io"
 
 let dirSizeCacheTime: number | undefined
 let dirSizeCache: DirSizeCache | undefined
@@ -19,7 +19,7 @@ export async function calculateFoldersSize(folders: IFile[]): Promise<IFile[]> {
         try {
             //console.log("CalculateFoldersSize", file);
             if (file.IsFolder && file.Path) {
-                file.Size = await IoDir.getSize(file.Path, cache)
+                file.Size = await io.getSize(file.Path, cache)
             }
         } catch (e) {
             console.log("calculateFoldersSize error", e)

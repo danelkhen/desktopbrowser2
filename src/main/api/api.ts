@@ -2,8 +2,7 @@ import { BrowserWindow, app, shell } from "electron"
 import { autoUpdater } from "electron-updater"
 import { Api } from "../../shared/Api"
 import { IListFilesRes } from "../../shared/IListFilesRes"
-import { IoDir } from "../io/IoDir"
-import { IoFile } from "../io/IoFile"
+import { io } from "../io/io"
 import { appDb } from "../services"
 import { getFile } from "./getFile"
 import { getFileRelatives } from "./getFileRelatives"
@@ -47,16 +46,16 @@ export const api: Api = {
     },
     del: async req => {
         const path = req.path
-        if (await IoFile.Exists(path)) {
-            await IoFile.Delete(path)
+        if (await io.fileExists(path)) {
+            await io.delete(path)
             return
         }
-        if (await IoDir.Exists(path)) {
+        if (await io.dirExists(path)) {
             if (path.split("\\").length <= 2)
                 throw new Error(
                     "Delete protection, cannot delete path so short, should be at least depth of 3 levels or more"
                 )
-            await IoDir.del(path)
+            await io.del(path)
         }
     },
     trash: async req => {

@@ -1,5 +1,3 @@
-import { getDiskInfo } from "node-disk-info"
-import Drive from "node-disk-info/dist/classes/drive"
 import { IoFile } from "./IoFile"
 
 export interface IoDrive extends IoFile {
@@ -7,23 +5,4 @@ export interface IoDrive extends IoFile {
     /** in mac a string returns */
     AvailableFreeSpace: number | string
     Capacity: string
-}
-
-export const IoDrive = {
-    async getDrives(): Promise<IoDrive[]> {
-        const list = await getDiskInfo()
-        const drives = list.map(t => toDriveInfo(t))
-        return drives
-    },
-}
-
-function toDriveInfo(x: Drive) {
-    const di: IoDrive = {
-        path: x.mounted + "\\",
-        Name: x.mounted,
-        IsReady: true,
-        AvailableFreeSpace: x.available,
-        Capacity: x.capacity,
-    }
-    return di
 }

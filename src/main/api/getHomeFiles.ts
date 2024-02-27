@@ -1,8 +1,8 @@
 import { IFile } from "../../shared/IFile"
-import { IoDrive } from "../io/IoDrive"
+import { io } from "../io/io"
 
 export async function getHomeFiles(): Promise<IFile[]> {
-    const list = await IoDrive.getDrives()
+    const list = await io.getDrives()
     return list.map(t => /*new File*/ ({
         IsFolder: true,
         Name: t.Name,
