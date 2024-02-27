@@ -3,7 +3,19 @@ import { IFile } from "../../shared/IFile"
 import path from "path"
 import { Stats } from "fs"
 
-export function toFile2(file: Path): IFile {
+export function toFile2(file: Path | string): IFile {
+    if (typeof file === "string") {
+        const file2: IFile = {
+            Name: path.basename(file),
+            IsFolder: true, // !!file.isDirectory(),
+            // Modified: file.mtime?.toJSON(),
+            // Size: file.isFile() ? file.size : undefined,
+            // IsHidden: file.name?.startsWith("."),
+            // Extension: path.extname(file.name),
+            Path: file,
+        }
+        return file2
+    }
     const file2: IFile = {
         type: getType(file),
         Name: file.name,

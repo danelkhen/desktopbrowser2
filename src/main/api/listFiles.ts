@@ -28,7 +28,7 @@ export async function listFiles({
         return []
     }
     const path2 = Path.resolve(path)
-    const res = await glob(`${path2}${g}${foldersOnlySuffix}`, { stat: true, withFileTypes: true, nodir })
+    const res = await glob(`${path2}${g}${foldersOnlySuffix}`, { stat: true, withFileTypes: true, nodir, posix: true })
     const files2 = res.map(t => toFile2(t))
     return files2
 }
