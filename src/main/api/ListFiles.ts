@@ -1,36 +1,33 @@
-import { equalsIgnoreCase } from "../shared/equalsIgnoreCase"
-import {
-    FsFile,
-    FileRelativesInfo,
-    FileService,
-    ListFilesRequest,
-    PathRequest,
-    ListFilesResponse,
-} from "../../shared/FileService"
-import { IoFile } from "../io/IoFile"
-import { IoPath } from "../io/IoPath"
+import * as _ from "lodash"
+import { Api } from "../../shared/Api"
+import { FileRelativesInfo } from "../../shared/FileRelativesInfo"
+import { IFile } from "../../shared/IFile"
+import { IListFilesReq } from "../../shared/IListFilesReq"
+import { IListFilesRes } from "../../shared/IListFilesRes"
 import { DirSizeCache, IoDir } from "../io/IoDir"
 import { IoDrive } from "../io/IoDrive"
+import { IoFile } from "../io/IoFile"
+import { IoPath } from "../io/IoPath"
+import { equalsIgnoreCase } from "../shared/equalsIgnoreCase"
 import { dateToDefaultString } from "../utils/dateToDefaultString"
 import { isWindows } from "../utils/isWindows"
-import * as _ from "lodash"
 
-export const ListFiles: FileService["listFiles"] = async req => {
+export const ListFiles: Api["listFiles"] = async req => {
     if (!req.Path) {
         throw new Error("Path is required")
     }
     const Relatives = await GetFileRelatives(req.Path)
-    const File = await GetFile({ Path: req.Path })
-    let Files: FsFile[] | undefined
+    const File = await GetFile({ path: req.Path })
+    let Files: IFile[] | undefined
 
     if (File?.IsFolder) {
         Files = await GetFiles(req)
     }
-    const res: ListFilesResponse = { Relatives, File: File ?? undefined, Files }
+    const res: IListFilesRes = { Relatives, File: File ?? undefined, Files }
     return res
 }
 
-async function GetFiles(req: ListFilesRequest): Promise<FsFile[]> {
+async function GetFiles(req: IListFilesReq): Promise<IFile[]> {
     if (req.HideFiles && req.HideFolders) {
         return []
     }
@@ -50,7 +47,7 @@ async function GetFileRelatives(path: string): Promise<FileRelativesInfo> {
     if (!path || path === "/") return {}
     const pathInfo = new IoPath(path)
     const info: FileRelativesInfo = {}
-    info.ParentFolder = (await GetFile({ Path: pathInfo.ParentPath.Value })) ?? undefined
+    info.ParentFolder = (await GetFile({ path: pathInfo.ParentPath.Value })) ?? undefined
     if (!info.ParentFolder?.Path) {
         return info
     }
@@ -65,12 +62,13 @@ async function GetFileRelatives(path: string): Promise<FileRelativesInfo> {
     return info
 }
 
-async function GetFile(req: PathRequest): Promise<FsFile | null> {
-    const path = normalizePath(req.Path)
-    if (!path) {
-        return /*new File*/ { IsFolder: true, Path: "", Name: "Home" }
+async function GetFile({ path }: { path: string }): Promise<IFile | null> {
+    const p = normalizePath(path)
+    if (!p) {
+        const x: IFile = { IsFolder: true, Path: "", Name: "Home" }
+        return x
     }
-    const absPath = new IoPath(path).ToAbsolute()
+    const absPath = new IoPath(p).ToAbsolute()
     if (await absPath.IsFile) {
         return ToFile(await IoFile.get(absPath.Value))
     } else if ((await absPath.IsDirectory) || absPath.IsRoot) {
@@ -113,12 +111,12 @@ function normalizePath(path: string | undefined): string {
     return path
 }
 
-export async function _listFiles({ path, recursive, files, folders }: ListFilesOptions): Promise<FsFile[]> {
+export async function _listFiles({ path, recursive, files, folders }: ListFilesOptions): Promise<IFile[]> {
     console.log(path)
     path = normalizePath(path)
     //: string, searchPattern: string, recursive: boolean, files: boolean, folders: boolean
     let isFiltered = false
-    let files2: FsFile[]
+    let files2: IFile[]
     if (path === "/" && isWindows()) {
         files2 = await GetHomeFiles()
     } else if (!files && !folders) {
@@ -154,7 +152,7 @@ export async function _listFiles({ path, recursive, files, folders }: ListFilesO
     return files2
 }
 
-export async function ApplyRequest(files: FsFile[], req: ListFilesRequest): Promise<FsFile[]> {
+export async function ApplyRequest(files: IFile[], req: IListFilesReq): Promise<IFile[]> {
     if (!req.ShowHiddenFiles) {
         files = files.filter(t => !t.IsHidden)
     }
@@ -177,8 +175,8 @@ export async function ApplyRequest(files: FsFile[], req: ListFilesRequest): Prom
     return files
 }
 
-export function ToFile(file: IoFile): FsFile {
-    const file2: FsFile = {
+export function ToFile(file: IoFile): IFile {
+    const file2: IFile = {
         type: undefined,
         Name: file.Name,
         IsFolder: !!file.isDir,
@@ -202,7 +200,7 @@ export function ToFile(file: IoFile): FsFile {
     return file2
 }
 
-export function ApplyPaging(files: FsFile[], req: ListFilesRequest): FsFile[] {
+export function ApplyPaging(files: IFile[], req: IListFilesReq): IFile[] {
     if (req.skip != null) files = files.slice(req.skip)
     if (req.take != null) files = files.slice(0, req.take + 1)
     return files
@@ -212,7 +210,7 @@ export function quote(s: string): string {
     return `"${s}"`
 }
 
-async function GetHomeFiles(): Promise<FsFile[]> {
+async function GetHomeFiles(): Promise<IFile[]> {
     const list = await IoDrive.getDrives()
     return list.map(t => /*new File*/ ({
         IsFolder: true,
@@ -233,9 +231,9 @@ function getDirSizeCache() {
     dirSizeCacheTime = Date.now()
     return dirSizeCache
 }
-async function calculateFoldersSize(folders: FsFile[]): Promise<FsFile[]> {
+async function calculateFoldersSize(folders: IFile[]): Promise<IFile[]> {
     const cache = getDirSizeCache()
-    const list: FsFile[] = []
+    const list: IFile[] = []
     for (const file of folders) {
         try {
             //console.log("CalculateFoldersSize", file);

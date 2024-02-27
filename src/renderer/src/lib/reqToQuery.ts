@@ -1,7 +1,7 @@
-import { ListFilesRequest } from "../../../shared/FileService"
+import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { sortToUrl } from "@renderer/lib/sortToUrl"
 
-export function reqToQuery(rest: ListFilesRequest) {
+export function reqToQuery(rest: IListFilesReq) {
     console.log("reqToQuery", rest)
     const obj = {
         foldersFirst: rest.foldersFirst ? "" : undefined,

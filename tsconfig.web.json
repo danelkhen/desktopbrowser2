@@ -5,8 +5,7 @@
         "src/renderer/src/**/*",
         "src/renderer/src/**/*.tsx",
         "src/preload/*.d.ts",
-        "src/shared/*.ts",
-        "src/main/shared/removeLast.ts"
+        "src/shared/*.ts"
     ],
     "compilerOptions": {
         "composite": true,

@@ -1,6 +1,6 @@
-import { FsFile } from "../../../shared/FileService"
+import { IFile } from "../../../shared/IFile"
 
-export function getFileNameWithoutExtension(file: FsFile): string {
+export function getFileNameWithoutExtension(file: IFile): string {
     if (file.IsFolder) return file.Name
     let s = file.Name
     const index = s.lastIndexOf(".")

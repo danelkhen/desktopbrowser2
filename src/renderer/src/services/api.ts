@@ -1,14 +1,14 @@
 import { httpInvoke } from "../lib/getHttpInvoker"
 import { wsInvoke } from "../lib/webSocket"
-import { FileService } from "../../../shared/FileService"
+import { Api } from "../../../shared/Api"
 
 function proxyForFileService() {
-    const proxy: FileService = {
+    const proxy: Api = {
         listFiles: req => wsInvoke({ target: ["fileService"], funcName: "listFiles", args: [req] }),
-        saveFileMetadata: req => httpInvoke("/api/fs/saveFileMetadata", req),
-        getFileMetadata: req => httpInvoke("/api/fs/getFileMetadata", req),
-        deleteFileMetadata: req => httpInvoke("/api/fs/deleteFileMetadata", req),
-        getAllFilesMetadata: () => httpInvoke("/api/fs/getAllFilesMetadata"),
+        saveFileMeta: req => httpInvoke("/api/fs/saveFileMetadata", req),
+        getFileMeta: req => httpInvoke("/api/fs/getFileMetadata", req),
+        deleteFileMeta: req => httpInvoke("/api/fs/deleteFileMetadata", req),
+        getAllFilesMeta: () => httpInvoke("/api/fs/getAllFilesMetadata"),
         execute: req => httpInvoke("/api/fs/execute", req),
         explore: req => httpInvoke("/api/fs/explore", req),
         del: req => httpInvoke("/api/fs/del", req),

@@ -1,7 +1,7 @@
 import { useMemo } from "react"
-import { FsFile } from "../../../shared/FileService"
+import { IFile } from "../../../shared/IFile"
 
-export function useSearch(search: string, list: FsFile[]) {
+export function useSearch(search: string, list: IFile[]) {
     return useMemo(() => {
         if (!search) return list
         const s = search.toLowerCase()

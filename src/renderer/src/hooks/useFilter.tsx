@@ -1,8 +1,9 @@
 import { useMemo } from "react"
 import { dispatcher } from "../services/Dispatcher"
-import { FsFile, ListFilesRequest } from "../../../shared/FileService"
+import { IFile } from "../../../shared/IFile"
+import { IListFilesReq } from "../../../shared/IListFilesReq"
 
-export function useFilter(req: ListFilesRequest, list: FsFile[]) {
+export function useFilter(req: IListFilesReq, list: IFile[]) {
     return useMemo(() => {
         if (!req.hideWatched) return list
         return list.filter(t => {

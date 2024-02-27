@@ -2,17 +2,19 @@ import { useCallback, useEffect, useMemo } from "react"
 import { sleep } from "../lib/sleep"
 import { Selected } from "../services/Classes"
 import { dispatcher } from "../services/Dispatcher"
-import { FileInfo, FsFile, ListFilesResponse } from "../../../shared/FileService"
 import { Selection } from "../services/Selection"
+import { IListFilesRes } from "../../../shared/IListFilesRes"
+import { IFile } from "../../../shared/IFile"
+import { IFileMeta } from "../../../shared/IFileMeta"
 
 export function useSelection({
     filesMd,
     res,
     selectedFiles,
 }: {
-    readonly res: ListFilesResponse
-    readonly filesMd: { [key: string]: FileInfo }
-    readonly selectedFiles: FsFile[]
+    readonly res: IListFilesRes
+    readonly filesMd: { [key: string]: IFileMeta }
+    readonly selectedFiles: IFile[]
 }) {
     useEffect(() => {
         const selectedFileName = res.File?.Name ? filesMd?.[res.File.Name]?.selectedFiles?.[0] : null
@@ -22,7 +24,7 @@ export function useSelection({
     }, [filesMd, res?.File?.Name, res?.Files])
 
     const setSelectedFiles = useCallback(
-        (v: FsFile[]) => {
+        (v: IFile[]) => {
             const file = v[v.length - 1]
             if (res?.File?.Name) {
                 console.log("saveSelectionAndSetSelectedItems", res.File.Name, file?.Name)
@@ -39,7 +41,7 @@ export function useSelection({
     useEffect(() => {
         function Win_keydown(e: KeyboardEvent): void {
             if (e.defaultPrevented) return
-            const selection = new Selection<FsFile>(res?.Files ?? [], selectedFiles)
+            const selection = new Selection<IFile>(res?.Files ?? [], selectedFiles)
             const selectedFile = selection.selectedItem
             const target = e.target as HTMLElement
             if (target.matches("input:not(#tbQuickFind),select")) return

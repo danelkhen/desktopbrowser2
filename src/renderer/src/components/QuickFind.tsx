@@ -1,6 +1,6 @@
 import { useRef, useState } from "react"
 import { sleep } from "../lib/sleep"
-import { FsFile } from "../../../shared/FileService"
+import { IFile } from "../../../shared/IFile"
 import { cx } from "@emotion/css"
 
 export function QuickFind({ allFiles, onFindFiles }: QuickFindProps) {
@@ -41,6 +41,6 @@ export function QuickFind({ allFiles, onFindFiles }: QuickFindProps) {
 }
 
 export interface QuickFindProps {
-    allFiles: FsFile[]
-    onFindFiles(files: FsFile[]): void
+    allFiles: IFile[]
+    onFindFiles(files: IFile[]): void
 }

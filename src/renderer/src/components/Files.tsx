@@ -3,10 +3,10 @@ import React, { useCallback } from "react"
 import { FileColumns } from "../services/AppState"
 import { Classes, FileRow, HasInnerSelection, IsFolder, Selected } from "../services/Classes"
 import { dispatcher } from "../services/Dispatcher"
-import { FsFile } from "../../../shared/FileService"
 import { Selection } from "../services/Selection"
 import { ColumnKey, Grid } from "./Grid"
 import { visibleGridColumns } from "./gridColumns"
+import { IFile } from "../../../shared/IFile"
 
 export function Files({
     selectedFiles,
@@ -15,14 +15,14 @@ export function Files({
     columns,
     files,
 }: {
-    setSelectedFiles: (v: FsFile[]) => void
-    selectedFiles: FsFile[]
-    allFiles: FsFile[]
+    setSelectedFiles: (v: IFile[]) => void
+    selectedFiles: IFile[]
+    allFiles: IFile[]
     columns: FileColumns
-    files: FsFile[]
+    files: IFile[]
 }) {
     const onItemMouseDown = useCallback(
-        (e: React.MouseEvent, file: FsFile) => {
+        (e: React.MouseEvent, file: IFile) => {
             const selection = new Selection(allFiles, selectedFiles)
             const selectedItems = selection.Click(file, e.ctrlKey, e.shiftKey)
             setSelectedFiles(selectedItems)
@@ -30,7 +30,7 @@ export function Files({
         [allFiles, selectedFiles, setSelectedFiles]
     )
 
-    const onItemClick = useCallback((e: React.MouseEvent, file: FsFile) => {
+    const onItemClick = useCallback((e: React.MouseEvent, file: IFile) => {
         // const selection = new Selection(allFiles, selectedFiles)
         const target = e.target as HTMLElement
         if (!target.matches("a.Name")) {
@@ -40,7 +40,7 @@ export function Files({
         dispatcher.Open(file)
     }, [])
 
-    const onItemDoubleClick = useCallback((e: React.MouseEvent, file: FsFile) => {
+    const onItemDoubleClick = useCallback((e: React.MouseEvent, file: IFile) => {
         if (file == null) {
             return
         }
@@ -49,7 +49,7 @@ export function Files({
     }, [])
 
     const getRowClass = useCallback(
-        (file: FsFile) => {
+        (file: IFile) => {
             const s = cx(
                 FileRow,
                 file.IsFolder && IsFolder,
@@ -76,7 +76,7 @@ export function Files({
     }, [])
 
     return (
-        <Grid<FsFile>
+        <Grid<IFile>
             className={GrdFiles}
             items={files}
             getHeaderClass={getHeaderClass}

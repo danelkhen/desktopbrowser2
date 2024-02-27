@@ -1,22 +1,22 @@
-import { FileService } from "../../shared/FileService"
+import { Api } from "../../shared/Api"
 import { ListFiles } from "./ListFiles"
 import { AppDb } from "../AppDb"
 import { Delete, Execute, Explore, trash } from "./api"
 import { app, BrowserWindow, shell } from "electron"
 import { autoUpdater } from "electron-updater"
 
-export function createApi(db: AppDb): FileService {
+export function createApi(db: AppDb): Api {
     return {
-        async getFileMetadata({ key }) {
+        async getFileMeta({ key }) {
             return db.files.get(key)
         },
-        async getAllFilesMetadata() {
+        async getAllFilesMeta() {
             return db.files.getAll()
         },
-        async saveFileMetadata(req) {
+        async saveFileMeta(req) {
             db.files.set(req)
         },
-        async deleteFileMetadata({ key }) {
+        async deleteFileMeta({ key }) {
             db.files.del(key)
         },
         listFiles: ListFiles,

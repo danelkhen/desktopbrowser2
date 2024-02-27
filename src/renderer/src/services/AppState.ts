@@ -1,18 +1,21 @@
 import { GridColumns } from "../components/Grid"
 import { SortConfig } from "../hooks/useSorting"
 import { FileColumnKeys } from "./Columns"
-import { FileInfo, FsFile, ListFilesRequest, ListFilesResponse } from "../../../shared/FileService"
+import { IFile } from "../../../shared/IFile"
+import { IListFilesRes } from "../../../shared/IListFilesRes"
+import { IListFilesReq } from "../../../shared/IListFilesReq"
+import { IFileMeta } from "../../../shared/IFileMeta"
 
 export interface AppState {
-    readonly res: ListFilesResponse
-    readonly req: ListFilesRequest
+    readonly res: IListFilesRes
+    readonly req: IListFilesReq
     readonly reqSorting: SortConfig
     readonly sorting: SortConfig
-    readonly filesMd: { [key: string]: FileInfo }
-    readonly selectedFiles: FsFile[]
+    readonly filesMd: { [key: string]: IFileMeta }
+    readonly selectedFiles: IFile[]
 }
 
-export type FileColumns = GridColumns<FsFile>
+export type FileColumns = GridColumns<IFile>
 
 export const sortingDefaults: SortConfig = {
     isDescending: {},

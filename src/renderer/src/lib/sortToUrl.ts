@@ -1,5 +1,5 @@
-import { Column } from "../../../shared/FileService"
-import { SortColumn } from "../../../shared/FileService"
+import { Column } from "../../../shared/Column"
+import { SortColumn } from "../../../shared/SortColumn"
 
 export function sortToUrl(cols: SortColumn[]): string {
     return cols.map(t => (t.Descending ? `${t.Name}_` : t.Name)).join(",")

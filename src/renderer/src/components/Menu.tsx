@@ -12,17 +12,18 @@ import SubtitleIcon from "../assets/icons/subtitle.svg?react"
 import TrashIcon from "../assets/icons/trash.svg?react"
 import UpIcon from "../assets/icons/up.svg?react"
 import { Dispatcher } from "../services/Dispatcher"
-import { FsFile, ListFilesRequest } from "../../../shared/FileService"
 import { Dropdown } from "./Dropdown"
 import { MenuButton, ToggleMenuButton } from "./MenuButton"
+import { IListFilesReq } from "../../../shared/IListFilesReq"
+import { IFile } from "../../../shared/IFile"
 
 export function Menu({
     req,
     selectedFile,
     dispatcher,
 }: {
-    req: ListFilesRequest
-    selectedFile?: FsFile
+    req: IListFilesReq
+    selectedFile?: IFile
     dispatcher: Dispatcher
 }) {
     const Delete = useCallback(

@@ -1,20 +1,20 @@
 import { shell } from "electron"
 import { IoDir } from "../io/IoDir"
 import { IoFile } from "../io/IoFile"
-import { FileService } from "../../shared/FileService"
+import { Api } from "../../shared/Api"
 
-export const Execute: FileService["execute"] = async req => {
-    const filename = req.Path
+export const Execute: Api["execute"] = async req => {
+    const filename = req.path
     await shell.openExternal(filename)
 }
 
-export const Explore: FileService["explore"] = async req => {
-    console.log("shell.showItemInFolder", req.Path)
-    await shell.showItemInFolder(req.Path)
+export const Explore: Api["explore"] = async req => {
+    console.log("shell.showItemInFolder", req.path)
+    await shell.showItemInFolder(req.path)
 }
 
-export const Delete: FileService["del"] = async req => {
-    const path = req.Path
+export const Delete: Api["del"] = async req => {
+    const path = req.path
     if (await IoFile.Exists(path)) {
         await IoFile.Delete(path)
         return
@@ -28,8 +28,8 @@ export const Delete: FileService["del"] = async req => {
     }
 }
 
-export const trash: FileService["trash"] = async req => {
-    const path = req.Path
+export const trash: Api["trash"] = async req => {
+    const path = req.path
     console.log("trash", path)
     await shell.trashItem(path)
 }

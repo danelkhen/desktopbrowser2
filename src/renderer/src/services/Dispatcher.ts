@@ -13,7 +13,10 @@ import { queryToReq } from "../lib/queryToReq"
 import { reqToQuery } from "../lib/reqToQuery"
 import { sortingDefaults } from "./AppState"
 import { FileColumnKeys } from "./Columns"
-import { Column, FileInfo, FsFile, ListFilesRequest } from "../../../shared/FileService"
+import { Column } from "../../../shared/Column"
+import { IFile } from "../../../shared/IFile"
+import { IListFilesReq } from "../../../shared/IListFilesReq"
+import { IFileMeta } from "../../../shared/IFileMeta"
 import { api } from "./api"
 import { store } from "./store"
 
@@ -21,24 +24,24 @@ export class Dispatcher {
     navigate?: NavigateFunction
 
     fetchAllFilesMetadata = async () => {
-        const x = await api.getAllFilesMetadata()
-        const obj: { [key: string]: FileInfo } = {}
+        const x = await api.getAllFilesMeta()
+        const obj: { [key: string]: IFileMeta } = {}
         x.map(t => (obj[t.key] = t))
         store.update({ filesMd: obj })
     }
 
-    private async setFileMetadata(value: FileInfo) {
+    private async setFileMetadata(value: IFileMeta) {
         if (value.selectedFiles == null || value.selectedFiles.length == 0) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { [value.key]: removed, ...rest } = store._state.filesMd ?? {}
             store.update({ filesMd: rest })
-            await api.deleteFileMetadata({ key: value.key })
+            await api.deleteFileMeta({ key: value.key })
             return
         }
         store.update({ filesMd: { ...store._state.filesMd, [value.key]: value } })
-        await api.saveFileMetadata(value)
+        await api.saveFileMeta(value)
     }
-    getFileMetadata = (key: string): FileInfo | null => {
+    getFileMetadata = (key: string): IFileMeta | null => {
         const x = store._state.filesMd?.[key]
         if (!x) return null
         return x
@@ -56,7 +59,7 @@ export class Dispatcher {
         })
     }
 
-    hasInnerSelection = (file: FsFile) => {
+    hasInnerSelection = (file: IFile) => {
         return dispatcher.getSavedSelectedFile(file.Name) != null
     }
 
@@ -65,11 +68,11 @@ export class Dispatcher {
         return order.indexOf(type)
     }
 
-    updateReq(v: Partial<ListFilesRequest>) {
+    updateReq(v: Partial<IListFilesReq>) {
         return this.setReq({ ...store._state.req, ...v })
     }
-    private setReq(v: ListFilesRequest) {
-        const navigateToReq = (req: ListFilesRequest) => {
+    private setReq(v: IListFilesReq) {
+        const navigateToReq = (req: IListFilesReq) => {
             console.log("navigateToReq", req)
             const { Path, ...rest } = req
             this.navigate?.({ pathname: `/${pathToUrl(Path)}`, search: reqToQuery(rest) })
@@ -83,7 +86,7 @@ export class Dispatcher {
         navigateToReq(v)
     }
 
-    private useReqSorting(req: ListFilesRequest) {
+    private useReqSorting(req: IListFilesReq) {
         const active: ColumnKey[] = []
         const isDescending: Record<ColumnKey, boolean> = {}
         const cols = req.sort ?? []
@@ -105,28 +108,28 @@ export class Dispatcher {
     }
 
     parseRequest = async (path: string, s: string) => {
-        const req2: ListFilesRequest = queryToReq(s)
+        const req2: IListFilesReq = queryToReq(s)
         const req = { ...req2, Path: path }
         const reqSorting = this.useReqSorting(req)
         store.update({ req, reqSorting, sorting: { ...sortingDefaults, ...reqSorting } })
         await this.reloadFiles()
     }
 
-    private deleteAndRefresh = async (file: FsFile) => {
+    private deleteAndRefresh = async (file: IFile) => {
         if (!file.Path) return
         const fileOrFolder = file.IsFolder ? "folder" : "file"
         if (!window.confirm("Are you sure you wan to delete the " + fileOrFolder + "?\n" + file.Path)) return
-        await api.del({ Path: file.Path })
+        await api.del({ path: file.Path })
         await this.reloadFiles()
     }
 
-    private trashAndRefresh = async (file: FsFile) => {
+    private trashAndRefresh = async (file: IFile) => {
         if (!file.Path) return
-        await api.trash({ Path: file.Path })
+        await api.trash({ path: file.Path })
         await this.reloadFiles()
     }
 
-    deleteOrTrash = async ({ file, isShiftDown }: { file: FsFile; isShiftDown: boolean }) => {
+    deleteOrTrash = async ({ file, isShiftDown }: { file: IFile; isShiftDown: boolean }) => {
         if (isShiftDown) {
             await this.deleteAndRefresh(file)
             return
@@ -134,12 +137,12 @@ export class Dispatcher {
         await this.trashAndRefresh(file)
     }
 
-    explore = async (file: FsFile) => {
+    explore = async (file: IFile) => {
         if (!file?.Path) return
-        await api.explore({ Path: file.Path })
+        await api.explore({ path: file.Path })
     }
 
-    async fetchFiles(req: ListFilesRequest) {
+    async fetchFiles(req: IListFilesReq) {
         const res = await api.listFiles(req)
         store.update({ res })
     }
@@ -154,7 +157,7 @@ export class Dispatcher {
     up = () => {
         store._state.res?.Relatives?.ParentFolder && this.GotoFolder(store._state.res.Relatives.ParentFolder)
     }
-    GotoFolder = (file?: FsFile) => {
+    GotoFolder = (file?: IFile) => {
         if (!file) return
         file.Path && this.GotoPath(file.Path)
     }
@@ -163,7 +166,7 @@ export class Dispatcher {
         this.updateReq({ Path: path })
     }
 
-    Open = async (file: FsFile) => {
+    Open = async (file: IFile) => {
         if (file == null) return
         if (file.IsFolder || file.type == "link") {
             this.GotoFolder(file)
@@ -177,9 +180,9 @@ export class Dispatcher {
         console.info(res)
     }
 
-    private Execute = async (file: FsFile) => {
+    private Execute = async (file: IFile) => {
         if (!file.Path) return
-        await api.execute({ Path: file.Path })
+        await api.execute({ path: file.Path })
     }
 
     orderBy = (column: ColumnKey) => {
@@ -242,7 +245,7 @@ export class Dispatcher {
         if (!file) return
         this.explore(file)
     }
-    _setSelectedFiles = (v: FsFile[]) => {
+    _setSelectedFiles = (v: IFile[]) => {
         if (arrayItemsEqual(v, store._state.selectedFiles)) return
         store.update({ selectedFiles: v })
     }

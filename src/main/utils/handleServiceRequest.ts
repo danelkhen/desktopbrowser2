@@ -1,14 +1,9 @@
 import { RequestHandler } from "express"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function handleServiceRequest(services: any) {
+export function handleServiceRequest(service: any) {
     const x: RequestHandler = async (req, res) => {
-        const serviceName = req.params["service"]
         const action = req.params["action"]
-        const service = services[serviceName]
-        if (service == null) {
-            console.error("No such service by that name:", serviceName)
-        }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let arg: any

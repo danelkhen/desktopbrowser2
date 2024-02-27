@@ -1,9 +1,9 @@
-import { ListFilesRequest } from "../../../shared/FileService"
+import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { urlToSort } from "@renderer/lib/sortToUrl"
 
-export function queryToReq(s: string): ListFilesRequest {
+export function queryToReq(s: string): IListFilesReq {
     const rest = new URLSearchParams(s)
-    const x: ListFilesRequest = {
+    const x: IListFilesReq = {
         foldersFirst: rest.has("foldersFirst") ? true : undefined,
         ByInnerSelection: rest.has("ByInnerSelection") ? true : undefined,
         SearchPattern: rest.get("SearchPattern") ?? undefined,
