@@ -1,9 +1,8 @@
 import { css } from "@emotion/css"
 import { useCallback, useEffect, useState } from "react"
-import { useMatch, useNavigate } from "react-router"
+import { useNavigate } from "react-router"
 import { useLocation } from "react-router-dom"
 import { colors } from "../GlobalStyle"
-import { urlToPath } from "../hooks/urlToPath"
 import { useAppState } from "../hooks/useAppState"
 import { useFilter } from "../hooks/useFilter"
 import { usePaging } from "../hooks/usePaging"
@@ -26,22 +25,22 @@ export function FileBrowser() {
     const navigate = useNavigate()
     dispatcher.navigate = navigate
 
-    const { pathname } = useLocation()
-    const match = useMatch("/*")
-    const reqPath = urlToPath(match?.params["*"] ?? "")
-    console.log("match", match, match?.params["*"] ?? "", reqPath)
-    const p = pathname // useQuery().toString() // get("p") ?? ""
-    console.log({ p })
+    const { pathname, search } = useLocation()
+    // const match = useMatch("/*")
+    // const reqPath = urlToPath(match?.params["*"] ?? "")
+    // console.log("match", match, match?.params["*"] ?? "", reqPath)
+    // const p = pathname // useQuery().toString() // get("p") ?? ""
+    // console.log({ p })
     useEffect(() => {
-        dispatcher.parseRequest(reqPath, p)
-    }, [p, reqPath])
+        dispatcher.parseRequest(pathname, search)
+    }, [pathname, search])
 
     useEffect(() => {
         void dispatcher.fetchAllFilesMetadata()
     }, [])
 
     const { req, res, sorting } = state
-    const [search, setSearch] = useState("")
+    const [search2, setSearch2] = useState("")
     const [path, setPath] = useState("")
     const [theme, setTheme] = useState("dark")
 
@@ -49,7 +48,7 @@ export function FileBrowser() {
 
     const sorted = useSorting(allFiles, sorting)
     const filtered2 = useFilter(req, sorted)
-    const filtered = useSearch(search, filtered2)
+    const filtered = useSearch(search2, filtered2)
     const { paged, nextPage, prevPage, totalPages, pageIndex } = usePaging(filtered, {
         pageSize,
     })
@@ -78,8 +77,8 @@ export function FileBrowser() {
                     setPath={setPath}
                     theme={theme}
                     setTheme={setTheme}
-                    search={search}
-                    setSearch={setSearch}
+                    search={search2}
+                    setSearch={setSearch2}
                     pageIndex={pageIndex}
                     totalPages={totalPages}
                 />
