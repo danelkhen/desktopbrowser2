@@ -1,8 +1,8 @@
-import fs from "fs/promises"
+import { glob } from "glob"
 import Path from "path"
 import { IFile } from "../../shared/IFile"
 import { normalizePath } from "./normalizePath"
-import { toFile3 } from "./toFile2"
+import { toFile2 } from "./toFile2"
 
 export async function getFile({ path }: { path: string }): Promise<IFile | null> {
     const p = normalizePath(path)
@@ -11,7 +11,7 @@ export async function getFile({ path }: { path: string }): Promise<IFile | null>
         return x
     }
     const absPath = Path.posix.resolve(p)
-    const stat = await fs.lstat(absPath).catch(() => null)
+    const res = await glob(absPath, { posix: true, withFileTypes: true, stat: true })
 
-    return toFile3(absPath, stat)
+    return toFile2(res[0])
 }
