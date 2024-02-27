@@ -5,6 +5,7 @@ import * as path from "path"
 import { rimraf } from "rimraf"
 import { IoDrive } from "./IoDrive"
 import { IoFile } from "./IoFile"
+import { glob } from "glob"
 
 export type DirSizeCache = { [path: string]: number }
 
@@ -20,12 +21,12 @@ export const io = {
         }
         let size = 0
         try {
-            const list = await io.getChildren(path)
+            const list = await glob(`${path}/*`, { stat: true, withFileTypes: true })
             for (const item of list) {
-                if (item.isFile && item.Length) {
-                    size += item.Length
-                } else if (item.isDir && item.FullName) {
-                    const dirSize = await io.getSize(item.FullName, cache)
+                if (item.isFile() && item.size !== undefined) {
+                    size += item.size
+                } else if (item.isDirectory() && item.fullpath()) {
+                    const dirSize = await io.getSize(item.fullpath(), cache)
                     size += dirSize
                 }
             }
@@ -42,28 +43,6 @@ export const io = {
         const list = await getDiskInfo()
         const drives = list.map(t => toDriveInfo(t))
         return drives
-    },
-    async getChildren(path2: string): Promise<IoFile[]> {
-        const list = await fse.readdir(path2)
-        const list2: IoFile[] = []
-        for (const t of list) {
-            list2.push(await io.get(path.join(path2, t)))
-        }
-        return list2
-    },
-
-    async getDescendants(path2: string): Promise<IoFile[]> {
-        const list = await io.getChildren(path2)
-        let i = 0
-        while (i < list.length) {
-            const file = list[i]
-            if (file.isDir) {
-                const list2 = await io.getChildren(file.path)
-                list.push(...list2)
-            }
-            i++
-        }
-        return list
     },
 
     async get(path2: string): Promise<IoFile> {
