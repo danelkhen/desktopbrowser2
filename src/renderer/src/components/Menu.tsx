@@ -16,15 +16,19 @@ import { Dropdown } from "./Dropdown"
 import { MenuButton, ToggleMenuButton } from "./MenuButton"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IFile } from "../../../shared/IFile"
+import { Column } from "../../../shared/Column"
+import { SortConfig } from "../hooks/useSorting"
 
 export function Menu({
     req,
     selectedFile,
     dispatcher,
+    sorting,
 }: {
     req: IListFilesReq
     selectedFile?: IFile
     dispatcher: Dispatcher
+    sorting: SortConfig
 }) {
     const Delete = useCallback(
         (e?: React.KeyboardEvent) =>
@@ -33,16 +37,7 @@ export function Menu({
         [dispatcher, selectedFile]
     )
 
-    const {
-        goto,
-        google,
-        subs,
-        Explore,
-        OrderByInnerSelection,
-        isOrderedByInnerSelection,
-        disableSorting,
-        isSortingDisabled,
-    } = dispatcher
+    const { goto, google, subs, Explore, OrderByInnerSelection, disableSorting, isSortingDisabled } = dispatcher
     return (
         <div className={MenuDiv}>
             <div className={ButtonsDiv}>
@@ -76,7 +71,7 @@ export function Menu({
                             <div className="menu">
                                 <ToggleMenuButton
                                     action={OrderByInnerSelection}
-                                    isActive={isOrderedByInnerSelection()}
+                                    isActive={dispatcher.isSortedBy(sorting, Column.hasInnerSelection)}
                                     label="Watched"
                                 />
                                 <ToggleMenuButton

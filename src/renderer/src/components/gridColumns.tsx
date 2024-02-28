@@ -1,14 +1,15 @@
 import { ReactElement } from "react"
-import { FileColumns } from "../services/AppState"
+import { Column } from "../../../shared/Column"
+import { IFile } from "../../../shared/IFile"
 import FileEmptyIcon from "../assets/linearicons/svg/file-empty.svg?react"
 import LayersIcon from "../assets/linearicons/svg/layers.svg?react"
 import LinkIcon from "../assets/linearicons/svg/link.svg?react"
-import { formatFriendlySize } from "../lib/formatFriendlySize"
 import { formatFriendlyDate } from "../lib/formatFriendlyDate"
+import { formatFriendlySize } from "../lib/formatFriendlySize"
 import { dispatcher } from "../services/Dispatcher"
-import { Column } from "../../../shared/Column"
+import { GridColumns } from "./Grid"
 
-export const gridColumns: FileColumns = {
+export const gridColumns: GridColumns<IFile> = {
     type: {
         getter: t => t.type,
         cell: file => (file.type && icons[file.type] && icons[file.type]) || null,

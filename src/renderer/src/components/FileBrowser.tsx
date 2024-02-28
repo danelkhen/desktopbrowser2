@@ -12,7 +12,6 @@ import { useSearch } from "../hooks/useSearch"
 import { useSelection } from "../hooks/useSelection"
 import { SortConfig, useSorting } from "../hooks/useSorting"
 import { queryToReq } from "../lib/queryToReq"
-import { sortingDefaults } from "../services/AppState"
 import { dispatcher } from "../services/Dispatcher"
 import { store } from "../services/store"
 import { AddressBar } from "./AddressBar"
@@ -36,7 +35,6 @@ export function FileBrowser() {
     useEffect(() => {
         store.update({
             req,
-            sorting: { ...sortingDefaults, ...sorting },
         })
         void dispatcher.reloadFiles()
     }, [req, sorting])
@@ -73,7 +71,7 @@ export function FileBrowser() {
         <>
             <header>
                 <div className={navStyle}>
-                    <Menu selectedFile={selectedFile} req={req} dispatcher={dispatcher} />
+                    <Menu selectedFile={selectedFile} req={req} dispatcher={dispatcher} sorting={sorting} />
                     <Clock />
                 </div>
                 <AddressBar
@@ -97,6 +95,7 @@ export function FileBrowser() {
                 setSelectedFiles={setSelectedFiles}
                 columns={gridColumns}
                 files={files}
+                sorting={sorting}
             />
         </>
     )

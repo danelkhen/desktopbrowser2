@@ -15,6 +15,7 @@ import { pathToUrl } from "../lib/pathToUrl"
 import { reqToQuery } from "../lib/reqToQuery"
 import { api } from "./api"
 import { store } from "./store"
+import { SortConfig } from "../hooks/useSorting"
 
 export class Dispatcher {
     navigate?: NavigateFunction
@@ -178,9 +179,9 @@ export class Dispatcher {
         this.updateReq({ sort })
     }
 
-    isSortedBy = (key: ColumnKey, desc?: boolean): boolean => {
-        if (!store._state.sorting.active.includes(key)) return false
-        if (desc !== undefined) return !!store._state.sorting.isDescending[key] === desc
+    isSortedBy = (sorting: SortConfig, key: ColumnKey, desc?: boolean): boolean => {
+        if (!sorting.active.includes(key)) return false
+        if (desc !== undefined) return !!sorting.isDescending[key] === desc
         return true
     }
 
@@ -206,7 +207,7 @@ export class Dispatcher {
         !store._state.req.sort && !store._state.req.foldersFirst && store._state.req.ByInnerSelection == null
 
     OrderByInnerSelection = () => this.orderBy(Column.hasInnerSelection)
-    isOrderedByInnerSelection = () => this.isSortedBy(Column.hasInnerSelection)
+    // isOrderedByInnerSelection = () => this.isSortedBy(Column.hasInnerSelection)
 
     google = () => store._state.res?.File && openInNewWindow(getGoogleSearchLink(store._state.res?.File))
 
