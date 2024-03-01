@@ -1,25 +1,30 @@
 import { BrowserWindow, app, shell } from "electron"
 import { autoUpdater } from "electron-updater"
 import { Api } from "../../shared/Api"
+import { IFileMeta } from "../../shared/IFileMeta"
 import { IListFilesRes } from "../../shared/IListFilesRes"
 import { io } from "../io/io"
-import { appDb } from "../services"
+import { db } from "../services"
 import { getFile } from "./getFile"
 import { getFileRelatives } from "./getFileRelatives"
 import { getFiles } from "./getFiles"
 
 export const api: Api = {
-    async getFileMeta({ key }) {
-        return appDb.files.get(key)
+    getFileMeta({ key }) {
+        return db.files.get(key)
     },
     async getAllFilesMeta() {
-        return appDb.files.getAll()
+        const list: IFileMeta[] = []
+        for await (const [, file] of db.files.iterator()) {
+            list.push(file)
+        }
+        return list
     },
     async saveFileMeta(req) {
-        await appDb.files.set(req)
+        await db.files.put(req.key, req)
     },
     async deleteFileMeta({ key }) {
-        await appDb.files.del(key)
+        await db.files.del(key)
     },
     listFiles: async req => {
         if (!req.path) {

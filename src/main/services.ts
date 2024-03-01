@@ -1,8 +1,10 @@
+import { Level } from "level"
 import path from "path"
-import { AppDb } from "./AppDb"
+import { IFileMeta } from "../shared/IFileMeta"
 import { config } from "./config"
-import { LevelDb } from "./lib/LevelDb"
 
 const database2 = path.join(config.userDataDir, "db.level")
-const levelDb = new LevelDb(database2)
-export const appDb = new AppDb(levelDb)
+export const levelDb = new Level<string, unknown>(database2, { valueEncoding: "json" })
+export const db = {
+    files: levelDb.sublevel<string, IFileMeta>("files", { valueEncoding: "json" }),
+}

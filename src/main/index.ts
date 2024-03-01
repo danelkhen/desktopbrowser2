@@ -10,6 +10,7 @@ import { setupTray } from "./setup/setupTray"
 import { setupWebServer } from "./setup/setupWebServer"
 import { setupDock } from "./setup/setupDock"
 import { setupAutoUpdate } from "./setup/setupAutoUpdate"
+import { migrateDb } from "./migrateDb"
 
 void app.whenReady().then(async () => {
     // Set app user model id for windows
@@ -26,7 +27,7 @@ void app.whenReady().then(async () => {
     // Menu.setApplicationMenu(menu)
 
     setupShortcuts()
-
+    await migrateDb()
     await setupWebServer()
     await setupMainWindow()
     await setupTray()
