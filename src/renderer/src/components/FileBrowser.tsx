@@ -21,6 +21,7 @@ import { ColumnKey } from "./Grid"
 import { Menu } from "./Menu"
 import { QuickFind } from "./QuickFind"
 import { gridColumns } from "./gridColumns"
+import { IFile } from "../../../shared/IFile"
 
 const pageSize = 200
 
@@ -43,7 +44,8 @@ export function FileBrowser() {
         void dispatcher.fetchAllFilesMetadata()
     }, [])
 
-    const { res, filesMd, selectedFiles } = useAppState()
+    const [selectedFiles, _setSelectedFiles] = useState<IFile[]>([])
+    const { res, filesMd } = useAppState()
 
     const [search2, setSearch2] = useState("")
     const [path, setPath] = useState("")
@@ -62,7 +64,7 @@ export function FileBrowser() {
         setPath(req.path ?? "")
     }, [req.path])
 
-    const { setSelectedFiles, selectedFile } = useSelection({ res, selectedFiles, filesMd })
+    const { setSelectedFiles, selectedFile } = useSelection({ res, selectedFiles, filesMd, _setSelectedFiles })
 
     const gotoPath = useCallback(() => dispatcher.GotoPath(path), [path])
 

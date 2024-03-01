@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo } from "react"
 import { sleep } from "../lib/sleep"
 import { dispatcher } from "../services/Dispatcher"
-import { Selection } from "../services/Selection"
+import { Selection } from "../lib/Selection"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { IFile } from "../../../shared/IFile"
 import { IFileMeta } from "../../../shared/IFileMeta"
@@ -11,17 +11,19 @@ export function useSelection({
     filesMd,
     res,
     selectedFiles,
+    _setSelectedFiles,
 }: {
     readonly res: IListFilesRes
     readonly filesMd: { [key: string]: IFileMeta }
     readonly selectedFiles: IFile[]
+    _setSelectedFiles: (v: IFile[]) => void
 }) {
     useEffect(() => {
         const selectedFileName = res.File?.Name ? filesMd?.[res.File.Name]?.selectedFiles?.[0] : null
         const files = res?.Files?.filter(t => t.Name == selectedFileName) ?? []
         const selection = files
-        dispatcher._setSelectedFiles(selection)
-    }, [filesMd, res?.File?.Name, res?.Files])
+        _setSelectedFiles(selection)
+    }, [_setSelectedFiles, filesMd, res.File?.Name, res?.Files])
 
     const setSelectedFiles = useCallback(
         (v: IFile[]) => {
@@ -31,10 +33,10 @@ export function useSelection({
                 void dispatcher.saveSelectedFile(res.File.Name, file?.Name)
             }
             console.log("selectedFiles", v)
-            dispatcher._setSelectedFiles(v)
+            _setSelectedFiles(v)
             void verifySelectionInView()
         },
-        [res?.File?.Name]
+        [_setSelectedFiles, res.File?.Name]
     )
 
     // Keyboard selection

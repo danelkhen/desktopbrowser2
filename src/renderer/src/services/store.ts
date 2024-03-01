@@ -3,7 +3,7 @@ import { AppState, initialAppState } from "./AppState"
 import { Produce } from "../lib/Produce"
 
 class AppStore {
-    constructor(public _state: AppState) {}
+    constructor(public state: AppState) {}
     onChanged = () => {
         this.listeners.forEach(t => t())
     }
@@ -15,14 +15,14 @@ class AppStore {
         }
     }
     getSnapshot = () => {
-        return this._state
+        return this.state
     }
     set(v: AppState | Produce<AppStore>) {
-        store._state = typeof v === "function" ? produce(store._state, v) : v
+        store.state = typeof v === "function" ? produce(store.state, v) : v
         store.onChanged()
     }
     update(v: Partial<AppState>) {
-        const to = { ...store._state, ...v }
+        const to = { ...store.state, ...v }
         this.set(to)
     }
 }

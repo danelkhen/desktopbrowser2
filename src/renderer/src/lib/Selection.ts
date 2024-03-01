@@ -1,4 +1,4 @@
-﻿import { arrayItemsEqual } from "../lib/arrayItemsEqual"
+﻿import { arrayItemsEqual } from "./arrayItemsEqual"
 
 export class Selection<T> {
     constructor(

@@ -6,7 +6,7 @@ import { IFileMeta } from "../../../shared/IFileMeta"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { ColumnKey } from "../components/Grid"
 import { gridColumns } from "../components/gridColumns"
-import { arrayItemsEqual } from "../lib/arrayItemsEqual"
+import { SortConfig } from "../hooks/useSorting"
 import { getGoogleSearchLink } from "../lib/getGoogleSearchLink"
 import { getSubtitleSearchLink } from "../lib/getSubtitleSearchLink"
 import { isExecutable } from "../lib/isExecutable"
@@ -15,7 +15,6 @@ import { pathToUrl } from "../lib/pathToUrl"
 import { reqToQuery } from "../lib/reqToQuery"
 import { api } from "./api"
 import { store } from "./store"
-import { SortConfig } from "../hooks/useSorting"
 
 export class Dispatcher {
     navigate?: NavigateFunction
@@ -30,16 +29,16 @@ export class Dispatcher {
     private async setFileMetadata(value: IFileMeta) {
         if (value.selectedFiles == null || value.selectedFiles.length == 0) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { [value.key]: removed, ...rest } = store._state.filesMd ?? {}
+            const { [value.key]: removed, ...rest } = store.state.filesMd ?? {}
             store.update({ filesMd: rest })
             await api.deleteFileMeta({ key: value.key })
             return
         }
-        store.update({ filesMd: { ...store._state.filesMd, [value.key]: value } })
+        store.update({ filesMd: { ...store.state.filesMd, [value.key]: value } })
         await api.saveFileMeta(value)
     }
     getFileMetadata = (key: string): IFileMeta | null => {
-        const x = store._state.filesMd?.[key]
+        const x = store.state.filesMd?.[key]
         if (!x) return null
         return x
     }
@@ -57,7 +56,7 @@ export class Dispatcher {
     }
 
     hasInnerSelection = (file: IFile) => {
-        return dispatcher.getSavedSelectedFile(file.Name) != null
+        return !!dispatcher.getSavedSelectedFile(file.Name)
     }
 
     getFileTypeOrder(type: string): number {
@@ -66,7 +65,7 @@ export class Dispatcher {
     }
 
     updateReq(v: Partial<IListFilesReq>) {
-        return this.setReq({ ...store._state.req, ...v })
+        return this.setReq({ ...store.state.req, ...v })
     }
     private setReq(v: IListFilesReq) {
         const navigateToReq = (req: IListFilesReq) => {
@@ -74,7 +73,7 @@ export class Dispatcher {
             const { path: Path, ...rest } = req
             this.navigate?.({ pathname: pathToUrl(Path), search: reqToQuery(rest) })
         }
-        const prev = store._state.req
+        const prev = store.state.req
         if (v === prev) return
         const p1 = JSON.stringify(prev)
         const p2 = JSON.stringify(v)
@@ -115,16 +114,16 @@ export class Dispatcher {
         store.update({ res })
     }
     reloadFiles = async () => {
-        if (store._state.req.folderSize) {
-            const req2 = { ...store._state.req, FolderSize: false }
+        if (store.state.req.folderSize) {
+            const req2 = { ...store.state.req, FolderSize: false }
             await this.fetchFiles(req2)
         }
-        await this.fetchFiles(store._state.req)
+        await this.fetchFiles(store.state.req)
     }
 
     up = () => {
-        const parent = store._state.res?.Relatives?.ParentFolder?.Path
-        const current = store._state.req.path
+        const parent = store.state.res?.Relatives?.ParentFolder?.Path
+        const current = store.state.req.path
         if (!parent || current === parent || pathToUrl(current) === pathToUrl(parent)) {
             this.GotoPath("/")
             return
@@ -150,17 +149,13 @@ export class Dispatcher {
         if (prompt && !window.confirm("This is an executable file, are you sure you want to run it?")) {
             return
         }
-        const res = await this.Execute(file)
+        if (!file.Path) return
+        const res = await api.execute({ path: file.Path })
         console.info(res)
     }
 
-    private Execute = async (file: IFile) => {
-        if (!file.Path) return
-        await api.execute({ path: file.Path })
-    }
-
     orderBy = (column: ColumnKey) => {
-        const sort = produce(store._state.req.sort ?? [], sort => {
+        const sort = produce(store.state.req.sort ?? [], sort => {
             const index = sort.findIndex(t => t.Name === column)
             if (index === 0) {
                 if (!!sort[index].Descending === !!gridColumns[column].descendingFirst) {
@@ -187,13 +182,13 @@ export class Dispatcher {
 
     goto = {
         up: () => this.up(),
-        prev: () => this.GotoFolder(store._state.res?.Relatives?.PreviousSibling),
-        next: () => this.GotoFolder(store._state.res?.Relatives?.NextSibling),
+        prev: () => this.GotoFolder(store.state.res?.Relatives?.PreviousSibling),
+        next: () => this.GotoFolder(store.state.res?.Relatives?.NextSibling),
     }
     canGoto = {
-        up: () => store._state.req.path !== "/",
-        prev: () => !!store._state.res?.Relatives?.PreviousSibling,
-        next: () => !!store._state.res?.Relatives?.NextSibling,
+        up: () => store.state.req.path !== "/",
+        prev: () => !!store.state.res?.Relatives?.PreviousSibling,
+        next: () => !!store.state.res?.Relatives?.NextSibling,
     }
 
     disableSorting = () =>
@@ -203,24 +198,24 @@ export class Dispatcher {
             // ByInnerSelection: false,
         })
 
-    isSortingDisabled = () => !store._state.req.sort && !store._state.req.foldersFirst // && store._state.req.ByInnerSelection == null
+    isSortingDisabled = () => !store.state.req.sort && !store.state.req.foldersFirst // && store._state.req.ByInnerSelection == null
 
     OrderByInnerSelection = () => this.orderBy(Column.hasInnerSelection)
 
-    google = () => store._state.res?.File && openInNewWindow(getGoogleSearchLink(store._state.res?.File))
+    google = () => store.state.res?.File && openInNewWindow(getGoogleSearchLink(store.state.res?.File))
 
-    subs = () => store._state.res?.File && openInNewWindow(getSubtitleSearchLink(store._state.res?.File))
+    subs = () => store.state.res?.File && openInNewWindow(getSubtitleSearchLink(store.state.res?.File))
 
-    explore = async () => {
-        console.log(store._state)
-        const file = store._state.selectedFiles[0] ?? store._state.res?.File
+    explore = async (selectedFile: IFile | null) => {
+        console.log(store.state)
+        const file = selectedFile ?? store.state.res?.File
         if (!file) return
         await this.exploreFile(file)
     }
-    _setSelectedFiles = (v: IFile[]) => {
-        if (arrayItemsEqual(v, store._state.selectedFiles)) return
-        store.update({ selectedFiles: v })
-    }
+    // _setSelectedFiles = (v: IFile[]) => {
+    //     if (arrayItemsEqual(v, store.state.selectedFiles)) return
+    //     store.update({ selectedFiles: v })
+    // }
 }
 
 export const dispatcher = new Dispatcher()

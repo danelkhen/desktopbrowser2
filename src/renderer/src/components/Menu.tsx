@@ -55,7 +55,7 @@ export function Menu({
                     />
                     <MenuButton icon={<GoogleIcon />} action={google} label="Google" />
                     <MenuButton icon={<SubtitleIcon />} action={subs} label="Subs" />
-                    <MenuButton icon={<ExploreIcon />} action={explore} label="Explore" />
+                    <MenuButton icon={<ExploreIcon />} action={() => explore(selectedFile ?? null)} label="Explore" />
                     <ToggleMenuButton
                         icon={<NewIcon />}
                         action={() => dispatcher.updateReq({ hideWatched: !req.hideWatched })}
