@@ -5,14 +5,14 @@ import { applyRequest } from "./applyRequest"
 import { listFiles } from "./listFiles"
 
 export async function getFiles(req: IListFilesReq): Promise<IFile[]> {
-    if (req.HideFiles && req.HideFolders) {
+    if (req.hideFiles && req.hideFolders) {
         return []
     }
     let files = await listFiles({
-        path: req.Path ?? "/",
-        recursive: req.IsRecursive,
-        files: !req.HideFiles,
-        folders: !req.HideFolders,
+        path: req.path ?? "/",
+        recursive: req.recursive,
+        files: !req.hideFiles,
+        folders: !req.hideFolders,
     })
     files = await applyRequest(files, req)
     files = applyPaging(files, req)

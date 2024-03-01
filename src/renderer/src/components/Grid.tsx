@@ -1,7 +1,7 @@
 import { css, cx } from "@emotion/css"
 import React, { ReactNode } from "react"
 import { colors } from "../GlobalStyle"
-import { asc, desc, sorted } from "../services/Classes"
+import { c } from "../services/c"
 
 export interface GridColumn<T, V> {
     getter?: (item: T, index: number) => V
@@ -102,11 +102,11 @@ const Table = css`
                 &:hover {
                     background-color: ${colors.bg2};
                 }
-                &.${sorted} {
-                    &.${asc} {
+                &.${c.sorted} {
+                    &.${c.asc} {
                         background-color: ${colors.bg2};
                     }
-                    &.${desc} {
+                    &.${c.desc} {
                         background-color: ${colors.bg3};
                     }
                 }

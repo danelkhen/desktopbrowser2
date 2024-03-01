@@ -47,7 +47,6 @@ export function FileBrowser() {
 
     const [search2, setSearch2] = useState("")
     const [path, setPath] = useState("")
-    const [theme, setTheme] = useState("dark")
 
     const allFiles = res.Files ?? []
 
@@ -60,8 +59,8 @@ export function FileBrowser() {
     const files = paged
 
     useEffect(() => {
-        setPath(req.Path ?? "")
-    }, [req.Path])
+        setPath(req.path ?? "")
+    }, [req.path])
 
     const { setSelectedFiles, selectedFile } = useSelection({ res, selectedFiles, filesMd })
 
@@ -80,8 +79,6 @@ export function FileBrowser() {
                     gotoPath={gotoPath}
                     path={path}
                     setPath={setPath}
-                    theme={theme}
-                    setTheme={setTheme}
                     search={search2}
                     setSearch={setSearch2}
                     pageIndex={pageIndex}
@@ -146,9 +143,9 @@ function getSortConfig(req: IListFilesReq) {
     if (req.foldersFirst && !cols.find(t => t.Name === Column.type)) {
         active.push(Column.type)
     }
-    if (req.ByInnerSelection && !cols.find(t => t.Name === Column.hasInnerSelection)) {
-        active.push(Column.hasInnerSelection)
-    }
+    // if (req.ByInnerSelection && !cols.find(t => t.Name === Column.hasInnerSelection)) {
+    //     active.push(Column.hasInnerSelection)
+    // }
     for (const col of cols ?? []) {
         active.push(col.Name)
         if (col.Descending) {
@@ -162,6 +159,6 @@ function getSortConfig(req: IListFilesReq) {
 
 function parseRequest(path: string, search: string) {
     const req2: IListFilesReq = queryToReq(search)
-    const req: IListFilesReq = { ...req2, Path: path }
+    const req: IListFilesReq = { ...req2, path: path }
     return req
 }

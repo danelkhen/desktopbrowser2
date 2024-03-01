@@ -71,7 +71,7 @@ export class Dispatcher {
     private setReq(v: IListFilesReq) {
         const navigateToReq = (req: IListFilesReq) => {
             console.log("navigateToReq", req)
-            const { Path, ...rest } = req
+            const { path: Path, ...rest } = req
             this.navigate?.({ pathname: pathToUrl(Path), search: reqToQuery(rest) })
         }
         const prev = store._state.req
@@ -105,7 +105,7 @@ export class Dispatcher {
         await this.trashAndRefresh(file)
     }
 
-    explore = async (file: IFile) => {
+    exploreFile = async (file: IFile) => {
         if (!file?.Path) return
         await api.explore({ path: file.Path })
     }
@@ -115,7 +115,7 @@ export class Dispatcher {
         store.update({ res })
     }
     reloadFiles = async () => {
-        if (store._state.req.FolderSize) {
+        if (store._state.req.folderSize) {
             const req2 = { ...store._state.req, FolderSize: false }
             await this.fetchFiles(req2)
         }
@@ -124,7 +124,7 @@ export class Dispatcher {
 
     up = () => {
         const parent = store._state.res?.Relatives?.ParentFolder?.Path
-        const current = store._state.req.Path
+        const current = store._state.req.path
         if (!parent || current === parent || pathToUrl(current) === pathToUrl(parent)) {
             this.GotoPath("/")
             return
@@ -137,7 +137,7 @@ export class Dispatcher {
     }
 
     GotoPath = (path: string) => {
-        this.updateReq({ Path: path })
+        this.updateReq({ path: path })
     }
 
     Open = async (file: IFile) => {
@@ -191,7 +191,7 @@ export class Dispatcher {
         next: () => this.GotoFolder(store._state.res?.Relatives?.NextSibling),
     }
     canGoto = {
-        up: () => store._state.req.Path !== "/",
+        up: () => store._state.req.path !== "/",
         prev: () => !!store._state.res?.Relatives?.PreviousSibling,
         next: () => !!store._state.res?.Relatives?.NextSibling,
     }
@@ -200,24 +200,22 @@ export class Dispatcher {
         this.updateReq({
             sort: undefined,
             foldersFirst: false,
-            ByInnerSelection: false,
+            // ByInnerSelection: false,
         })
 
-    isSortingDisabled = () =>
-        !store._state.req.sort && !store._state.req.foldersFirst && store._state.req.ByInnerSelection == null
+    isSortingDisabled = () => !store._state.req.sort && !store._state.req.foldersFirst // && store._state.req.ByInnerSelection == null
 
     OrderByInnerSelection = () => this.orderBy(Column.hasInnerSelection)
-    // isOrderedByInnerSelection = () => this.isSortedBy(Column.hasInnerSelection)
 
     google = () => store._state.res?.File && openInNewWindow(getGoogleSearchLink(store._state.res?.File))
 
     subs = () => store._state.res?.File && openInNewWindow(getSubtitleSearchLink(store._state.res?.File))
 
-    Explore = async () => {
+    explore = async () => {
         console.log(store._state)
         const file = store._state.selectedFiles[0] ?? store._state.res?.File
         if (!file) return
-        await this.explore(file)
+        await this.exploreFile(file)
     }
     _setSelectedFiles = (v: IFile[]) => {
         if (arrayItemsEqual(v, store._state.selectedFiles)) return

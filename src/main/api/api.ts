@@ -22,14 +22,14 @@ export const api: Api = {
         appDb.files.del(key)
     },
     listFiles: async req => {
-        if (!req.Path) {
+        if (!req.path) {
             throw new Error("Path is required")
         }
-        const file = await getFile({ path: req.Path })
+        const file = await getFile({ path: req.path })
 
         if (file?.IsFolder) {
             const files = await getFiles(req)
-            const relatives = await getFileRelatives(req.Path)
+            const relatives = await getFileRelatives(req.path)
             const res: IListFilesRes = { Relatives: relatives, File: file ?? undefined, Files: files }
             return res
         }

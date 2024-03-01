@@ -37,7 +37,7 @@ export function Menu({
         [dispatcher, selectedFile]
     )
 
-    const { goto, google, subs, Explore, OrderByInnerSelection, disableSorting, isSortingDisabled } = dispatcher
+    const { goto, google, subs, explore, OrderByInnerSelection, disableSorting, isSortingDisabled } = dispatcher
     return (
         <div className={MenuDiv}>
             <div className={ButtonsDiv}>
@@ -49,13 +49,13 @@ export function Menu({
                 <div className={ButtonGroup}>
                     <ToggleMenuButton
                         icon={<FolderIcon />}
-                        action={() => dispatcher.updateReq({ FolderSize: !req.FolderSize })}
-                        isActive={!!req.FolderSize}
+                        action={() => dispatcher.updateReq({ folderSize: !req.folderSize })}
+                        isActive={!!req.folderSize}
                         label="Folder"
                     />
                     <MenuButton icon={<GoogleIcon />} action={google} label="Google" />
                     <MenuButton icon={<SubtitleIcon />} action={subs} label="Subs" />
-                    <MenuButton icon={<ExploreIcon />} action={Explore} label="Explore" />
+                    <MenuButton icon={<ExploreIcon />} action={explore} label="Explore" />
                     <ToggleMenuButton
                         icon={<NewIcon />}
                         action={() => dispatcher.updateReq({ hideWatched: !req.hideWatched })}
@@ -92,28 +92,28 @@ export function Menu({
                         popup={
                             <div className="menu">
                                 <ToggleMenuButton
-                                    action={() => dispatcher.updateReq({ HideFolders: !req.HideFolders })}
-                                    isActive={!!req.HideFolders}
+                                    action={() => dispatcher.updateReq({ hideFolders: !req.hideFolders })}
+                                    isActive={!!req.hideFolders}
                                     label="Hide Folders"
                                 />
                                 <ToggleMenuButton
-                                    action={() => dispatcher.updateReq({ HideFiles: !req.HideFiles })}
-                                    isActive={!!req.HideFiles}
+                                    action={() => dispatcher.updateReq({ hideFiles: !req.hideFiles })}
+                                    isActive={!!req.hideFiles}
                                     label="Hide Files"
                                 />
                                 <ToggleMenuButton
-                                    action={() => dispatcher.updateReq({ IsRecursive: !req.IsRecursive })}
-                                    isActive={!!req.IsRecursive}
+                                    action={() => dispatcher.updateReq({ recursive: !req.recursive })}
+                                    isActive={!!req.recursive}
                                     label="Recursive"
                                 />
                                 <ToggleMenuButton
-                                    action={() => dispatcher.updateReq({ KeepView: !req.KeepView })}
-                                    isActive={!!req.KeepView}
+                                    action={() => dispatcher.updateReq({ keepView: !req.keepView })}
+                                    isActive={!!req.keepView}
                                     label="Keep"
                                 />
                                 <ToggleMenuButton
-                                    action={() => dispatcher.updateReq({ ShowHiddenFiles: !req.ShowHiddenFiles })}
-                                    isActive={!!req.ShowHiddenFiles}
+                                    action={() => dispatcher.updateReq({ hidden: !req.hidden })}
+                                    isActive={!!req.hidden}
                                     label="Hidden"
                                 />
                             </div>

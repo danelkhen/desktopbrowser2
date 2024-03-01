@@ -3,10 +3,8 @@ import { css } from "@emotion/css"
 export interface AddressBarProps {
     path: string
     search: string
-    theme: string
     pageIndex: number
     totalPages: number | null
-    setTheme(theme: string, remember?: boolean): void
     setPath(v: string): void
     setSearch(v: string): void
     gotoPath(): void
@@ -18,8 +16,6 @@ export function AddressBar({
     gotoPath,
     path,
     search,
-    theme,
-    setTheme,
     setPath,
     setSearch,
     prevPage,
@@ -67,10 +63,6 @@ export function AddressBar({
                         placeholder="Find Something"
                     />
                 </span>
-                <select id="ddThemes" className="form-control" value={theme} onChange={e => setTheme(e.target.value)}>
-                    <option value="light">light</option>
-                    <option value="dark">dark</option>
-                </select>
             </div>
         </div>
     )

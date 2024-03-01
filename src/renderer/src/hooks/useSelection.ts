@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo } from "react"
 import { sleep } from "../lib/sleep"
-import { Selected } from "../services/Classes"
 import { dispatcher } from "../services/Dispatcher"
 import { Selection } from "../services/Selection"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { IFile } from "../../../shared/IFile"
 import { IFileMeta } from "../../../shared/IFileMeta"
+import { c } from "../services/c"
 
 export function useSelection({
     filesMd,
@@ -47,7 +47,7 @@ export function useSelection({
             if (target.matches("input:not(#tbQuickFind),select")) return
             ;(document.querySelector("#tbQuickFind") as HTMLElement).focus()
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            setSelectedFiles(selection.KeyDown(e as any))
+            setSelectedFiles(selection.keyDown(e as any))
             if (e.defaultPrevented) return
             if (e.key == "Enter") {
                 const file = selectedFile
@@ -74,7 +74,7 @@ export function useSelection({
 
 async function verifySelectionInView() {
     await sleep(10)
-    const el = document.querySelector(`.${Selected}`) as HTMLElement
+    const el = document.querySelector(`.${c.Selected}`) as HTMLElement
     if (el == null) return
     const container = document.body
     const containerHeight = container.clientHeight - 100

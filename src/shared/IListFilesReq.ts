@@ -1,23 +1,22 @@
 import { SortColumn } from "./SortColumn"
-import { SortRequest } from "./SortRequest"
 
 export interface IListFilesReq {
     readonly sort?: SortColumn[]
     readonly foldersFirst?: boolean
-    readonly ByInnerSelection?: boolean
+    // readonly ByInnerSelection?: boolean
     readonly SearchPattern?: string
-    readonly IsRecursive?: boolean
-    readonly FolderSize?: boolean
-    readonly HideFolders?: boolean
-    readonly HideFiles?: boolean
-    readonly Path?: string
-    readonly Sort?: SortRequest
-    readonly ShowHiddenFiles?: boolean
-    readonly NoCache?: boolean
-    readonly View?: string
+    readonly recursive?: boolean
+    readonly folderSize?: boolean
+    readonly hideFolders?: boolean
+    readonly hideFiles?: boolean
+    readonly path?: string
+    // readonly Sort?: SortRequest
+    readonly hidden?: boolean
+    readonly noCache?: boolean
+    readonly view?: string
     readonly hideWatched?: boolean
     // TODO:
-    readonly KeepView?: boolean
+    readonly keepView?: boolean
     readonly skip?: number
     readonly take?: number
 }

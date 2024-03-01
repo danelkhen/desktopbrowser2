@@ -2,10 +2,10 @@ import { css, cx } from "@emotion/css"
 import React, { useCallback } from "react"
 import { IFile } from "../../../shared/IFile"
 import { SortConfig } from "../hooks/useSorting"
-import { Classes, FileRow, HasInnerSelection, IsFolder, Selected } from "../services/Classes"
 import { dispatcher } from "../services/Dispatcher"
 import { Selection } from "../services/Selection"
-import { ColumnKey, Grid, GridColumns } from "./Grid"
+import { c } from "../services/c"
+import { Grid, GridColumns } from "./Grid"
 import { visibleGridColumns } from "./gridColumns"
 
 export function Files({
@@ -26,7 +26,7 @@ export function Files({
     const onItemMouseDown = useCallback(
         (e: React.MouseEvent, file: IFile) => {
             const selection = new Selection(allFiles, selectedFiles)
-            const selectedItems = selection.Click(file, e.ctrlKey, e.shiftKey)
+            const selectedItems = selection.click(file, e.ctrlKey, e.shiftKey)
             setSelectedFiles(selectedItems)
         },
         [allFiles, selectedFiles, setSelectedFiles]
@@ -50,44 +50,31 @@ export function Files({
         void dispatcher.Open(file)
     }, [])
 
-    const getRowClass = (file: IFile) => {
-        const s = cx(
-            FileRow,
-            file.IsFolder && IsFolder,
-            dispatcher.hasInnerSelection(file) && HasInnerSelection,
-            selectedFiles.includes(file) && Selected
-        )
-        return s
-        // const s = `${FileRow} ${file.IsFolder ? IsFolder : IsFile} ${
-        //     dispatcher.hasInnerSelection(file) && HasInnerSelection
-        // } ${selectedFiles.includes(file) && Selected}`
-        // return s
-    }
-
-    const getHeaderClass = useCallback(
-        (column: ColumnKey) => {
-            const { sorted, asc, desc } = Classes
-            return cx(
-                column,
-                dispatcher.isSortedBy(sorting, column) && sorted,
-                dispatcher.isSortedBy(sorting, column, false) && asc,
-                dispatcher.isSortedBy(sorting, column, true) && desc
-            )
-        },
-        [sorting]
-    )
-
     return (
         <Grid<IFile>
             className={GrdFiles}
             items={files}
-            getHeaderClass={getHeaderClass}
+            getHeaderClass={col =>
+                cx(
+                    col,
+                    dispatcher.isSortedBy(sorting, col) && c.sorted,
+                    dispatcher.isSortedBy(sorting, col, false) && c.asc,
+                    dispatcher.isSortedBy(sorting, col, true) && c.desc
+                )
+            }
             orderBy={dispatcher.orderBy}
             onItemMouseDown={onItemMouseDown}
             onItemClick={onItemClick}
             onItemDoubleClick={onItemDoubleClick}
-            getRowClass={getRowClass}
-            getCellClass={column => column}
+            getRowClass={file => {
+                const s = cx(
+                    c.FileRow,
+                    file.IsFolder && c.IsFolder,
+                    dispatcher.hasInnerSelection(file) && c.HasInnerSelection,
+                    selectedFiles.includes(file) && c.Selected
+                )
+                return s
+            }}
             columns={columns}
             visibleColumns={visibleGridColumns}
         />

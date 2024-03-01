@@ -1,14 +1,14 @@
 import { css } from "@emotion/css"
 
-export const IsFolder = "IsFolder"
-export const IsFile = "IsFile"
-export const HasInnerSelection = "HasInnerSelection"
-export const Selected = "Selected"
-export const sorted = "sorted"
-export const asc = "asc"
-export const desc = "desc"
+const IsFolder = "IsFolder"
+const IsFile = "IsFile"
+const HasInnerSelection = "HasInnerSelection"
+const Selected = "Selected"
+const sorted = "sorted"
+const asc = "asc"
+const desc = "desc"
 
-export const FileRow = css`
+const FileRow = css`
     label: FileRow;
     transition: all 0.3s ease;
     color: #999;
@@ -34,7 +34,7 @@ export const FileRow = css`
     }
 `
 
-export const Classes = {
+export const c = {
     FileRow,
     IsFolder,
     IsFile,

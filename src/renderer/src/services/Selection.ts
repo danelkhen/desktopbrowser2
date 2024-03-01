@@ -1,5 +1,4 @@
 ﻿import { arrayItemsEqual } from "../lib/arrayItemsEqual"
-import { Keys } from "../lib/Keys"
 
 export class Selection<T> {
     constructor(
@@ -7,7 +6,7 @@ export class Selection<T> {
         public readonly SelectedItems: T[]
     ) {}
 
-    Toggle(list: T[], item: T): void {
+    toggle(list: T[], item: T): void {
         const index = list.indexOf(item)
         if (index < 0) list.push(item)
         else list.splice(index, 1)
@@ -17,12 +16,12 @@ export class Selection<T> {
         return this.SelectedItems[this.SelectedItems.length - 1]
     }
 
-    Click(item: T, ctrl: boolean, shift: boolean): T[] {
+    click(item: T, ctrl: boolean, shift: boolean): T[] {
         let sel = [...this.SelectedItems]
         const anchor = this.SelectedItems[0]
 
         if (ctrl) {
-            this.Toggle(sel, item)
+            this.toggle(sel, item)
         } else if (shift && anchor != null) {
             const index1 = this.AllItems.indexOf(anchor)
             const index2 = this.AllItems.indexOf(item)
@@ -40,42 +39,42 @@ export class Selection<T> {
         }
         return sel
     }
-    KeyDown(e: KeyboardEvent): T[] {
-        const keyCode = e.keyCode
+    keyDown(e: KeyboardEvent): T[] {
+        console.log(e)
+        const keyCode = e.key
         const ctrl = e.ctrlKey
-        // var sel = this.SelectedItems.toArray();
         const lastActive = this.selectedItem
         if (lastActive == null) {
-            if (this.AllItems.length > 0 && [Keys.Down, Keys.Up, Keys.PageDown, Keys.PageUp].includes(keyCode)) {
-                this.SetSelection([this.AllItems[0]])
+            if (this.AllItems.length > 0 && ["ArrowDown", "ArrowUp", "PageDown", "PageUp"].includes(keyCode)) {
+                this.set([this.AllItems[0]])
                 e.preventDefault()
             }
             return this.SelectedItems
         }
         let offset = 0
-        if (keyCode == Keys.Down) offset = 1
-        else if (keyCode == Keys.Up) offset = -1
-        else if (keyCode == Keys.PageDown) offset = this.AllItems.length
-        else if (keyCode == Keys.PageUp) offset = this.AllItems.length * -1
-        const sibling = GetSiblingOrEdge(this.AllItems, lastActive, offset)
+        if (keyCode === "ArrowDown") offset = 1
+        else if (keyCode === "ArrowUp") offset = -1
+        else if (keyCode === "PageDown") offset = this.AllItems.length
+        else if (keyCode === "PageUp") offset = this.AllItems.length * -1
+        const sibling = getSiblingOrEdge(this.AllItems, lastActive, offset)
         if (sibling == null || sibling === lastActive) {
             return this.SelectedItems
         }
 
         e.preventDefault()
         if (ctrl) {
-            return this.AddToSelection(sibling)
+            return this.add(sibling)
         }
-        return this.SetSelection([sibling])
+        return this.set([sibling])
     }
 
-    AddToSelection(item: T): T[] {
+    add(item: T): T[] {
         if (this.SelectedItems.includes(item)) return this.SelectedItems
         const sel = [...this.SelectedItems]
         sel.push(item)
-        return this.SetSelection(sel)
+        return this.set(sel)
     }
-    SetSelection(sel: T[]): T[] {
+    set(sel: T[]): T[] {
         if (arrayItemsEqual(sel, this.SelectedItems) || sel == this.SelectedItems) {
             return this.SelectedItems
         }
@@ -83,12 +82,7 @@ export class Selection<T> {
     }
 }
 
-export interface SelectionChangedEventArgs<T> {
-    From: T[]
-    To: T[]
-}
-
-function GetSiblingOrEdge<T>(list: T[], item: T, offset: number): T {
+function getSiblingOrEdge<T>(list: T[], item: T, offset: number): T {
     if (offset == null || offset == 0) return item
     let index = list.indexOf(item)
     const newIndex = (index += offset)
