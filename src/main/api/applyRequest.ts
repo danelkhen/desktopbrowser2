@@ -13,11 +13,11 @@ export async function applyRequest(files: IFile[], req: IListFilesReq): Promise<
     if (req.hideFiles) {
         files = files.filter(t => t.IsFolder)
     }
-    if (req.Sort != null && req.Sort.Columns != null) {
+    if (req.sort?.length) {
         files = _.orderBy(
             files,
-            req.Sort.Columns.map(t => t.Name),
-            req.Sort.Columns.map(t => (t.Descending ? "desc" : "asc"))
+            req.sort.map(t => t.Name),
+            req.sort.map(t => (t.Descending ? "desc" : "asc"))
         )
     }
     if (req.folderSize && !req.hideFolders) {

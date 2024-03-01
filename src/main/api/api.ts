@@ -16,10 +16,10 @@ export const api: Api = {
         return appDb.files.getAll()
     },
     async saveFileMeta(req) {
-        appDb.files.set(req)
+        await appDb.files.set(req)
     },
     async deleteFileMeta({ key }) {
-        appDb.files.del(key)
+        await appDb.files.del(key)
     },
     listFiles: async req => {
         if (!req.path) {
@@ -29,11 +29,17 @@ export const api: Api = {
 
         if (file?.IsFolder) {
             const files = await getFiles(req)
-            const relatives = await getFileRelatives(req.path)
-            const res: IListFilesRes = { Relatives: relatives, File: file ?? undefined, Files: files }
+            const { NextSibling, ParentFolder, PreviousSibling } = await getFileRelatives(req.path)
+            const res: IListFilesRes = {
+                File: file ?? undefined,
+                Files: files,
+                NextSibling,
+                ParentFolder,
+                PreviousSibling,
+            }
             return res
         }
-        const res: IListFilesRes = { File: file ?? undefined, Relatives: {} }
+        const res: IListFilesRes = { File: file ?? undefined }
         return res
     },
     execute: async req => {

@@ -122,7 +122,7 @@ export class Dispatcher {
     }
 
     up = () => {
-        const parent = store.state.res?.Relatives?.ParentFolder?.Path
+        const parent = store.state.res?.ParentFolder?.Path
         const current = store.state.req.path
         if (!parent || current === parent || pathToUrl(current) === pathToUrl(parent)) {
             this.GotoPath("/")
@@ -182,13 +182,13 @@ export class Dispatcher {
 
     goto = {
         up: () => this.up(),
-        prev: () => this.GotoFolder(store.state.res?.Relatives?.PreviousSibling),
-        next: () => this.GotoFolder(store.state.res?.Relatives?.NextSibling),
+        prev: () => this.GotoFolder(store.state.res?.PreviousSibling),
+        next: () => this.GotoFolder(store.state.res?.NextSibling),
     }
     canGoto = {
         up: () => store.state.req.path !== "/",
-        prev: () => !!store.state.res?.Relatives?.PreviousSibling,
-        next: () => !!store.state.res?.Relatives?.NextSibling,
+        prev: () => !!store.state.res?.PreviousSibling,
+        next: () => !!store.state.res?.NextSibling,
     }
 
     disableSorting = () =>

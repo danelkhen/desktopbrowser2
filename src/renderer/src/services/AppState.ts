@@ -9,7 +9,7 @@ export interface AppState {
 }
 
 export const initialAppState: AppState = {
-    res: { Relatives: {} },
+    res: {},
     req: {},
     filesMd: {},
 }
