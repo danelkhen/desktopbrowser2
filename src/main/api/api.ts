@@ -31,15 +31,15 @@ export const api: Api = {
             const files = await getFiles(req)
             const { NextSibling, ParentFolder, PreviousSibling } = await getFileRelatives(req.path)
             const res: IListFilesRes = {
-                File: file ?? undefined,
-                Files: files,
-                NextSibling,
-                ParentFolder,
-                PreviousSibling,
+                file: file ?? undefined,
+                files: files,
+                next: NextSibling,
+                parent: ParentFolder,
+                prev: PreviousSibling,
             }
             return res
         }
-        const res: IListFilesRes = { File: file ?? undefined }
+        const res: IListFilesRes = { file: file ?? undefined }
         return res
     },
     execute: async req => {

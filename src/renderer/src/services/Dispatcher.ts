@@ -122,7 +122,7 @@ export class Dispatcher {
     }
 
     up = () => {
-        const parent = store.state.res?.ParentFolder?.Path
+        const parent = store.state.res?.parent?.Path
         const current = store.state.req.path
         if (!parent || current === parent || pathToUrl(current) === pathToUrl(parent)) {
             this.GotoPath("/")
@@ -182,13 +182,13 @@ export class Dispatcher {
 
     goto = {
         up: () => this.up(),
-        prev: () => this.GotoFolder(store.state.res?.PreviousSibling),
-        next: () => this.GotoFolder(store.state.res?.NextSibling),
+        prev: () => this.GotoFolder(store.state.res?.prev),
+        next: () => this.GotoFolder(store.state.res?.next),
     }
     canGoto = {
         up: () => store.state.req.path !== "/",
-        prev: () => !!store.state.res?.PreviousSibling,
-        next: () => !!store.state.res?.NextSibling,
+        prev: () => !!store.state.res?.prev,
+        next: () => !!store.state.res?.next,
     }
 
     disableSorting = () =>
@@ -202,13 +202,13 @@ export class Dispatcher {
 
     OrderByInnerSelection = () => this.orderBy(Column.hasInnerSelection)
 
-    google = () => store.state.res?.File && openInNewWindow(getGoogleSearchLink(store.state.res?.File))
+    google = () => store.state.res?.file && openInNewWindow(getGoogleSearchLink(store.state.res?.file))
 
-    subs = () => store.state.res?.File && openInNewWindow(getSubtitleSearchLink(store.state.res?.File))
+    subs = () => store.state.res?.file && openInNewWindow(getSubtitleSearchLink(store.state.res?.file))
 
     explore = async (selectedFile: IFile | null) => {
         console.log(store.state)
-        const file = selectedFile ?? store.state.res?.File
+        const file = selectedFile ?? store.state.res?.file
         if (!file) return
         await this.exploreFile(file)
     }

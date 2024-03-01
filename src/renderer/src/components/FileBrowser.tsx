@@ -50,7 +50,7 @@ export function FileBrowser() {
     const [search2, setSearch2] = useState("")
     const [path, setPath] = useState("")
 
-    const allFiles = res.Files ?? []
+    const allFiles = res.files ?? []
 
     const sorted = useSorting(allFiles, sorting)
     const filtered2 = useFilter(req, sorted)

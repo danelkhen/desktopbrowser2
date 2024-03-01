@@ -6,7 +6,7 @@ export function queryToReq(s: string): IListFilesReq {
     const x: IListFilesReq = {
         foldersFirst: rest.has("foldersFirst") ? true : undefined,
         // ByInnerSelection: rest.has("ByInnerSelection") ? true : undefined,
-        SearchPattern: rest.get("SearchPattern") ?? undefined,
+        searchPattern: rest.get("SearchPattern") ?? undefined,
         recursive: rest.has("IsRecursive") ? true : undefined,
         folderSize: rest.has("FolderSize") ? true : undefined,
         hideFolders: rest.has("HideFolders") ? true : undefined,

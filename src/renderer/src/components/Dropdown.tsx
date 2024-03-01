@@ -1,7 +1,6 @@
 import { css, cx } from "@emotion/css"
 import React, {
     ReactComponentElement,
-    ReactElement,
     ReactNode,
     useCallback,
     useEffect,
@@ -12,9 +11,6 @@ import React, {
 import { createPortal } from "react-dom"
 import { colors } from "../GlobalStyle"
 
-export interface DropdownProps {
-    children: [ReactComponentElement<"button">, ReactElement]
-}
 export function Dropdown({ toggler, popup }: { toggler: ReactComponentElement<"button">; popup: ReactNode }) {
     const [show, setShow] = useState(false)
     const [ignore, setIgnore] = useState(false)
@@ -87,6 +83,10 @@ const popupStyle = css`
     top: 40px;
     z-index: 10000;
     left: 0;
+    .menu {
+        display: flex;
+        flex-direction: column;
+    }
 `
 const DropdownDiv = css`
     display: flex;

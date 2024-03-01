@@ -6,7 +6,7 @@ export function reqToQuery(rest: IListFilesReq) {
     const obj = {
         foldersFirst: rest.foldersFirst ? "" : undefined,
         // ByInnerSelection: rest.ByInnerSelection ? "" : undefined,
-        SearchPattern: rest.SearchPattern ? rest.SearchPattern : undefined,
+        SearchPattern: rest.searchPattern ? rest.searchPattern : undefined,
         IsRecursive: rest.recursive ? "" : undefined,
         FolderSize: rest.folderSize ? "" : undefined,
         HideFolders: rest.hideFolders ? "" : undefined,

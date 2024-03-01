@@ -19,31 +19,31 @@ export function useSelection({
     _setSelectedFiles: (v: IFile[]) => void
 }) {
     useEffect(() => {
-        const selectedFileName = res.File?.Name ? filesMd?.[res.File.Name]?.selectedFiles?.[0] : null
-        const files = res?.Files?.filter(t => t.Name == selectedFileName) ?? []
+        const selectedFileName = res.file?.Name ? filesMd?.[res.file.Name]?.selectedFiles?.[0] : null
+        const files = res?.files?.filter(t => t.Name == selectedFileName) ?? []
         const selection = files
         _setSelectedFiles(selection)
-    }, [_setSelectedFiles, filesMd, res.File?.Name, res?.Files])
+    }, [_setSelectedFiles, filesMd, res.file?.Name, res?.files])
 
     const setSelectedFiles = useCallback(
         (v: IFile[]) => {
             const file = v[v.length - 1]
-            if (res?.File?.Name) {
-                console.log("saveSelectionAndSetSelectedItems", res.File.Name, file?.Name)
-                void dispatcher.saveSelectedFile(res.File.Name, file?.Name)
+            if (res?.file?.Name) {
+                console.log("saveSelectionAndSetSelectedItems", res.file.Name, file?.Name)
+                void dispatcher.saveSelectedFile(res.file.Name, file?.Name)
             }
             console.log("selectedFiles", v)
             _setSelectedFiles(v)
             void verifySelectionInView()
         },
-        [_setSelectedFiles, res.File?.Name]
+        [_setSelectedFiles, res.file?.Name]
     )
 
     // Keyboard selection
     useEffect(() => {
         function Win_keydown(e: KeyboardEvent): void {
             if (e.defaultPrevented) return
-            const selection = new Selection<IFile>(res?.Files ?? [], selectedFiles)
+            const selection = new Selection<IFile>(res?.files ?? [], selectedFiles)
             const selectedFile = selection.selectedItem
             const target = e.target as HTMLElement
             if (target.matches("input:not(#tbQuickFind),select")) return
