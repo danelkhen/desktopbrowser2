@@ -1,10 +1,10 @@
-import { glob } from "glob"
-import Path from "path"
+import { glob, Path } from "glob"
+import path3 from "path"
 import { IFile } from "../../shared/IFile"
 import { isWindows } from "../lib/isWindows"
 import { getHomeFiles } from "./getHomeFiles"
 import { normalizePath } from "./normalizePath"
-import { toFile2 } from "./toFile2"
+import { globPathToFile } from "./toFile2"
 
 export async function listFiles({
     path,
@@ -27,13 +27,13 @@ export async function listFiles({
     } else if (!files && !folders) {
         return []
     }
-    const path2 = Path.posix.resolve(path)
-    const res = await glob(`${path2}${g}${foldersOnlySuffix}`, {
+    const path2 = path3.posix.resolve(path)
+    const res = (await glob(`${path2}${g}${foldersOnlySuffix}`, {
         stat: true,
         withFileTypes: true,
         nodir,
         posix: true,
-    })
-    const files2 = res.map(t => toFile2(t))
+    })) as Path[]
+    const files2 = res.map(t => globPathToFile(t))
     return files2
 }

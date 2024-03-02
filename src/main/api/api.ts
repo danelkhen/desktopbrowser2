@@ -8,6 +8,7 @@ import { db } from "../services"
 import { getFile } from "./getFile"
 import { getFileRelatives } from "./getFileRelatives"
 import { getFiles } from "./getFiles"
+import { toCurrentPlatformPath } from "./toCurrentPlatformPath"
 
 export const api: Api = {
     getFileMeta({ key }) {
@@ -15,8 +16,8 @@ export const api: Api = {
     },
     async getAllFilesMeta() {
         const list: IFileMeta[] = []
-        for await (const [, file] of db.files.iterator()) {
-            list.push(file)
+        for await (const [key, file] of db.files.iterator()) {
+            list.push({ ...file, key })
         }
         return list
     },
@@ -48,12 +49,12 @@ export const api: Api = {
         return res
     },
     execute: async req => {
-        const filename = req.path
+        const filename = toCurrentPlatformPath(req.path)
         await shell.openExternal(filename)
     },
     explore: async req => {
         console.log("shell.showItemInFolder", req.path)
-        await shell.showItemInFolder(req.path)
+        await shell.showItemInFolder(toCurrentPlatformPath(req.path))
     },
     del: async req => {
         const path = req.path
