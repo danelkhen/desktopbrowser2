@@ -57,7 +57,7 @@ export const api: Api = {
         await shell.showItemInFolder(toCurrentPlatformPath(req.path))
     },
     del: async req => {
-        const path = req.path
+        const path = toCurrentPlatformPath(req.path)
         if (await io.fileExists(path)) {
             await io.delete(path)
             return
@@ -71,7 +71,7 @@ export const api: Api = {
         }
     },
     trash: async req => {
-        const path = req.path
+        const path = toCurrentPlatformPath(req.path)
         console.log("trash", path)
         await shell.trashItem(path)
     },
