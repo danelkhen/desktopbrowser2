@@ -9,6 +9,7 @@ import { getFile } from "./getFile"
 import { getFileRelatives } from "./getFileRelatives"
 import { getFiles } from "./getFiles"
 import { toCurrentPlatformPath } from "./toCurrentPlatformPath"
+import log from "electron-log/main"
 
 export const api: Api = {
     getFileMeta({ key }) {
@@ -50,11 +51,13 @@ export const api: Api = {
     },
     execute: async req => {
         const filename = toCurrentPlatformPath(req.path)
+        log.log("shell.openExternal", req.path, filename)
         await shell.openExternal(filename)
     },
     explore: async req => {
-        console.log("shell.showItemInFolder", req.path)
-        await shell.showItemInFolder(toCurrentPlatformPath(req.path))
+        const p = toCurrentPlatformPath(req.path)
+        log.log("shell.showItemInFolder", req.path, p)
+        await shell.showItemInFolder(p)
     },
     del: async req => {
         const path = toCurrentPlatformPath(req.path)
@@ -72,7 +75,7 @@ export const api: Api = {
     },
     trash: async req => {
         const path = toCurrentPlatformPath(req.path)
-        console.log("trash", path)
+        log.log("trash", req.path, path)
         await shell.trashItem(path)
     },
 
