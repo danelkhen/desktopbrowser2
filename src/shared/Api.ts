@@ -8,7 +8,7 @@ export interface Api {
     getAllFilesMeta(): Promise<IFileMeta[]>
     getFileMeta(req: { key: string }): Promise<IFileMeta>
     listFiles(req: IListFilesReq): Promise<IListFilesRes>
-    execute(req: { path: string }): void
+    execute(req: { path: string; vlc?: boolean }): void
     explore(req: { path: string }): void
     del(req: { path: string }): Promise<void>
     trash(req: { path: string }): Promise<void>

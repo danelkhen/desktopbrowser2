@@ -10,6 +10,7 @@ import { getFileRelatives } from "./getFileRelatives"
 import { getFiles } from "./getFiles"
 import { toCurrentPlatformPath } from "./toCurrentPlatformPath"
 import log from "electron-log/main"
+import { vlcPlay } from "../lib/vlc"
 
 export const api: Api = {
     getFileMeta({ key }) {
@@ -51,6 +52,11 @@ export const api: Api = {
     },
     execute: async req => {
         const filename = toCurrentPlatformPath(req.path)
+        if (req.vlc) {
+            log.log("vlcPlay", req.path, filename)
+            await vlcPlay(filename)
+            return
+        }
         log.log("shell.openExternal", req.path, filename)
         await shell.openExternal(filename)
     },

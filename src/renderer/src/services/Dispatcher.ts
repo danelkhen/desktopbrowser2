@@ -150,7 +150,7 @@ export class Dispatcher {
             return
         }
         if (!file.Path) return
-        const res = await api.execute({ path: file.Path })
+        const res = await api.execute({ path: file.Path, vlc: new URLSearchParams(location.search).has("vlc") })
         console.info(res)
     }
 
