@@ -1,17 +1,5 @@
 import { css } from "@emotion/css"
 
-export interface AddressBarProps {
-    path: string
-    search: string
-    pageIndex: number
-    totalPages: number | null
-    setPath(v: string): void
-    setSearch(v: string): void
-    gotoPath(): void
-    prevPage(): void
-    nextPage(): void
-}
-
 export function AddressBar({
     gotoPath,
     path,
@@ -22,7 +10,17 @@ export function AddressBar({
     nextPage,
     pageIndex,
     totalPages,
-}: AddressBarProps) {
+}: {
+    path: string
+    search: string
+    pageIndex: number
+    totalPages: number | null
+    setPath(v: string): void
+    setSearch(v: string): void
+    gotoPath(): void
+    prevPage(): void
+    nextPage(): void
+}) {
     return (
         <div className={style}>
             <form onSubmit={gotoPath}>

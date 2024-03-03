@@ -1,17 +1,9 @@
 import { css, cx } from "@emotion/css"
-import React, {
-    ReactComponentElement,
-    ReactNode,
-    useCallback,
-    useEffect,
-    useLayoutEffect,
-    useRef,
-    useState,
-} from "react"
+import React, { ReactElement, ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { colors } from "../GlobalStyle"
 
-export function Dropdown({ toggler, popup }: { toggler: ReactComponentElement<"button">; popup: ReactNode }) {
+export function Dropdown({ toggler, popup }: { toggler: ReactElement<HTMLButtonElement>; popup: ReactNode }) {
     const [show, setShow] = useState(false)
     const [ignore, setIgnore] = useState(false)
 
