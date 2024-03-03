@@ -1,5 +1,8 @@
 import { css } from "@emotion/css"
 import React, { useCallback } from "react"
+import { Column } from "../../../shared/Column"
+import { IFile } from "../../../shared/IFile"
+import { IListFilesReq } from "../../../shared/IListFilesReq"
 import ExploreIcon from "../assets/icons/explore.svg?react"
 import FolderIcon from "../assets/icons/folder.svg?react"
 import GoogleIcon from "../assets/icons/google.svg?react"
@@ -11,21 +14,21 @@ import SortIcon from "../assets/icons/sort.svg?react"
 import SubtitleIcon from "../assets/icons/subtitle.svg?react"
 import TrashIcon from "../assets/icons/trash.svg?react"
 import UpIcon from "../assets/icons/up.svg?react"
+import { SortConfig } from "../hooks/useSorting"
 import { Dispatcher } from "../services/Dispatcher"
 import { Dropdown } from "./Dropdown"
 import { MenuButton, ToggleMenuButton } from "./MenuButton"
-import { IListFilesReq } from "../../../shared/IListFilesReq"
-import { IFile } from "../../../shared/IFile"
-import { Column } from "../../../shared/Column"
-import { SortConfig } from "../hooks/useSorting"
+import { IListFilesRes } from "../../../shared/IListFilesRes"
 
 export function Menu({
     req,
     selectedFile,
     dispatcher,
     sorting,
+    res,
 }: {
     req: IListFilesReq
+    res: IListFilesRes
     selectedFile?: IFile
     dispatcher: Dispatcher
     sorting: SortConfig
@@ -37,90 +40,105 @@ export function Menu({
         [dispatcher, selectedFile]
     )
 
-    const { goto, google, subs, explore, OrderByInnerSelection, disableSorting, isSortingDisabled } = dispatcher
+    const contextFile = selectedFile ?? res.file ?? null
+    const { goto, google, subs, exploreFile, OrderByInnerSelection, updateReq } = dispatcher
     return (
         <div className={MenuDiv}>
             <div className={ButtonsDiv}>
                 <div className={ButtonGroup}>
-                    <MenuButton icon={<UpIcon />} action={goto.up} label="Up" />
-                    <MenuButton icon={<PrevIcon />} action={goto.prev} label="Prev" />
-                    <MenuButton icon={<NextIcon />} action={goto.next} label="Next" />
+                    <MenuButton icon={<UpIcon />} action={goto.up}>
+                        Up
+                    </MenuButton>
+                    <MenuButton icon={<PrevIcon />} action={goto.prev}>
+                        Prev
+                    </MenuButton>
+                    <MenuButton icon={<NextIcon />} action={goto.next}>
+                        Next
+                    </MenuButton>
                 </div>
                 <div className={ButtonGroup}>
                     <ToggleMenuButton
                         icon={<FolderIcon />}
-                        action={() => dispatcher.updateReq({ folderSize: !req.folderSize })}
+                        action={() => updateReq({ folderSize: !req.folderSize })}
                         isActive={!!req.folderSize}
-                        label="Folder"
-                    />
-                    <MenuButton icon={<GoogleIcon />} action={google} label="Google" />
-                    <MenuButton icon={<SubtitleIcon />} action={subs} label="Subs" />
-                    <MenuButton icon={<ExploreIcon />} action={() => explore(selectedFile ?? null)} label="Explore" />
+                    >
+                        Folder
+                    </ToggleMenuButton>
+                    <MenuButton icon={<GoogleIcon />} action={google}></MenuButton>
+                    <MenuButton icon={<SubtitleIcon />} action={subs}></MenuButton>
+                    <MenuButton
+                        icon={<ExploreIcon />}
+                        action={() => contextFile && exploreFile(contextFile)}
+                        disabled={!contextFile}
+                    >
+                        Explore
+                    </MenuButton>
                     <ToggleMenuButton
                         icon={<NewIcon />}
-                        action={() => dispatcher.updateReq({ hideWatched: !req.hideWatched })}
+                        action={() => updateReq({ hideWatched: !req.hideWatched })}
                         isActive={!!req.hideWatched}
-                        label="New"
-                    />
+                    >
+                        New
+                    </ToggleMenuButton>
                 </div>
                 <div className={ButtonGroup}>
-                    <MenuButton icon={<TrashIcon />} action={Delete} label="Delete" />
+                    <MenuButton icon={<TrashIcon />} action={Delete}></MenuButton>
                     <Dropdown
-                        toggler={<MenuButton icon={<SortIcon />} label="Sort" />}
+                        toggler={<MenuButton icon={<SortIcon />}></MenuButton>}
                         popup={
                             <div className="menu">
                                 <ToggleMenuButton
                                     action={OrderByInnerSelection}
                                     isActive={dispatcher.isSortedBy(sorting, Column.hasInnerSelection)}
-                                    label="Watched"
-                                />
+                                >
+                                    Watched
+                                </ToggleMenuButton>
                                 <ToggleMenuButton
-                                    action={() => dispatcher.updateReq({ foldersFirst: !req.foldersFirst })}
+                                    action={() => updateReq({ foldersFirst: !req.foldersFirst })}
                                     isActive={!!req.foldersFirst}
-                                    label="Folders first"
-                                />
-                                <ToggleMenuButton
-                                    action={disableSorting}
-                                    isActive={isSortingDisabled()}
-                                    label="Disable sort"
-                                />
+                                >
+                                    Folders first
+                                </ToggleMenuButton>
                             </div>
                         }
                     />
                     <Dropdown
-                        toggler={<MenuButton icon={<MoreIcon />} label="More" />}
+                        toggler={<MenuButton icon={<MoreIcon />}>More</MenuButton>}
                         popup={
                             <div className="menu">
                                 <ToggleMenuButton
-                                    action={() => dispatcher.updateReq({ hideFolders: !req.hideFolders })}
+                                    action={() => updateReq({ hideFolders: !req.hideFolders })}
                                     isActive={!!req.hideFolders}
-                                    label="Hide Folders"
-                                />
+                                >
+                                    Hide Folders
+                                </ToggleMenuButton>
                                 <ToggleMenuButton
-                                    action={() => dispatcher.updateReq({ hideFiles: !req.hideFiles })}
+                                    action={() => updateReq({ hideFiles: !req.hideFiles })}
                                     isActive={!!req.hideFiles}
-                                    label="Hide Files"
-                                />
+                                >
+                                    Hide Files
+                                </ToggleMenuButton>
                                 <ToggleMenuButton
-                                    action={() => dispatcher.updateReq({ recursive: !req.recursive })}
+                                    action={() => updateReq({ recursive: !req.recursive })}
                                     isActive={!!req.recursive}
-                                    label="Recursive"
-                                />
+                                >
+                                    Recursive
+                                </ToggleMenuButton>
                                 <ToggleMenuButton
-                                    action={() => dispatcher.updateReq({ keepView: !req.keepView })}
+                                    action={() => updateReq({ keepView: !req.keepView })}
                                     isActive={!!req.keepView}
-                                    label="Keep"
-                                />
+                                >
+                                    Keep
+                                </ToggleMenuButton>
                                 <ToggleMenuButton
-                                    action={() => dispatcher.updateReq({ hidden: !req.hidden })}
+                                    action={() => updateReq({ hidden: !req.hidden })}
                                     isActive={!!req.hidden}
-                                    label="Hidden"
-                                />
-                                <ToggleMenuButton
-                                    action={() => dispatcher.updateReq({ vlc: !req.vlc })}
-                                    isActive={!!req.vlc}
-                                    label="VLC"
-                                />
+                                >
+                                    Hidden
+                                </ToggleMenuButton>
+                                <ToggleMenuButton action={() => updateReq({ vlc: !req.vlc })} isActive={!!req.vlc}>
+                                    VLC
+                                </ToggleMenuButton>
                             </div>
                         }
                     />

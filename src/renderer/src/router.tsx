@@ -10,15 +10,15 @@ export const router = createBrowserRouter([
         element: <App />,
         children: [
             {
-                index: true,
+                path: "/",
                 element: <FileBrowser />,
             },
             {
-                path: "tray",
+                path: "/tray",
                 element: <Tray />,
             },
             {
-                path: "version",
+                path: "/version",
                 element: <Version />,
             },
             {

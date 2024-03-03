@@ -1,26 +1,25 @@
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { urlToSort } from "@renderer/lib/sortToUrl"
+import { IReqQuery } from "./IReqQuery"
 
 export function queryToReq(s: string): IListFilesReq {
-    const rest = new URLSearchParams(s)
+    const rest = Object.fromEntries(new URLSearchParams(s).entries()) as IReqQuery
     const x: IListFilesReq = {
-        foldersFirst: rest.has("foldersFirst") ? true : undefined,
-        // ByInnerSelection: rest.has("ByInnerSelection") ? true : undefined,
-        searchPattern: rest.get("SearchPattern") ?? undefined,
-        recursive: rest.has("IsRecursive") ? true : undefined,
-        folderSize: rest.has("FolderSize") ? true : undefined,
-        hideFolders: rest.has("HideFolders") ? true : undefined,
-        hideFiles: rest.has("HideFiles") ? true : undefined,
-        // Path: rest.get("Path") ?? undefined,
-        sort: rest.get("sort") ? urlToSort(rest.get("sort")!) : undefined,
-        hidden: rest.has("ShowHiddenFiles") ? true : undefined,
-        noCache: rest.has("NoCache") ? true : undefined,
-        view: rest.get("View") ?? undefined,
-        hideWatched: rest.has("hideWatched") ? true : undefined,
-        keepView: rest.has("KeepView") ? true : undefined,
-        skip: rest.get("skip") ? +rest.get("skip")! : undefined,
-        take: rest.get("take") ? +rest.get("take")! : undefined,
-        vlc: rest.has("vlc") ? true : undefined,
+        foldersFirst: rest.foldersFirst === "" ? true : undefined,
+        searchPattern: rest.search ?? undefined,
+        recursive: rest.recursive === "" ? true : undefined,
+        folderSize: rest.folderSize === "" ? true : undefined,
+        hideFolders: rest.hideFolders === "" ? true : undefined,
+        hideFiles: rest.hideFiles === "" ? true : undefined,
+        sort: rest.sort ? urlToSort(rest.sort!) : undefined,
+        hidden: rest.hidden === "" ? true : undefined,
+        noCache: rest.noCache === "" ? true : undefined,
+        view: rest.View ?? undefined,
+        hideWatched: rest.hideWatched === "" ? true : undefined,
+        keepView: rest.keepView === "" ? true : undefined,
+        skip: rest.skip ? +rest.skip! : undefined,
+        take: rest.take ? +rest.take! : undefined,
+        vlc: rest.vlc === "" ? true : undefined,
     }
 
     return x

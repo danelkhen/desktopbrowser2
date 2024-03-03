@@ -15,6 +15,7 @@ import { pathToUrl } from "../lib/pathToUrl"
 import { reqToQuery } from "../lib/reqToQuery"
 import { api } from "./api"
 import { store } from "./store"
+import _ from "lodash"
 
 export class Dispatcher {
     navigate?: NavigateFunction
@@ -27,7 +28,9 @@ export class Dispatcher {
     }
 
     private async setFileMetadata(value: IFileMeta) {
-        if (value.selectedFiles == null || value.selectedFiles.length == 0) {
+        const meta = await this.getFileMetadata(value.key)
+        if (_.isEqual(meta, value)) return
+        if (!value.selectedFiles?.length == null) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { [value.key]: removed, ...rest } = store.state.filesMd ?? {}
             store.update({ filesMd: rest })
@@ -48,11 +51,8 @@ export class Dispatcher {
         return x.selectedFiles[0]
     }
     saveSelectedFile = async (folderName: string, filename: string) => {
-        await this.setFileMetadata({
-            key: folderName,
-            selectedFiles: filename ? [filename] : undefined,
-            collection: "",
-        })
+        const meta: IFileMeta = { key: folderName, selectedFiles: filename ? [filename] : undefined, collection: "" }
+        await this.setFileMetadata(meta)
     }
 
     hasInnerSelection = (file: IFile) => {
@@ -64,7 +64,7 @@ export class Dispatcher {
         return order.indexOf(type)
     }
 
-    updateReq(v: Partial<IListFilesReq>) {
+    updateReq = (v: Partial<IListFilesReq>) => {
         return this.setReq({ ...store.state.req, ...v })
     }
     private setReq(v: IListFilesReq) {
@@ -191,31 +191,11 @@ export class Dispatcher {
         next: () => !!store.state.res?.next,
     }
 
-    disableSorting = () =>
-        this.updateReq({
-            sort: undefined,
-            foldersFirst: false,
-            // ByInnerSelection: false,
-        })
-
-    isSortingDisabled = () => !store.state.req.sort && !store.state.req.foldersFirst // && store._state.req.ByInnerSelection == null
-
     OrderByInnerSelection = () => this.orderBy(Column.hasInnerSelection)
 
     google = () => store.state.res?.file && openInNewWindow(getGoogleSearchLink(store.state.res?.file))
 
     subs = () => store.state.res?.file && openInNewWindow(getSubtitleSearchLink(store.state.res?.file))
-
-    explore = async (selectedFile: IFile | null) => {
-        console.log(store.state)
-        const file = selectedFile ?? store.state.res?.file
-        if (!file) return
-        await this.exploreFile(file)
-    }
-    // _setSelectedFiles = (v: IFile[]) => {
-    //     if (arrayItemsEqual(v, store.state.selectedFiles)) return
-    //     store.update({ selectedFiles: v })
-    // }
 }
 
 export const dispatcher = new Dispatcher()

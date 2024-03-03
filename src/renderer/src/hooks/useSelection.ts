@@ -1,43 +1,42 @@
-import { useCallback, useEffect, useMemo } from "react"
-import { sleep } from "../lib/sleep"
-import { dispatcher } from "../services/Dispatcher"
-import { Selection } from "../lib/Selection"
-import { IListFilesRes } from "../../../shared/IListFilesRes"
+import { useEffect, useMemo } from "react"
 import { IFile } from "../../../shared/IFile"
 import { IFileMeta } from "../../../shared/IFileMeta"
+import { IListFilesRes } from "../../../shared/IListFilesRes"
+import { Selection } from "../lib/Selection"
+import { sleep } from "../lib/sleep"
+import { dispatcher } from "../services/Dispatcher"
 import { c } from "../services/c"
 
 export function useSelection({
     filesMd,
     res,
     selectedFiles,
-    _setSelectedFiles,
+    setSelectedFiles,
 }: {
     readonly res: IListFilesRes
     readonly filesMd: { [key: string]: IFileMeta }
     readonly selectedFiles: IFile[]
-    _setSelectedFiles: (v: IFile[]) => void
+    setSelectedFiles: (v: IFile[]) => void
 }) {
     useEffect(() => {
         const selectedFileName = res.file?.Name ? filesMd?.[res.file.Name]?.selectedFiles?.[0] : null
         const files = res?.files?.filter(t => t.Name == selectedFileName) ?? []
         const selection = files
-        _setSelectedFiles(selection)
-    }, [_setSelectedFiles, filesMd, res.file?.Name, res?.files])
+        setSelectedFiles(selection)
+    }, [setSelectedFiles, filesMd, res.file?.Name, res?.files])
 
-    const setSelectedFiles = useCallback(
-        (v: IFile[]) => {
-            const file = v[v.length - 1]
-            if (res?.file?.Name) {
-                console.log("saveSelectionAndSetSelectedItems", res.file.Name, file?.Name)
-                void dispatcher.saveSelectedFile(res.file.Name, file?.Name)
-            }
-            console.log("selectedFiles", v)
-            _setSelectedFiles(v)
-            void verifySelectionInView()
-        },
-        [_setSelectedFiles, res.file?.Name]
-    )
+    useEffect(() => {
+        const v = selectedFiles
+        const file = v[v.length - 1]
+        if (res?.file?.Name) {
+            console.log("saveSelectionAndSetSelectedItems", res.file.Name, file?.Name)
+            void dispatcher.saveSelectedFile(res.file.Name, file?.Name)
+        }
+    }, [res.file?.Name, selectedFiles])
+    useEffect(() => {
+        console.log("verifySelectionInView", selectedFiles)
+        void verifySelectionInView()
+    }, [selectedFiles])
 
     // Keyboard selection
     useEffect(() => {
@@ -48,8 +47,8 @@ export function useSelection({
             const target = e.target as HTMLElement
             if (target.matches("input:not(#tbQuickFind),select")) return
             ;(document.querySelector("#tbQuickFind") as HTMLElement).focus()
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            setSelectedFiles(selection.keyDown(e as any))
+            const newSelectedFiles = selection.keyDown(e)
+            setSelectedFiles(newSelectedFiles)
             if (e.defaultPrevented) return
             if (e.key == "Enter") {
                 const file = selectedFile

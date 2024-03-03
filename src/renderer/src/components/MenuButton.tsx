@@ -1,7 +1,49 @@
 import { css, cx } from "@emotion/css"
 import { ReactNode } from "react"
 
-export const StyledButton = css`
+export function MenuButton({
+    action,
+    className,
+    icon,
+    disabled,
+    children,
+}: {
+    action?: () => void
+    className?: string
+    icon?: ReactNode
+    disabled?: boolean
+    children?: ReactNode
+}) {
+    return (
+        <button className={cx(className, btn)} onClick={action} disabled={disabled}>
+            {icon}
+            {children}
+        </button>
+    )
+}
+
+export function ToggleMenuButton({
+    action,
+    isActive,
+    className,
+    icon,
+    children,
+}: {
+    action: () => void
+    isActive: boolean
+    className?: string
+    icon?: ReactNode
+    children?: ReactNode
+}) {
+    return (
+        <button className={cx(className, btn, { active: isActive })} onClick={action}>
+            {icon}
+            {children}
+        </button>
+    )
+}
+
+const btn = css`
     font-family: "PT Sans", "helvetica-neue", helvetica, sans-serif;
     border: none;
     border-right: 1px solid #282828;
@@ -30,43 +72,3 @@ export const StyledButton = css`
         margin-right: 6px;
     }
 `
-
-export function MenuButton({
-    action,
-    label,
-    className,
-    icon,
-}: {
-    action?: () => void
-    label?: string
-    className?: string
-    icon?: ReactNode
-}) {
-    return (
-        <button className={cx(className, StyledButton)} onClick={action}>
-            {icon}
-            {label}
-        </button>
-    )
-}
-
-export function ToggleMenuButton({
-    action,
-    isActive,
-    label,
-    className,
-    icon,
-}: {
-    action: () => void
-    isActive: boolean
-    label?: string
-    className?: string
-    icon?: ReactNode
-}) {
-    return (
-        <button className={cx(className, StyledButton, { active: isActive })} onClick={action}>
-            {icon}
-            {label}
-        </button>
-    )
-}

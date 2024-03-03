@@ -64,7 +64,12 @@ export function FileBrowser() {
         setPath(req.path ?? "")
     }, [req.path])
 
-    const { setSelectedFiles, selectedFile } = useSelection({ res, selectedFiles, filesMd, _setSelectedFiles })
+    const { setSelectedFiles, selectedFile } = useSelection({
+        res,
+        selectedFiles,
+        filesMd,
+        setSelectedFiles: _setSelectedFiles,
+    })
 
     const gotoPath = useCallback(() => dispatcher.GotoPath(path), [path])
 
@@ -72,7 +77,7 @@ export function FileBrowser() {
         <>
             <header>
                 <div className={navStyle}>
-                    <Menu selectedFile={selectedFile} req={req} dispatcher={dispatcher} sorting={sorting} />
+                    <Menu selectedFile={selectedFile} req={req} dispatcher={dispatcher} sorting={sorting} res={res} />
                     <Clock />
                 </div>
                 <AddressBar

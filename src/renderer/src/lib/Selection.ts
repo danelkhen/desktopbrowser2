@@ -2,8 +2,8 @@
 
 export class Selection<T> {
     constructor(
-        public readonly AllItems: T[],
-        public readonly SelectedItems: T[]
+        public readonly all: T[],
+        public readonly selected: T[]
     ) {}
 
     toggle(list: T[], item: T): void {
@@ -13,52 +13,55 @@ export class Selection<T> {
     }
 
     get selectedItem() {
-        return this.SelectedItems[this.SelectedItems.length - 1]
+        return this.selected[this.selected.length - 1]
     }
 
     click(item: T, ctrl: boolean, shift: boolean): T[] {
-        let sel = [...this.SelectedItems]
-        const anchor = this.SelectedItems[0]
+        let sel = [...this.selected]
+        const anchor = this.selected[0]
 
         if (ctrl) {
             this.toggle(sel, item)
         } else if (shift && anchor != null) {
-            const index1 = this.AllItems.indexOf(anchor)
-            const index2 = this.AllItems.indexOf(item)
+            const index1 = this.all.indexOf(anchor)
+            const index2 = this.all.indexOf(item)
 
             const minIndex = Math.min(index1, index2)
             const maxIndex = Math.max(index1, index2)
-            const slice = this.AllItems.slice(minIndex, maxIndex + 1)
+            const slice = this.all.slice(minIndex, maxIndex + 1)
             sel = [anchor, ...slice.filter(t => t != anchor)]
         } else {
             sel = [item]
         }
 
-        if (arrayItemsEqual(sel, this.SelectedItems)) {
-            return this.SelectedItems
+        if (arrayItemsEqual(sel, this.selected)) {
+            return this.selected
         }
         return sel
     }
     keyDown(e: KeyboardEvent): T[] {
-        console.log(e)
+        // console.log(e)
         const keyCode = e.key
         const ctrl = e.ctrlKey
         const lastActive = this.selectedItem
         if (lastActive == null) {
-            if (this.AllItems.length > 0 && ["ArrowDown", "ArrowUp", "PageDown", "PageUp"].includes(keyCode)) {
-                this.set([this.AllItems[0]])
+            if (this.all.length > 0 && ["ArrowDown", "ArrowUp", "PageDown", "PageUp"].includes(keyCode)) {
                 e.preventDefault()
+                return this.set([this.all[0]])
             }
-            return this.SelectedItems
+            return this.selected
         }
         let offset = 0
         if (keyCode === "ArrowDown") offset = 1
         else if (keyCode === "ArrowUp") offset = -1
-        else if (keyCode === "PageDown") offset = this.AllItems.length
-        else if (keyCode === "PageUp") offset = this.AllItems.length * -1
-        const sibling = getSiblingOrEdge(this.AllItems, lastActive, offset)
+        else if (keyCode === "PageDown") offset = this.all.length
+        else if (keyCode === "PageUp") offset = this.all.length * -1
+        else {
+            return this.selected
+        }
+        const sibling = getSiblingOrEdge(this.all, lastActive, offset)
         if (sibling == null || sibling === lastActive) {
-            return this.SelectedItems
+            return this.selected
         }
 
         e.preventDefault()
@@ -69,14 +72,14 @@ export class Selection<T> {
     }
 
     add(item: T): T[] {
-        if (this.SelectedItems.includes(item)) return this.SelectedItems
-        const sel = [...this.SelectedItems]
+        if (this.selected.includes(item)) return this.selected
+        const sel = [...this.selected]
         sel.push(item)
         return this.set(sel)
     }
     set(sel: T[]): T[] {
-        if (arrayItemsEqual(sel, this.SelectedItems) || sel == this.SelectedItems) {
-            return this.SelectedItems
+        if (arrayItemsEqual(sel, this.selected) || sel == this.selected) {
+            return this.selected
         }
         return sel
     }

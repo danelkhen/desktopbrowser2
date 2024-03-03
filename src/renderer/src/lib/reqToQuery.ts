@@ -1,25 +1,25 @@
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { sortToUrl } from "@renderer/lib/sortToUrl"
+import { IReqQuery } from "./IReqQuery"
 
 export function reqToQuery(rest: IListFilesReq) {
     console.log("reqToQuery", rest)
-    const obj = {
+    const obj: IReqQuery = {
         foldersFirst: rest.foldersFirst ? "" : undefined,
-        // ByInnerSelection: rest.ByInnerSelection ? "" : undefined,
-        SearchPattern: rest.searchPattern ? rest.searchPattern : undefined,
-        IsRecursive: rest.recursive ? "" : undefined,
-        FolderSize: rest.folderSize ? "" : undefined,
-        HideFolders: rest.hideFolders ? "" : undefined,
-        HideFiles: rest.hideFiles ? "" : undefined,
-        Path: rest.path ? rest.path : undefined,
+        search: rest.searchPattern ? rest.searchPattern : undefined,
+        recursive: rest.recursive ? "" : undefined,
+        folderSize: rest.folderSize ? "" : undefined,
+        hideFolders: rest.hideFolders ? "" : undefined,
+        hideFiles: rest.hideFiles ? "" : undefined,
+        // Path: rest.path ? rest.path : undefined,
         sort: rest.sort?.length ? sortToUrl(rest.sort) : undefined,
-        ShowHiddenFiles: rest.hidden ? "" : undefined,
-        NoCache: rest.noCache ? "" : undefined,
+        hidden: rest.hidden ? "" : undefined,
+        noCache: rest.noCache ? "" : undefined,
         View: rest.view ? rest.view : undefined,
         hideWatched: rest.hideWatched ? "" : undefined,
-        KeepView: rest.keepView ? "" : undefined,
-        skip: rest.skip ? rest.skip : undefined,
-        take: rest.take ? rest.take : undefined,
+        keepView: rest.keepView ? "" : undefined,
+        skip: rest.skip?.toString(),
+        take: rest.take?.toString(),
         vlc: rest.vlc ? "" : undefined,
     }
     const q = new URLSearchParams(withoutUndefineds(obj))
