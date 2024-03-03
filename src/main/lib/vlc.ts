@@ -14,7 +14,7 @@ const host = "127.0.0.1"
 const user = ""
 
 export async function openVlc() {
-    const cmd = `${exe} --extraintf http --http-host ${host} --http-port ${port} --http-password ${pwd}`
+    const cmd = `"${exe}" --extraintf http --http-host ${host} --http-port ${port} --http-password ${pwd}`
     const res = await child_process.spawn(cmd, { detached: true, shell: true })
     log.info("openVlc", cmd, res)
 }
