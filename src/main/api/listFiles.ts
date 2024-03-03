@@ -28,7 +28,7 @@ export async function listFiles({
         return []
     }
     const path2 = path3.posix.resolve(path)
-    const res = (await glob(`${path2}${g}${foldersOnlySuffix}`, {
+    const res = (await glob(`${glob.escape(path2)}${g}${foldersOnlySuffix}`, {
         stat: true,
         withFileTypes: true,
         nodir,

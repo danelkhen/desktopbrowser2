@@ -21,7 +21,7 @@ export const io = {
         }
         let size = 0
         try {
-            const list = await glob(`${path}/*`, {
+            const list = await glob(`${glob.escape(path)}/*`, {
                 stat: true,
                 withFileTypes: true,
                 posix: true,

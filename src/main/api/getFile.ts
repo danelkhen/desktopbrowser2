@@ -11,7 +11,7 @@ export async function getFile({ path }: { path: string }): Promise<IFile | null>
         return x
     }
     const absPath = Path2.posix.resolve(p)
-    const res = (await glob(absPath, { posix: true, withFileTypes: true, stat: true })) as Path[]
+    const res = (await glob(glob.escape(absPath), { posix: true, withFileTypes: true, stat: true })) as Path[]
 
     return globPathToFile(res[0])
 }
