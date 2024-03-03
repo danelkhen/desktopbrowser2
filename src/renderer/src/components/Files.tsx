@@ -102,24 +102,12 @@ const GrdFiles = css`
         > thead > tr,
         > tbody > tr {
             > .type {
-                width: 35px;
+                /* width: 35px; */
                 text-overflow: clip;
                 padding: 10px 5px;
                 > .lnr {
                     font-size: 18px;
                 }
-            }
-
-            > .Modified {
-                width: 150px;
-            }
-
-            > .Size {
-                width: 150px;
-            }
-
-            > .Extension {
-                width: 150px;
             }
         }
         > thead {

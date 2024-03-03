@@ -147,16 +147,16 @@ function getSortConfig(req: IListFilesReq) {
     const active: ColumnKey[] = []
     const isDescending: Record<ColumnKey, boolean> = {}
     const cols = req.sort ?? []
-    if (req.foldersFirst && !cols.find(t => t.Name === Column.type)) {
+    if (req.foldersFirst && !cols.find(t => t.name === Column.type)) {
         active.push(Column.type)
     }
     // if (req.ByInnerSelection && !cols.find(t => t.Name === Column.hasInnerSelection)) {
     //     active.push(Column.hasInnerSelection)
     // }
     for (const col of cols ?? []) {
-        active.push(col.Name)
-        if (col.Descending) {
-            isDescending[col.Name] = true
+        active.push(col.name)
+        if (col.desc) {
+            isDescending[col.name] = true
         }
     }
     console.log("setSorting", active)

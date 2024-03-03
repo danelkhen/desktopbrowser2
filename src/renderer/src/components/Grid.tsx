@@ -9,6 +9,7 @@ export interface GridColumn<T, V> {
     header?: () => ReactNode
     sortGetter?: (item: T) => unknown
     descendingFirst?: boolean
+    width?: string | number
 }
 export type GridColumns<T> = {
     [k: string]: GridColumn<T, unknown>
@@ -48,13 +49,16 @@ export function Grid<T>({
     visibleColumns,
 }: GridProps<T>) {
     return (
-        <div className={cx(Container, className)}>
-            <table className={Table}>
+        <div className={cx(containerStyle, className)}>
+            <table className={tableStyle}>
+                <colgroup>
+                    {visibleColumns?.map(col => <col key={col} style={{ width: columns[col]?.width }}></col>)}
+                </colgroup>
                 <thead>
                     <tr>
-                        {visibleColumns?.map(column => (
-                            <th key={column} className={getHeaderClass?.(column)} onClick={() => orderBy?.(column)}>
-                                {columns[column].header?.() ?? column}
+                        {visibleColumns?.map(col => (
+                            <th key={col} className={getHeaderClass?.(col)} onClick={() => orderBy?.(col)}>
+                                {columns[col].header?.() ?? col}
                             </th>
                         ))}
                     </tr>
@@ -68,10 +72,10 @@ export function Grid<T>({
                             onClick={e => onItemClick?.(e, item)}
                             onDoubleClick={e => onItemDoubleClick?.(e, item)}
                         >
-                            {visibleColumns?.map(column => (
-                                <td key={column} className={getCellClass?.(column, item)}>
-                                    {columns[column].cell?.(item, itemIndex) ?? (
-                                        <span>{columns[column].getter?.(item, itemIndex) as ReactNode}</span>
+                            {visibleColumns?.map(col => (
+                                <td key={col} className={getCellClass?.(col, item)}>
+                                    {columns[col].cell?.(item, itemIndex) ?? (
+                                        <span>{columns[col].getter?.(item, itemIndex) as ReactNode}</span>
                                     )}
                                 </td>
                             ))}
@@ -83,7 +87,7 @@ export function Grid<T>({
     )
 }
 
-const Table = css`
+const tableStyle = css`
     border-collapse: collapse;
     table-layout: fixed;
     border-spacing: 0;
@@ -135,7 +139,7 @@ const Table = css`
         }
     }
 `
-const Container = css`
+const containerStyle = css`
     > .Pager {
         display: inline-block;
         margin: 0 5px;

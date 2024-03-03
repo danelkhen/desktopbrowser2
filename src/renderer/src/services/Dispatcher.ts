@@ -156,20 +156,20 @@ export class Dispatcher {
 
     orderBy = (column: ColumnKey) => {
         const sort = produce(store.state.req.sort ?? [], sort => {
-            const index = sort.findIndex(t => t.Name === column)
+            const index = sort.findIndex(t => t.name === column)
             if (index === 0) {
-                if (!!sort[index].Descending === !!gridColumns[column].descendingFirst) {
-                    sort[index].Descending = !sort[index].Descending
+                if (!!sort[index].desc === !!gridColumns[column].descendingFirst) {
+                    sort[index].desc = !sort[index].desc
                 } else {
                     sort.shift()
                 }
                 return
             }
             if (index > 0) {
-                sort = [{ Name: column as Column, Descending: gridColumns[column].descendingFirst }]
+                sort = [{ name: column as Column, desc: gridColumns[column].descendingFirst }]
                 return sort
             }
-            sort.unshift({ Name: column as Column, Descending: gridColumns[column].descendingFirst })
+            sort.unshift({ name: column as Column, desc: gridColumns[column].descendingFirst })
         })
         this.updateReq({ sort })
     }

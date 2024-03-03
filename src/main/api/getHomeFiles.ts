@@ -1,13 +1,13 @@
 import { IFile } from "../../shared/IFile"
-import { io } from "../io/io"
+import { getDrives } from "../lib/getDrives"
 
 export async function getHomeFiles(): Promise<IFile[]> {
-    const list = await io.getDrives()
+    const list = await getDrives()
     return list.map(t => {
         const f: IFile = {
             isFolder: true,
-            name: t.Name,
-            path: t.Name,
+            name: t.name,
+            path: t.name,
             size: t.isReady ? +(t.availableFreeSpace as string) : undefined,
         }
         return f

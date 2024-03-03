@@ -2,7 +2,7 @@ import { Column } from "src/shared/Column"
 import { SortColumn } from "../../../shared/SortColumn"
 
 export function sortToUrl(cols: SortColumn[]): string {
-    return cols.map(t => (t.Descending ? `${t.Name}_` : t.Name)).join(",")
+    return cols.map(t => (t.desc ? `${t.name}_` : t.name)).join(",")
 }
 export function urlToSort(sort: string | undefined): SortColumn[] {
     return (
@@ -10,8 +10,8 @@ export function urlToSort(sort: string | undefined): SortColumn[] {
             ?.split(",")
             .map(t =>
                 t.endsWith("_")
-                    ? ({ Name: removeLast(t, 1) as Column, Descending: true } as SortColumn)
-                    : ({ Name: t as Column } as SortColumn)
+                    ? ({ name: removeLast(t, 1) as Column, desc: true } as SortColumn)
+                    : ({ name: t as Column } as SortColumn)
             ) ?? []
     )
 }

@@ -17,8 +17,8 @@ export async function applyRequest(files: IFile[], req: IListFilesReq): Promise<
     if (req.sort?.length) {
         files = _.orderBy(
             files,
-            req.sort.map(t => t.Name),
-            req.sort.map(t => (t.Descending ? "desc" : "asc"))
+            req.sort.map(t => t.name),
+            req.sort.map(t => (t.desc ? "desc" : "asc"))
         )
     }
     if (req.hideWatched) {

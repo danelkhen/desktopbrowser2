@@ -2,10 +2,10 @@ import { Values } from "./Values"
 
 export const Column = {
     type: "type",
-    Name: "Name",
-    Size: "Size",
-    Modified: "Modified",
-    Extension: "Extension",
+    name: "name",
+    size: "size",
+    modified: "modified",
+    ext: "ext",
     hasInnerSelection: "hasInnerSelection",
 } as const
 

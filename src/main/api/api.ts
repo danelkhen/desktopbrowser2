@@ -1,16 +1,17 @@
 import { BrowserWindow, app, shell } from "electron"
+import log from "electron-log/main"
 import { autoUpdater } from "electron-updater"
+import fs from "fs/promises"
+import { rimraf } from "rimraf"
 import { Api } from "../../shared/Api"
 import { IFileMeta } from "../../shared/IFileMeta"
 import { IListFilesRes } from "../../shared/IListFilesRes"
-import { io } from "../io/io"
+import { vlcPlay } from "../lib/vlc"
 import { db } from "../services"
 import { getFile } from "./getFile"
 import { getFileRelatives } from "./getFileRelatives"
 import { getFiles } from "./getFiles"
 import { toCurrentPlatformPath } from "./toCurrentPlatformPath"
-import log from "electron-log/main"
-import { vlcPlay } from "../lib/vlc"
 
 export const api: Api = {
     getFileMeta({ key }) {
@@ -67,16 +68,18 @@ export const api: Api = {
     },
     del: async req => {
         const path = toCurrentPlatformPath(req.path)
-        if (await io.fileExists(path)) {
-            await io.delete(path)
+        const stat = await fs.lstat(path).catch(() => null)
+        if (!stat) return
+        if (await stat.isFile()) {
+            await fs.unlink(path)
             return
         }
-        if (await io.dirExists(path)) {
+        if (await stat.isDirectory()) {
             if (path.split("/").length <= 2)
                 throw new Error(
                     "Delete protection, cannot delete path so short, should be at least depth of 3 levels or more"
                 )
-            await io.del(path)
+            await rimraf(path, { glob: false })
         }
     },
     trash: async req => {

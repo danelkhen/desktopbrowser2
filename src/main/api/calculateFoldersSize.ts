@@ -1,5 +1,5 @@
+import { glob } from "glob"
 import { IFile } from "../../shared/IFile"
-import { DirSizeCache, io } from "../io/io"
 
 let dirSizeCacheTime: number | undefined
 let dirSizeCache: DirSizeCache | undefined
@@ -19,7 +19,7 @@ export async function calculateFoldersSize(folders: IFile[]): Promise<IFile[]> {
         try {
             //console.log("CalculateFoldersSize", file);
             if (file.isFolder && file.path) {
-                file.size = await io.getSize(file.path, cache)
+                file.size = await getSize(file.path, cache)
             }
         } catch (e) {
             console.log("calculateFoldersSize error", e)
@@ -27,4 +27,33 @@ export async function calculateFoldersSize(folders: IFile[]): Promise<IFile[]> {
         list.push(file)
     }
     return list
+}
+
+export type DirSizeCache = { [path: string]: number }
+
+async function getSize(path: string, cache: DirSizeCache = {}): Promise<number> {
+    if (cache[path] !== undefined) {
+        return cache[path]
+    }
+    let size = 0
+    try {
+        const list = await glob(`${glob.escape(path)}/*`, {
+            stat: true,
+            withFileTypes: true,
+            posix: true,
+        })
+        for (const item of list) {
+            if (typeof item === "string") continue
+            if (item.isFile() && item.size !== undefined) {
+                size += item.size
+            } else if (item.isDirectory() && item.fullpathPosix()) {
+                const dirSize = await getSize(item.fullpathPosix(), cache)
+                size += dirSize
+            }
+        }
+    } catch (e) {
+        console.log("IoDir.getSize() error", path, e)
+    }
+    cache[path] = size
+    return size
 }

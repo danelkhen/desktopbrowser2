@@ -15,29 +15,37 @@ export const gridColumns: GridColumns<IFile> = {
         cell: file => (file.type && icons[file.type] && icons[file.type]) || null,
         header: () => "",
         sortGetter: x => (x.type && dispatcher.getFileTypeOrder(x.type)) ?? 0,
+        width: "35px",
     },
-    Name: {
+    name: {
         getter: t => t.name,
         cell: file => (
             <span>
                 <a className="Name">{file.name}</a>
             </span>
         ),
+        // width: "100%",
     },
-    Size: { getter: t => t.size, cell: file => <span>{formatFriendlySize(file.size)}</span>, descendingFirst: true },
-    Modified: {
+    size: {
+        getter: t => t.size,
+        cell: file => <span>{formatFriendlySize(file.size)}</span>,
+        descendingFirst: true,
+        width: "150px",
+    },
+    modified: {
         getter: t => t.modified,
         cell: file => <span>{formatFriendlyDate(file.modified ?? null)}</span>,
         descendingFirst: true,
+        width: "150px",
     },
-    Extension: { getter: t => t.ext, cell: file => !file.isFolder && <span>{file.ext}</span> },
+    ext: { getter: t => t.ext, cell: file => !file.isFolder && <span>{file.ext}</span>, width: "150px" },
     hasInnerSelection: {
         getter: t => !!t?.isFolder && !!dispatcher.getSavedSelectedFile(t.name),
         descendingFirst: true,
     },
 }
 
-export const visibleGridColumns = [Column.type, Column.Name, Column.Modified, Column.Size, Column.Extension]
+export const visibleGridColumns = [Column.type, Column.name, Column.modified, Column.size, Column.ext]
 
 export const icons: { [key: string]: ReactElement } = {
     folder: <LayersIcon />,
