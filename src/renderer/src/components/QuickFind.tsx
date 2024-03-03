@@ -25,7 +25,7 @@ export function QuickFind({ allFiles, onFindFiles }: QuickFindProps) {
     function quickFind(value: string) {
         const list = allFiles
         const s = value.toLowerCase()
-        const item = list.find(t => t.Name.toLowerCase().includes(s))
+        const item = list.find(t => t.name.toLowerCase().includes(s))
         if (!item) return
         onFindFiles([item])
     }

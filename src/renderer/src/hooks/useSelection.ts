@@ -19,20 +19,20 @@ export function useSelection({
     setSelectedFiles: (v: IFile[]) => void
 }) {
     useEffect(() => {
-        const selectedFileName = res.file?.Name ? filesMd?.[res.file.Name]?.selectedFiles?.[0] : null
-        const files = res?.files?.filter(t => t.Name == selectedFileName) ?? []
+        const selectedFileName = res.file?.name ? filesMd?.[res.file.name]?.selectedFiles?.[0] : null
+        const files = res?.files?.filter(t => t.name == selectedFileName) ?? []
         const selection = files
         setSelectedFiles(selection)
-    }, [setSelectedFiles, filesMd, res.file?.Name, res?.files])
+    }, [setSelectedFiles, filesMd, res.file?.name, res?.files])
 
     useEffect(() => {
         const v = selectedFiles
         const file = v[v.length - 1]
-        if (res?.file?.Name) {
-            console.log("saveSelectionAndSetSelectedItems", res.file.Name, file?.Name)
-            void dispatcher.saveSelectedFile(res.file.Name, file?.Name)
+        if (res?.file?.name) {
+            console.log("saveSelectionAndSetSelectedItems", res.file.name, file?.name)
+            void dispatcher.saveSelectedFile(res.file.name, file?.name)
         }
-    }, [res.file?.Name, selectedFiles])
+    }, [res.file?.name, selectedFiles])
     useEffect(() => {
         console.log("verifySelectionInView", selectedFiles)
         void verifySelectionInView()

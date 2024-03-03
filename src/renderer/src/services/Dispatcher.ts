@@ -56,7 +56,7 @@ export class Dispatcher {
     }
 
     hasInnerSelection = (file: IFile) => {
-        return !!dispatcher.getSavedSelectedFile(file.Name)
+        return !!dispatcher.getSavedSelectedFile(file.name)
     }
 
     getFileTypeOrder(type: string): number {
@@ -83,16 +83,16 @@ export class Dispatcher {
     }
 
     private deleteAndRefresh = async (file: IFile) => {
-        if (!file.Path) return
-        const fileOrFolder = file.IsFolder ? "folder" : "file"
-        if (!window.confirm("Are you sure you wan to delete the " + fileOrFolder + "?\n" + file.Path)) return
-        await api.del({ path: file.Path })
+        if (!file.path) return
+        const fileOrFolder = file.isFolder ? "folder" : "file"
+        if (!window.confirm("Are you sure you wan to delete the " + fileOrFolder + "?\n" + file.path)) return
+        await api.del({ path: file.path })
         await this.reloadFiles()
     }
 
     private trashAndRefresh = async (file: IFile) => {
-        if (!file.Path) return
-        await api.trash({ path: file.Path })
+        if (!file.path) return
+        await api.trash({ path: file.path })
         await this.reloadFiles()
     }
 
@@ -105,8 +105,8 @@ export class Dispatcher {
     }
 
     exploreFile = async (file: IFile) => {
-        if (!file?.Path) return
-        await api.explore({ path: file.Path })
+        if (!file?.path) return
+        await api.explore({ path: file.path })
     }
 
     async fetchFiles(req: IListFilesReq) {
@@ -122,7 +122,7 @@ export class Dispatcher {
     }
 
     up = () => {
-        const parent = store.state.res?.parent?.Path
+        const parent = store.state.res?.parent?.path
         const current = store.state.req.path
         if (!parent || current === parent || pathToUrl(current) === pathToUrl(parent)) {
             this.GotoPath("/")
@@ -132,7 +132,7 @@ export class Dispatcher {
     }
     GotoFolder = (file?: IFile) => {
         if (!file) return
-        file.Path && this.GotoPath(file.Path)
+        file.path && this.GotoPath(file.path)
     }
 
     GotoPath = (path: string) => {
@@ -141,16 +141,16 @@ export class Dispatcher {
 
     Open = async (file: IFile) => {
         if (file == null) return
-        if (file.IsFolder || file.type == "link") {
+        if (file.isFolder || file.type == "link") {
             this.GotoFolder(file)
             return
         }
-        const prompt = file.Extension ? isExecutable(file.Extension) : true
+        const prompt = file.ext ? isExecutable(file.ext) : true
         if (prompt && !window.confirm("This is an executable file, are you sure you want to run it?")) {
             return
         }
-        if (!file.Path) return
-        const res = await api.execute({ path: file.Path, vlc: new URLSearchParams(location.search).has("vlc") })
+        if (!file.path) return
+        const res = await api.execute({ path: file.path, vlc: new URLSearchParams(location.search).has("vlc") })
         console.info(res)
     }
 

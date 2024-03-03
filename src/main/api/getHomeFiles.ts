@@ -3,10 +3,13 @@ import { io } from "../io/io"
 
 export async function getHomeFiles(): Promise<IFile[]> {
     const list = await io.getDrives()
-    return list.map(t => /*new File*/ ({
-        IsFolder: true,
-        Name: t.Name,
-        Path: t.Name,
-        Size: t.IsReady ? parseInt(t.AvailableFreeSpace as string) : undefined,
-    }))
+    return list.map(t => {
+        const f: IFile = {
+            isFolder: true,
+            name: t.Name,
+            path: t.Name,
+            size: t.isReady ? +(t.availableFreeSpace as string) : undefined,
+        }
+        return f
+    })
 }

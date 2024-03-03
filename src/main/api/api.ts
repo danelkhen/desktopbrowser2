@@ -35,7 +35,7 @@ export const api: Api = {
         }
         const file = await getFile({ path: req.path })
 
-        if (file?.IsFolder) {
+        if (file?.isFolder) {
             const files = await getFiles(req)
             const { NextSibling, ParentFolder, PreviousSibling } = await getFileRelatives(req.path)
             const res: IListFilesRes = {

@@ -69,7 +69,7 @@ export function Files({
             getRowClass={file => {
                 const s = cx(
                     c.FileRow,
-                    file.IsFolder && c.IsFolder,
+                    file.isFolder && c.IsFolder,
                     dispatcher.hasInnerSelection(file) && c.HasInnerSelection,
                     selectedFiles.includes(file) && c.Selected
                 )

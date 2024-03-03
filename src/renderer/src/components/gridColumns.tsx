@@ -17,22 +17,22 @@ export const gridColumns: GridColumns<IFile> = {
         sortGetter: x => (x.type && dispatcher.getFileTypeOrder(x.type)) ?? 0,
     },
     Name: {
-        getter: t => t.Name,
+        getter: t => t.name,
         cell: file => (
             <span>
-                <a className="Name">{file.Name}</a>
+                <a className="Name">{file.name}</a>
             </span>
         ),
     },
-    Size: { getter: t => t.Size, cell: file => <span>{formatFriendlySize(file.Size)}</span>, descendingFirst: true },
+    Size: { getter: t => t.size, cell: file => <span>{formatFriendlySize(file.size)}</span>, descendingFirst: true },
     Modified: {
-        getter: t => t.Modified,
-        cell: file => <span>{formatFriendlyDate(file.Modified ?? null)}</span>,
+        getter: t => t.modified,
+        cell: file => <span>{formatFriendlyDate(file.modified ?? null)}</span>,
         descendingFirst: true,
     },
-    Extension: { getter: t => t.Extension, cell: file => !file.IsFolder && <span>{file.Extension}</span> },
+    Extension: { getter: t => t.ext, cell: file => !file.isFolder && <span>{file.ext}</span> },
     hasInnerSelection: {
-        getter: t => !!t?.IsFolder && !!dispatcher.getSavedSelectedFile(t.Name),
+        getter: t => !!t?.isFolder && !!dispatcher.getSavedSelectedFile(t.name),
         descendingFirst: true,
     },
 }

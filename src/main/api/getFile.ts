@@ -7,7 +7,7 @@ import { globPathToFile } from "./toFile2"
 export async function getFile({ path }: { path: string }): Promise<IFile | null> {
     const p = normalizePath(path)
     if (!p) {
-        const x: IFile = { IsFolder: true, Path: "", Name: "Home" }
+        const x: IFile = { isFolder: true, path: "", name: "Home" }
         return x
     }
     const absPath = Path2.posix.resolve(p)

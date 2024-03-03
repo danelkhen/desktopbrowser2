@@ -6,13 +6,13 @@ import { Stats } from "fs"
 export function globPathToFile(file: Path): IFile {
     const file2: IFile = {
         type: getType(file),
-        Name: file.name,
-        IsFolder: !!file.isDirectory(),
-        Modified: file.mtime?.toJSON(),
-        Size: file.isFile() ? file.size : undefined,
-        IsHidden: file.name?.startsWith("."),
-        Extension: path.posix.extname(file.name),
-        Path: normalizeGlobFullpathPosix(file.fullpathPosix()),
+        name: file.name,
+        isFolder: !!file.isDirectory(),
+        modified: file.mtime?.toJSON(),
+        size: file.isFile() ? file.size : undefined,
+        isHidden: file.name?.startsWith("."),
+        ext: path.posix.extname(file.name),
+        path: normalizeGlobFullpathPosix(file.fullpathPosix()),
     }
     return file2
 }

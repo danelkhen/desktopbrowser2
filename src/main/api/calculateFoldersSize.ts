@@ -18,8 +18,8 @@ export async function calculateFoldersSize(folders: IFile[]): Promise<IFile[]> {
     for (const file of folders) {
         try {
             //console.log("CalculateFoldersSize", file);
-            if (file.IsFolder && file.Path) {
-                file.Size = await io.getSize(file.Path, cache)
+            if (file.isFolder && file.path) {
+                file.size = await io.getSize(file.path, cache)
             }
         } catch (e) {
             console.log("calculateFoldersSize error", e)

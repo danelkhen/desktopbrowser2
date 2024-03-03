@@ -90,9 +90,9 @@ export function toDriveInfo(x: Drive) {
     const di: IoDrive = {
         path: x.mounted + "\\",
         Name: x.mounted,
-        IsReady: true,
-        AvailableFreeSpace: x.available,
-        Capacity: x.capacity,
+        isReady: true,
+        availableFreeSpace: x.available,
+        capacity: x.capacity,
     }
     return di
 }

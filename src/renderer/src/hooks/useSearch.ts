@@ -5,6 +5,6 @@ export function useSearch(search: string, list: IFile[]) {
     return useMemo(() => {
         if (!search) return list
         const s = search.toLowerCase()
-        return list.filter(t => t.Name.toLowerCase().includes(s))
+        return list.filter(t => t.name.toLowerCase().includes(s))
     }, [search, list])
 }

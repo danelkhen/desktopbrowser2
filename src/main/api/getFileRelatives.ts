@@ -12,15 +12,15 @@ export async function getFileRelatives(path: string): Promise<FileRelativesInfo>
     const pathInfo = new IoPath(path)
     const info: FileRelativesInfo = {}
     info.ParentFolder = (await getFile({ path: pathInfo.ParentPath.Value })) ?? undefined
-    if (!info.ParentFolder?.Path) {
+    if (!info.ParentFolder?.path) {
         return info
     }
-    const files = await listFiles({ path: info.ParentFolder.Path, files: false, folders: true })
+    const files = await listFiles({ path: info.ParentFolder.path, files: false, folders: true })
     const parentFiles = _.orderBy(
-        files.filter(t => t.IsFolder),
-        [t => t.Name]
+        files.filter(t => t.isFolder),
+        [t => t.name]
     )
-    const index = parentFiles.findIndex(t => equalsIgnoreCase(t.Name, pathInfo.Name))
+    const index = parentFiles.findIndex(t => equalsIgnoreCase(t.name, pathInfo.Name))
     info.NextSibling = index >= 0 && index + 1 < parentFiles.length ? parentFiles[index + 1] : undefined
     info.PreviousSibling = index > 0 ? parentFiles[index - 1] : undefined
     return info

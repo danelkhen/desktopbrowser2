@@ -1,8 +1,8 @@
 import { IoFile } from "./IoFile"
 
 export interface IoDrive extends IoFile {
-    IsReady: boolean
+    isReady: boolean
     /** in mac a string returns */
-    AvailableFreeSpace: number | string
-    Capacity: string
+    availableFreeSpace: number | string
+    capacity: string
 }
