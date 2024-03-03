@@ -20,6 +20,7 @@ export function reqToQuery(rest: IListFilesReq) {
         KeepView: rest.keepView ? "" : undefined,
         skip: rest.skip ? rest.skip : undefined,
         take: rest.take ? rest.take : undefined,
+        vlc: rest.vlc ? "" : undefined,
     }
     const q = new URLSearchParams(withoutUndefineds(obj))
     return sanitizeQuery(q.toString())

@@ -13,6 +13,7 @@ export interface IListFilesReq {
     readonly noCache?: boolean
     readonly view?: string
     readonly hideWatched?: boolean
+    readonly vlc?: boolean
     // TODO:
     readonly keepView?: boolean
     readonly skip?: number

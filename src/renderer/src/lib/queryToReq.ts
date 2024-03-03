@@ -20,6 +20,7 @@ export function queryToReq(s: string): IListFilesReq {
         keepView: rest.has("KeepView") ? true : undefined,
         skip: rest.get("skip") ? +rest.get("skip")! : undefined,
         take: rest.get("take") ? +rest.get("take")! : undefined,
+        vlc: rest.has("vlc") ? true : undefined,
     }
 
     return x

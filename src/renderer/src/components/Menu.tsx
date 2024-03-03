@@ -116,6 +116,11 @@ export function Menu({
                                     isActive={!!req.hidden}
                                     label="Hidden"
                                 />
+                                <ToggleMenuButton
+                                    action={() => dispatcher.updateReq({ vlc: !req.vlc })}
+                                    isActive={!!req.vlc}
+                                    label="VLC"
+                                />
                             </div>
                         }
                     />
