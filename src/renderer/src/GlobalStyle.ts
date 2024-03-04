@@ -1,4 +1,5 @@
-import { injectGlobal } from "@emotion/css"
+import { injectGlobal as inj } from "@emotion/css"
+import { c } from "./services/c"
 
 export const lightTheme = {
     fg1: "#333",
@@ -30,7 +31,7 @@ export const darkTheme = {
 
 export const colors = darkTheme
 
-injectGlobal`
+inj`
     @font-face {
         font-family: "FreightSansProBook-Regular";
         src: url("/fonts/FreightSansProBook-Regular.eot");
@@ -86,11 +87,11 @@ injectGlobal`
         font-size: inherit;
     }
 
-    a.Name {
+    a.${c.name} {
         text-decoration: none;
     }
 
-    a.Name:hover {
+    a.${c.name}:hover {
         border-bottom: 1px solid ${colors.fg3};
     }
 

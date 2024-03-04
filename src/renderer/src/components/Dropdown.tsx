@@ -60,8 +60,8 @@ export function Dropdown({ toggler, popup }: { toggler: ReactElement<HTMLButtonE
 function shouldToggleDropDown(e: React.MouseEvent | Event) {
     const el = e.target as HTMLElement
     const dropDownEl = el.closest(`.${popupStyle}`)
-    const isInDropDown = dropDownEl != null
-    const isInToggleBtn = el.closest(".dropdown-toggle") != null
+    const isInDropDown = dropDownEl !== null
+    const isInToggleBtn = el.closest(".dropdown-toggle") !== null
 
     return { isInDropDown, isInToggleBtn }
 }

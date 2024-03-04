@@ -1,93 +1,96 @@
-﻿import _ from "lodash"
-import { arrayItemsEqual } from "./arrayItemsEqual"
+﻿import { isWin } from "./isWin"
 
 export class Selection<T> {
-    constructor(
-        public readonly all: T[],
-        public selected: T[],
-        public opts: { itemsOnScreen?: number }
-    ) {}
+    constructor(public ctx: { all: T[]; itemsOnScreen?: number; selected: T[] }) {}
+    get all() {
+        return this.ctx.all
+    }
+    get selected() {
+        return this.ctx.selected
+    }
+    get itemsOnScreen() {
+        return this.ctx.itemsOnScreen
+    }
+    clone(selected: T[]) {
+        return new Selection({ ...this.ctx, selected })
+    }
+    has(item: T) {
+        return this.selected.includes(item)
+    }
+    hasOnly(item: T) {
+        return this.selected.length === 1 && this.selected[0] === item
+    }
 
-    toggle(list: T[], item: T): void {
-        const index = list.indexOf(item)
-        if (index < 0) list.push(item)
-        else list.splice(index, 1)
+    toggle(item: T) {
+        const index = this.selected.indexOf(item)
+        if (index === -1) {
+            return this.clone([...this.selected, item])
+        }
+        return this.clone(this.selected.filter(t => t !== item))
     }
 
     get selectedItem() {
-        return this.selected[this.selected.length - 1]
+        return this.selected[this.selected.length - 1] ?? null
     }
 
-    click(item: T, ctrl: boolean, shift: boolean): T[] {
-        let sel = [...this.selected]
+    click(item: T, e: MouseEvent | React.MouseEvent) {
+        const ctrl = isWin ? e.ctrlKey : e.metaKey
+        const shift = e.shiftKey
         const anchor = this.selected[0]
 
         if (ctrl) {
-            this.toggle(sel, item)
-        } else if (shift && anchor != null) {
+            return this.toggle(item)
+        }
+        if (shift && anchor !== null) {
             const index1 = this.all.indexOf(anchor)
             const index2 = this.all.indexOf(item)
 
             const minIndex = Math.min(index1, index2)
             const maxIndex = Math.max(index1, index2)
             const slice = this.all.slice(minIndex, maxIndex + 1)
-            sel = [anchor, ...slice.filter(t => t != anchor)]
-        } else {
-            sel = [item]
+            return this.clone([anchor, ...slice.filter(t => t !== anchor)])
         }
-
-        if (arrayItemsEqual(sel, this.selected)) {
-            return this.selected
+        if (this.hasOnly(item)) {
+            return this
         }
-        return sel
+        return this.clone([item])
     }
-    keyDown(e: KeyboardEvent): T[] {
+    keyDown(e: KeyboardEvent) {
         const keyCode = e.key
-        const ctrl = e.ctrlKey
+        const ctrl = isWin ? e.ctrlKey : e.metaKey
         const lastActive = this.selectedItem
         let offset = 0
-        const pageSize = this.opts.itemsOnScreen ?? 1
+        const pageSize = this.ctx.itemsOnScreen ?? 1
         if (keyCode === "ArrowDown") offset = 1
         else if (keyCode === "ArrowUp") offset = -1
         else if (keyCode === "PageDown") offset = pageSize
         else if (keyCode === "PageUp") offset = pageSize * -1
-        else {
-            return this.selected
-        }
+        else return this
+
         if (!lastActive) {
             e.preventDefault()
-            this.set([this.all[0]])
-            return this.selected
+            return this.clone([this.all[0]])
         }
         const sibling = getSiblingOrEdge(this.all, lastActive, offset)
-        if (sibling == null || sibling === lastActive) {
-            return this.selected
+        if (!sibling || sibling === lastActive) {
+            return this
         }
 
         e.preventDefault()
         if (ctrl) {
-            this.add(sibling)
-            return this.selected
+            if (this.selected.includes(sibling)) {
+                return this
+            }
+            return this.clone([...this.selected, sibling])
         }
-        this.set([sibling])
-        return this.selected
-    }
-
-    add(item: T) {
-        if (this.selected.includes(item)) return this.selected
-        const sel = [...this.selected]
-        sel.push(item)
-        this.set(sel)
-    }
-    set(sel: T[]) {
-        if (sel == this.selected || !_.difference(sel, this.selected).length) {
-            return
+        if (this.hasOnly(sibling)) {
+            return this
         }
-        this.selected = sel
+        return this.clone([sibling])
     }
 }
 
-function getSiblingOrEdge<T>(list: T[], item: T, offset: number): T {
+function getSiblingOrEdge<T>(list: T[], item: T, offset: number) {
     if (offset == null || offset == 0) return item
     let index = list.indexOf(item)
     const newIndex = (index += offset)

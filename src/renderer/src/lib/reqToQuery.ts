@@ -35,7 +35,7 @@ function withoutUndefineds(obj: any): any {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const obj2 = {} as any
     for (const key of Object.keys(obj)) {
-        if (obj[key] != undefined) {
+        if (obj[key] !== undefined) {
             obj2[key] = obj[key]
         }
     }

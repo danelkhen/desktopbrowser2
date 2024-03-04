@@ -8,6 +8,7 @@ import { c } from "../services/c"
 import { Grid, GridColumns } from "./Grid"
 import { visibleGridColumns } from "./gridColumns"
 import { calcItemsOnScreen } from "../hooks/calcItemsOnScreen"
+import { fileRow } from "../services/fileRow"
 
 export function Files({
     selectedFiles,
@@ -26,10 +27,10 @@ export function Files({
 }) {
     const onItemMouseDown = useCallback(
         (e: React.MouseEvent, file: IFile) => {
-            const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${c.FileRow}`))
-            const selection = new Selection(allFiles, selectedFiles, { itemsOnScreen })
-            const selectedItems = selection.click(file, e.ctrlKey, e.shiftKey)
-            setSelectedFiles(selectedItems)
+            const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${fileRow}`))
+            const selection = new Selection({ all: allFiles, selected: selectedFiles, itemsOnScreen })
+            const newSelection = selection.click(file, e)
+            setSelectedFiles(newSelection.selected)
         },
         [allFiles, selectedFiles, setSelectedFiles]
     )
@@ -37,7 +38,7 @@ export function Files({
     const onItemClick = useCallback((e: React.MouseEvent, file: IFile) => {
         // const selection = new Selection(allFiles, selectedFiles)
         const target = e.target as HTMLElement
-        if (!target.matches("a.Name")) {
+        if (!target.matches(`a.${c.name}`)) {
             return
         }
         e.preventDefault()
@@ -70,10 +71,10 @@ export function Files({
             onItemDoubleClick={onItemDoubleClick}
             getRowClass={file => {
                 const s = cx(
-                    c.FileRow,
-                    file.isFolder && c.IsFolder,
-                    dispatcher.hasInnerSelection(file) && c.HasInnerSelection,
-                    selectedFiles.includes(file) && c.Selected
+                    fileRow,
+                    file.isFolder && c.isFolder,
+                    dispatcher.hasInnerSelection(file) && c.hasInnerSelection,
+                    selectedFiles.includes(file) && c.selected
                 )
                 return s
             }}

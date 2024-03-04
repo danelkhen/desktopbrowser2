@@ -3,7 +3,7 @@ export async function httpInvoke(url: string, prms?: unknown): Promise<any> {
     const req: RequestInit = {
         method: "GET",
     }
-    if (prms != null) {
+    if (prms !== null) {
         const json = JSON.stringify(prms)
         req.method = "POST"
         req.headers = { "Content-Type": "application/json" }

@@ -7,6 +7,7 @@ import { sleep } from "../lib/sleep"
 import { dispatcher } from "../services/Dispatcher"
 import { c } from "../services/c"
 import { calcItemsOnScreen } from "./calcItemsOnScreen"
+import { fileRow } from "../services/fileRow"
 
 export function useSelection({
     filesMd,
@@ -43,14 +44,14 @@ export function useSelection({
     useEffect(() => {
         function Win_keydown(e: KeyboardEvent): void {
             if (e.defaultPrevented) return
-            const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${c.FileRow}`))
-            const selection = new Selection<IFile>(res?.files ?? [], selectedFiles, { itemsOnScreen })
+            const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${fileRow}`))
+            const selection = new Selection<IFile>({ all: res?.files ?? [], selected: selectedFiles, itemsOnScreen })
             const selectedFile = selection.selectedItem
             const target = e.target as HTMLElement
             if (target.matches("input:not(#tbQuickFind),select")) return
             ;(document.querySelector("#tbQuickFind") as HTMLElement).focus()
-            const newSelectedFiles = selection.keyDown(e)
-            setSelectedFiles(newSelectedFiles)
+            const newSelection = selection.keyDown(e)
+            setSelectedFiles(newSelection.selected)
             if (e.defaultPrevented) return
             if (e.key == "Enter") {
                 const file = selectedFile
@@ -77,7 +78,7 @@ export function useSelection({
 
 async function verifySelectionInView() {
     await sleep(10)
-    const el = document.querySelector(`.${c.Selected}`) as HTMLElement
+    const el = document.querySelector(`.${c.selected}`) as HTMLElement
     if (el == null) return
     const container = document.documentElement
     const containerHeight = container.clientHeight - 100
