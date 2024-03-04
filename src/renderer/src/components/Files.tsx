@@ -46,7 +46,7 @@ export function Files({
     }, [])
 
     const onItemDoubleClick = useCallback((e: React.MouseEvent, file: IFile) => {
-        if (file == null) {
+        if (file === null) {
             return
         }
         e.preventDefault()

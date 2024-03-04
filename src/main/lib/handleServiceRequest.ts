@@ -7,7 +7,7 @@ export function handleServiceRequest(service: any) {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let arg: any
-        if (req.method == "POST") arg = req.body
+        if (req.method === "POST") arg = req.body
         else if (req.query.p !== null) arg = JSON.parse(req.query.p as string)
         else arg = req.query
         console.log(action, req.params, req.query)

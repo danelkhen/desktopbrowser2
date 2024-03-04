@@ -31,12 +31,12 @@ export async function* invokeStreaming<T>(pc: IWsReq): AsyncIterableIterator<T> 
                 // TODO: const x = JSON.parse(json)
             }
             throw new Error(data)
-        } else if (data == "[") {
+        } else if (data === "[") {
             //
         } else if (data.endsWith(",")) {
             const item = JSON.parse(data.substring(0, data.length - 1))
             yield item
-        } else if (data == "]") {
+        } else if (data === "]") {
             break
         } else {
             const item = JSON.parse(data) as T
@@ -51,18 +51,18 @@ export async function* send(cmd: string): AsyncIterableIterator<string> {
     let iterable: boolean | null = null
     for await (const e of events) {
         const data = e.data
-        if (data == "[") {
+        if (data === "[") {
             if (iterable != null) throw new Error()
             iterable = true
             yield data
         } else if (data.endsWith(",")) {
             if (iterable !== true) throw new Error()
             yield data
-        } else if (data == "]") {
+        } else if (data === "]") {
             if (iterable !== true) throw new Error()
             yield data
             break
-        } else if (data.startsWith == "ERROR: ") {
+        } else if (data.startsWith === "ERROR: ") {
             const err = JSON.parse(data.substr("ERROR: ".length))
             throw new Error(err.message || err)
         } else {

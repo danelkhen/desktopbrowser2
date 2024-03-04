@@ -1,38 +1,37 @@
 import { useEffect, useMemo } from "react"
 import { IFile } from "../../../shared/IFile"
-import { IFileMeta } from "../../../shared/IFileMeta"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { Selection } from "../lib/Selection"
+import { iterableLast } from "../lib/iterableLast"
 import { sleep } from "../lib/sleep"
 import { dispatcher } from "../services/Dispatcher"
 import { c } from "../services/c"
-import { calcItemsOnScreen } from "./calcItemsOnScreen"
 import { fileRow } from "../services/fileRow"
-import { iterableLast } from "../lib/iterableLast"
+import { calcItemsOnScreen } from "./calcItemsOnScreen"
 
 export function useSelection({
-    filesMd,
     res,
     selectedFiles,
     setSelectedFiles,
 }: {
     readonly res: IListFilesRes
-    readonly filesMd: { [key: string]: IFileMeta }
     readonly selectedFiles: Set<IFile>
     setSelectedFiles: (v: Set<IFile>) => void
 }) {
     useEffect(() => {
-        const selectedFileName = res.file?.name ? filesMd?.[res.file.name]?.selectedFiles?.[0] : null
-        const files = res?.files?.filter(t => t.name == selectedFileName) ?? []
+        const fm = res.file?.name ? dispatcher.getFileMetadata(res.file?.name ?? "") : null
+        const selectedFileName = fm?.selectedFiles?.[0] ?? null
+        const files = res?.files?.filter(t => t.name === selectedFileName) ?? []
         setSelectedFiles(new Set(files))
-    }, [setSelectedFiles, filesMd, res.file?.name, res?.files])
+    }, [setSelectedFiles, res.file?.name, res?.files])
 
     useEffect(() => {
-        const file = iterableLast(selectedFiles)
-        if (res?.file?.name) {
-            console.log("saveSelectionAndSetSelectedItems", res.file.name, file?.name)
-            void dispatcher.saveSelectedFile(res.file.name, file?.name ?? null)
+        if (!res?.file?.name) {
+            return
         }
+        const file = iterableLast(selectedFiles)
+        console.log("saveSelectionAndSetSelectedItems", res.file.name, file?.name)
+        void dispatcher.saveSelectedFile(res.file.name, file?.name ?? null)
     }, [res.file?.name, selectedFiles])
     useEffect(() => {
         console.log("verifySelectionInView", selectedFiles)
@@ -52,12 +51,12 @@ export function useSelection({
             const newSelection = selection.keyDown(e)
             setSelectedFiles(newSelection.selected)
             if (e.defaultPrevented) return
-            if (e.key == "Enter") {
+            if (e.key === "Enter") {
                 const file = selectedFile
                 if (!file) return
                 e.preventDefault()
                 void dispatcher.Open(selectedFile)
-            } else if (e.key == "Backspace") {
+            } else if (e.key === "Backspace") {
                 dispatcher.up()
             }
         }
@@ -67,10 +66,9 @@ export function useSelection({
 
     const service = useMemo(() => {
         return {
-            setSelectedFiles,
             selectedFile: iterableLast(selectedFiles),
         }
-    }, [selectedFiles, setSelectedFiles])
+    }, [selectedFiles])
 
     return service
 }
@@ -78,7 +76,7 @@ export function useSelection({
 async function verifySelectionInView() {
     await sleep(10)
     const el = document.querySelector(`.${c.selected}`) as HTMLElement
-    if (el == null) return
+    if (el === null) return
     const container = document.documentElement
     const containerHeight = container.clientHeight - 100
 
@@ -99,7 +97,7 @@ async function verifySelectionInView() {
         finalTop = finalBottom - containerHeight
     }
 
-    if (finalTop == null) return
+    if (finalTop === null) return
     console.log("scrolling", { finalTop, top, top2, bottom2, bottom })
     container.scrollTop = finalTop
 }

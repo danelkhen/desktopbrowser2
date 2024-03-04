@@ -30,10 +30,11 @@ export class Dispatcher {
     private async setFileMetadata(value: IFileMeta) {
         const meta = await this.getFileMetadata(value.key)
         if (_.isEqual(meta, value)) return
-        if (!value.selectedFiles?.length == null) {
+        if (!value.selectedFiles?.length) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { [value.key]: removed, ...rest } = store.state.filesMd ?? {}
             store.update({ filesMd: rest })
+            console.log("deleteFileMeta", value.key)
             await api.deleteFileMeta({ key: value.key })
             return
         }
@@ -47,8 +48,7 @@ export class Dispatcher {
     }
     getSavedSelectedFile = (folder: string) => {
         const x = this.getFileMetadata(folder)
-        if (x == null || x.selectedFiles == null) return null
-        return x.selectedFiles[0]
+        return x?.selectedFiles?.[0] ?? null
     }
     saveSelectedFile = async (folderName: string, filename: string | null) => {
         const meta: IFileMeta = { key: folderName, selectedFiles: filename ? [filename] : undefined, collection: "" }
@@ -140,8 +140,8 @@ export class Dispatcher {
     }
 
     Open = async (file: IFile) => {
-        if (file == null) return
-        if (file.isFolder || file.type == "link") {
+        if (!file) return
+        if (file.isFolder || file.type === "link") {
             this.GotoFolder(file)
             return
         }

@@ -64,7 +64,8 @@ export class Selection<T> {
     }
     keyDown(e: KeyboardEvent) {
         const keyCode = e.key
-        const ctrl = isWin ? e.ctrlKey : e.metaKey
+        // const ctrl = isWin ? e.ctrlKey : e.metaKey
+        const shift = e.shiftKey
         const lastActive = this.lastSelected
         let offset = 0
         const pageSize = this.ctx.itemsOnScreen ?? 1
@@ -84,7 +85,7 @@ export class Selection<T> {
         }
 
         e.preventDefault()
-        if (ctrl) {
+        if (shift) {
             if (this.has(sibling)) {
                 return this
             }
@@ -98,7 +99,7 @@ export class Selection<T> {
 }
 
 function getSiblingOrEdge<T>(list: T[], item: T, offset: number) {
-    if (offset == null || offset == 0) return item
+    if (!offset) return item
     let index = list.indexOf(item)
     const newIndex = (index += offset)
     if (newIndex < 0 || newIndex >= list.length) {

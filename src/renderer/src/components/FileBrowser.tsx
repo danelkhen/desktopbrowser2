@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router"
 import { useLocation } from "react-router-dom"
 import { Column } from "../../../shared/Column"
+import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { colors } from "../GlobalStyle"
 import { useAppState } from "../hooks/useAppState"
@@ -11,6 +12,7 @@ import { usePaging } from "../hooks/usePaging"
 import { useSearch } from "../hooks/useSearch"
 import { useSelection } from "../hooks/useSelection"
 import { SortConfig, useSorting } from "../hooks/useSorting"
+import { iterableLast } from "../lib/iterableLast"
 import { queryToReq } from "../lib/queryToReq"
 import { dispatcher } from "../services/Dispatcher"
 import { store } from "../services/store"
@@ -21,7 +23,6 @@ import { ColumnKey } from "./Grid"
 import { Menu } from "./Menu"
 import { QuickFind } from "./QuickFind"
 import { gridColumns } from "./gridColumns"
-import { IFile } from "../../../shared/IFile"
 
 const pageSize = 200
 
@@ -44,8 +45,8 @@ export function FileBrowser() {
         void dispatcher.fetchAllFilesMetadata()
     }, [])
 
-    const [selectedFiles, _setSelectedFiles] = useState(new Set<IFile>())
-    const { res, filesMd } = useAppState()
+    const [selectedFiles, setSelectedFiles] = useState(new Set<IFile>())
+    const { res } = useAppState()
 
     const [search2, setSearch2] = useState("")
     const [path, setPath] = useState("")
@@ -64,12 +65,12 @@ export function FileBrowser() {
         setPath(req.path ?? "")
     }, [req.path])
 
-    const { setSelectedFiles, selectedFile } = useSelection({
+    useSelection({
         res,
         selectedFiles,
-        filesMd,
-        setSelectedFiles: _setSelectedFiles,
+        setSelectedFiles,
     })
+    const selectedFile = useMemo(() => iterableLast(selectedFiles), [selectedFiles])
 
     const gotoPath = useCallback(() => dispatcher.GotoPath(path), [path])
 

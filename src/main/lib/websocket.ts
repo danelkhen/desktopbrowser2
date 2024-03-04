@@ -44,11 +44,11 @@ export function setupWebsockets(server: http.Server, service: any) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isIterable(obj: any): obj is Iterable<unknown> {
-    if (obj == null) return false
+    if (obj === null) return false
     return typeof obj[Symbol.iterator] === "function"
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isAsyncIterable(obj: any): obj is AsyncIterable<unknown> {
-    if (obj == null) return false
+    if (obj === null) return false
     return typeof obj[Symbol.asyncIterator] === "function"
 }

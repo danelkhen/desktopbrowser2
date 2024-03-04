@@ -12,7 +12,7 @@ export function Dropdown({ toggler, popup }: { toggler: ReactElement<HTMLButtonE
             if (e.defaultPrevented || ignore) return
             const { isInDropDown, isInToggleBtn } = shouldToggleDropDown(e)
             console.log({ isInDropDown, isInToggleBtn })
-            if (e.currentTarget == window) {
+            if (e.currentTarget === window) {
                 if (isInDropDown || isInToggleBtn || !show) return
                 setShow(false)
                 return

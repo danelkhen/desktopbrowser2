@@ -17,6 +17,6 @@ export function urlToSort(sort: string | undefined): SortColumn[] {
 }
 
 function removeLast(_this: string, x?: number): string {
-    if (x == null) x = 1
+    if (x === undefined) x = 1
     return _this.substring(0, _this.length - x)
 }
