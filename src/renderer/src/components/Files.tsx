@@ -7,6 +7,7 @@ import { Selection } from "../lib/Selection"
 import { c } from "../services/c"
 import { Grid, GridColumns } from "./Grid"
 import { visibleGridColumns } from "./gridColumns"
+import { calcItemsOnScreen } from "../hooks/calcItemsOnScreen"
 
 export function Files({
     selectedFiles,
@@ -25,7 +26,8 @@ export function Files({
 }) {
     const onItemMouseDown = useCallback(
         (e: React.MouseEvent, file: IFile) => {
-            const selection = new Selection(allFiles, selectedFiles)
+            const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${c.FileRow}`))
+            const selection = new Selection(allFiles, selectedFiles, { itemsOnScreen })
             const selectedItems = selection.click(file, e.ctrlKey, e.shiftKey)
             setSelectedFiles(selectedItems)
         },

@@ -1,9 +1,11 @@
-﻿import { arrayItemsEqual } from "./arrayItemsEqual"
+﻿import _ from "lodash"
+import { arrayItemsEqual } from "./arrayItemsEqual"
 
 export class Selection<T> {
     constructor(
         public readonly all: T[],
-        public readonly selected: T[]
+        public selected: T[],
+        public opts: { itemsOnScreen?: number }
     ) {}
 
     toggle(list: T[], item: T): void {
@@ -40,23 +42,21 @@ export class Selection<T> {
         return sel
     }
     keyDown(e: KeyboardEvent): T[] {
-        // console.log(e)
         const keyCode = e.key
         const ctrl = e.ctrlKey
         const lastActive = this.selectedItem
-        if (lastActive == null) {
-            if (this.all.length > 0 && ["ArrowDown", "ArrowUp", "PageDown", "PageUp"].includes(keyCode)) {
-                e.preventDefault()
-                return this.set([this.all[0]])
-            }
-            return this.selected
-        }
         let offset = 0
+        const pageSize = this.opts.itemsOnScreen ?? 1
         if (keyCode === "ArrowDown") offset = 1
         else if (keyCode === "ArrowUp") offset = -1
-        else if (keyCode === "PageDown") offset = this.all.length
-        else if (keyCode === "PageUp") offset = this.all.length * -1
+        else if (keyCode === "PageDown") offset = pageSize
+        else if (keyCode === "PageUp") offset = pageSize * -1
         else {
+            return this.selected
+        }
+        if (!lastActive) {
+            e.preventDefault()
+            this.set([this.all[0]])
             return this.selected
         }
         const sibling = getSiblingOrEdge(this.all, lastActive, offset)
@@ -66,22 +66,24 @@ export class Selection<T> {
 
         e.preventDefault()
         if (ctrl) {
-            return this.add(sibling)
+            this.add(sibling)
+            return this.selected
         }
-        return this.set([sibling])
+        this.set([sibling])
+        return this.selected
     }
 
-    add(item: T): T[] {
+    add(item: T) {
         if (this.selected.includes(item)) return this.selected
         const sel = [...this.selected]
         sel.push(item)
-        return this.set(sel)
+        this.set(sel)
     }
-    set(sel: T[]): T[] {
-        if (arrayItemsEqual(sel, this.selected) || sel == this.selected) {
-            return this.selected
+    set(sel: T[]) {
+        if (sel == this.selected || !_.difference(sel, this.selected).length) {
+            return
         }
-        return sel
+        this.selected = sel
     }
 }
 

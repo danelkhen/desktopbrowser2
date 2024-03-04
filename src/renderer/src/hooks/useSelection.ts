@@ -6,6 +6,7 @@ import { Selection } from "../lib/Selection"
 import { sleep } from "../lib/sleep"
 import { dispatcher } from "../services/Dispatcher"
 import { c } from "../services/c"
+import { calcItemsOnScreen } from "./calcItemsOnScreen"
 
 export function useSelection({
     filesMd,
@@ -42,7 +43,8 @@ export function useSelection({
     useEffect(() => {
         function Win_keydown(e: KeyboardEvent): void {
             if (e.defaultPrevented) return
-            const selection = new Selection<IFile>(res?.files ?? [], selectedFiles)
+            const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${c.FileRow}`))
+            const selection = new Selection<IFile>(res?.files ?? [], selectedFiles, { itemsOnScreen })
             const selectedFile = selection.selectedItem
             const target = e.target as HTMLElement
             if (target.matches("input:not(#tbQuickFind),select")) return
@@ -77,10 +79,10 @@ async function verifySelectionInView() {
     await sleep(10)
     const el = document.querySelector(`.${c.Selected}`) as HTMLElement
     if (el == null) return
-    const container = document.body
+    const container = document.documentElement
     const containerHeight = container.clientHeight - 100
 
-    const top = el.offsetTop
+    const top = el.offsetTop - 50
     const bottom = el.offsetTop + el.offsetHeight
 
     const top2 = container.scrollTop
@@ -98,6 +100,6 @@ async function verifySelectionInView() {
     }
 
     if (finalTop == null) return
-    console.log("scrolling", top2, finalTop)
+    console.log("scrolling", { finalTop, top, top2, bottom2, bottom })
     container.scrollTop = finalTop
 }
