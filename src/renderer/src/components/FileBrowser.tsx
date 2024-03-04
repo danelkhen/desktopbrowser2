@@ -44,7 +44,7 @@ export function FileBrowser() {
         void dispatcher.fetchAllFilesMetadata()
     }, [])
 
-    const [selectedFiles, _setSelectedFiles] = useState<IFile[]>([])
+    const [selectedFiles, _setSelectedFiles] = useState(new Set<IFile>())
     const { res, filesMd } = useAppState()
 
     const [search2, setSearch2] = useState("")
@@ -91,7 +91,7 @@ export function FileBrowser() {
                     pageIndex={pageIndex}
                     totalPages={totalPages}
                 />
-                <QuickFind allFiles={allFiles} onFindFiles={setSelectedFiles} />
+                <QuickFind allFiles={allFiles} onFindFiles={v => setSelectedFiles(new Set(v))} />
             </header>
             <Files
                 selectedFiles={selectedFiles}

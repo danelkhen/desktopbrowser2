@@ -8,6 +8,7 @@ import { dispatcher } from "../services/Dispatcher"
 import { c } from "../services/c"
 import { calcItemsOnScreen } from "./calcItemsOnScreen"
 import { fileRow } from "../services/fileRow"
+import { iterableLast } from "../lib/iterableLast"
 
 export function useSelection({
     filesMd,
@@ -17,22 +18,20 @@ export function useSelection({
 }: {
     readonly res: IListFilesRes
     readonly filesMd: { [key: string]: IFileMeta }
-    readonly selectedFiles: IFile[]
-    setSelectedFiles: (v: IFile[]) => void
+    readonly selectedFiles: Set<IFile>
+    setSelectedFiles: (v: Set<IFile>) => void
 }) {
     useEffect(() => {
         const selectedFileName = res.file?.name ? filesMd?.[res.file.name]?.selectedFiles?.[0] : null
         const files = res?.files?.filter(t => t.name == selectedFileName) ?? []
-        const selection = files
-        setSelectedFiles(selection)
+        setSelectedFiles(new Set(files))
     }, [setSelectedFiles, filesMd, res.file?.name, res?.files])
 
     useEffect(() => {
-        const v = selectedFiles
-        const file = v[v.length - 1]
+        const file = iterableLast(selectedFiles)
         if (res?.file?.name) {
             console.log("saveSelectionAndSetSelectedItems", res.file.name, file?.name)
-            void dispatcher.saveSelectedFile(res.file.name, file?.name)
+            void dispatcher.saveSelectedFile(res.file.name, file?.name ?? null)
         }
     }, [res.file?.name, selectedFiles])
     useEffect(() => {
@@ -46,7 +45,7 @@ export function useSelection({
             if (e.defaultPrevented) return
             const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${fileRow}`))
             const selection = new Selection<IFile>({ all: res?.files ?? [], selected: selectedFiles, itemsOnScreen })
-            const selectedFile = selection.selectedItem
+            const selectedFile = selection.lastSelected
             const target = e.target as HTMLElement
             if (target.matches("input:not(#tbQuickFind),select")) return
             ;(document.querySelector("#tbQuickFind") as HTMLElement).focus()
@@ -69,7 +68,7 @@ export function useSelection({
     const service = useMemo(() => {
         return {
             setSelectedFiles,
-            selectedFile: selectedFiles[selectedFiles.length - 1],
+            selectedFile: iterableLast(selectedFiles),
         }
     }, [selectedFiles, setSelectedFiles])
 

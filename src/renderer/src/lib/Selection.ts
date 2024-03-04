@@ -1,7 +1,9 @@
 ﻿import { isWin } from "./isWin"
+import { iterableFirst } from "./iterableFirst"
+import { iterableLast } from "./iterableLast"
 
 export class Selection<T> {
-    constructor(public ctx: { all: T[]; itemsOnScreen?: number; selected: T[] }) {}
+    constructor(public ctx: { all: T[]; itemsOnScreen?: number; selected: Set<T> }) {}
     get all() {
         return this.ctx.all
     }
@@ -11,54 +13,59 @@ export class Selection<T> {
     get itemsOnScreen() {
         return this.ctx.itemsOnScreen
     }
-    clone(selected: T[]) {
+    clone(selected: Set<T>) {
         return new Selection({ ...this.ctx, selected })
     }
     has(item: T) {
-        return this.selected.includes(item)
+        return this.selected.has(item)
     }
     hasOnly(item: T) {
-        return this.selected.length === 1 && this.selected[0] === item
+        return this.selected.size === 1 && this.has(item)
     }
 
     toggle(item: T) {
-        const index = this.selected.indexOf(item)
-        if (index === -1) {
-            return this.clone([...this.selected, item])
+        if (this.has(item)) {
+            const x = new Set(this.selected)
+            x.delete(item)
+            return this.clone(x)
         }
-        return this.clone(this.selected.filter(t => t !== item))
+        return this.clone(new Set(this.selected).add(item))
     }
 
-    get selectedItem() {
-        return this.selected[this.selected.length - 1] ?? null
+    get lastSelected() {
+        return iterableLast(this.selected)
+    }
+
+    get firstSelected() {
+        return iterableFirst(this.selected)
     }
 
     click(item: T, e: MouseEvent | React.MouseEvent) {
         const ctrl = isWin ? e.ctrlKey : e.metaKey
         const shift = e.shiftKey
-        const anchor = this.selected[0]
+        const anchor = this.firstSelected
 
         if (ctrl) {
             return this.toggle(item)
         }
-        if (shift && anchor !== null) {
+        if (shift && anchor) {
             const index1 = this.all.indexOf(anchor)
             const index2 = this.all.indexOf(item)
 
             const minIndex = Math.min(index1, index2)
             const maxIndex = Math.max(index1, index2)
             const slice = this.all.slice(minIndex, maxIndex + 1)
-            return this.clone([anchor, ...slice.filter(t => t !== anchor)])
+            return this.clone(new Set([anchor, ...slice.filter(t => t !== anchor)]))
         }
         if (this.hasOnly(item)) {
             return this
         }
-        return this.clone([item])
+        return this.clone(new Set([item]))
     }
     keyDown(e: KeyboardEvent) {
         const keyCode = e.key
         const ctrl = isWin ? e.ctrlKey : e.metaKey
-        const lastActive = this.selectedItem
+        const lastActive = this.lastSelected
         let offset = 0
         const pageSize = this.ctx.itemsOnScreen ?? 1
         if (keyCode === "ArrowDown") offset = 1
@@ -69,7 +76,7 @@ export class Selection<T> {
 
         if (!lastActive) {
             e.preventDefault()
-            return this.clone([this.all[0]])
+            return this.clone(new Set([this.all[0]]))
         }
         const sibling = getSiblingOrEdge(this.all, lastActive, offset)
         if (!sibling || sibling === lastActive) {
@@ -78,15 +85,15 @@ export class Selection<T> {
 
         e.preventDefault()
         if (ctrl) {
-            if (this.selected.includes(sibling)) {
+            if (this.has(sibling)) {
                 return this
             }
-            return this.clone([...this.selected, sibling])
+            return this.clone(new Set(this.selected).add(sibling))
         }
         if (this.hasOnly(sibling)) {
             return this
         }
-        return this.clone([sibling])
+        return this.clone(new Set([sibling]))
     }
 }
 

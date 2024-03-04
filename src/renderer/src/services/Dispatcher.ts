@@ -50,7 +50,7 @@ export class Dispatcher {
         if (x == null || x.selectedFiles == null) return null
         return x.selectedFiles[0]
     }
-    saveSelectedFile = async (folderName: string, filename: string) => {
+    saveSelectedFile = async (folderName: string, filename: string | null) => {
         const meta: IFileMeta = { key: folderName, selectedFiles: filename ? [filename] : undefined, collection: "" }
         await this.setFileMetadata(meta)
     }

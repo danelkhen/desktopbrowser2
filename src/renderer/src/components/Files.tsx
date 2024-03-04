@@ -18,8 +18,8 @@ export function Files({
     files,
     sorting,
 }: {
-    setSelectedFiles: (v: IFile[]) => void
-    selectedFiles: IFile[]
+    setSelectedFiles: (v: Set<IFile>) => void
+    selectedFiles: Set<IFile>
     allFiles: IFile[]
     columns: GridColumns<IFile>
     files: IFile[]
@@ -74,7 +74,7 @@ export function Files({
                     fileRow,
                     file.isFolder && c.isFolder,
                     dispatcher.hasInnerSelection(file) && c.hasInnerSelection,
-                    selectedFiles.includes(file) && c.selected
+                    selectedFiles.has(file) && c.selected
                 )
                 return s
             }}
