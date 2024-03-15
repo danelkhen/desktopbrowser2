@@ -8,10 +8,11 @@ import { normalizePath } from "./normalizePath"
 export async function getFileRelatives(p: string): Promise<FileRelativesInfo> {
     p = normalizePath(p)
     if (!p || p === "/") return {}
-    const pathInfo = path.posix.parse(path.posix.resolve(p))
+    const pi = path.posix.parse(path.posix.resolve(p))
+    const name = pi.name + pi.ext
     // const pathInfo = new IoPath(p)
     const info: FileRelativesInfo = {}
-    info.ParentFolder = (await getFile({ path: pathInfo.dir })) ?? undefined
+    info.ParentFolder = (await getFile({ path: pi.dir })) ?? undefined
     if (!info.ParentFolder?.path) {
         return info
     }
@@ -20,7 +21,7 @@ export async function getFileRelatives(p: string): Promise<FileRelativesInfo> {
         files.filter(t => t.isFolder),
         [t => t.name]
     )
-    const index = parentFiles.findIndex(t => t.name === pathInfo.name)
+    const index = parentFiles.findIndex(t => t.name === name)
     info.NextSibling = index >= 0 && index + 1 < parentFiles.length ? parentFiles[index + 1] : undefined
     info.PreviousSibling = index > 0 ? parentFiles[index - 1] : undefined
     return info
