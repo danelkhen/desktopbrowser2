@@ -8,6 +8,7 @@ import { formatFriendlyDate } from "../lib/formatFriendlyDate"
 import { formatFriendlySize } from "../lib/formatFriendlySize"
 import { dispatcher } from "../services/Dispatcher"
 import { GridColumns } from "./Grid"
+import { c } from "../services/c"
 
 export const gridColumns: GridColumns<IFile> = {
     type: {
@@ -21,7 +22,7 @@ export const gridColumns: GridColumns<IFile> = {
         getter: t => t.name,
         cell: file => (
             <span>
-                <a className="Name">{file.name}</a>
+                <a className={c.name}>{file.name}</a>
             </span>
         ),
         // width: "100%",
