@@ -8,4 +8,5 @@ export const c = {
     desc: "desc",
     name: "name",
     dropdownToggle: "dropdown-toggle",
+    type: "type",
 } as const

@@ -10,6 +10,7 @@ export interface GridColumn<T, V> {
     sortGetter?: (item: T) => unknown
     descendingFirst?: boolean
     width?: string | number
+    className?: string
 }
 export type GridColumns<T> = {
     [k: string]: GridColumn<T, unknown>
@@ -47,7 +48,6 @@ export function Grid<T>({
     orderBy,
     className,
     getHeaderClass,
-    getCellClass,
     visibleColumns,
     noHead,
     noBody,
@@ -80,7 +80,7 @@ export function Grid<T>({
                                 onDoubleClick={e => onItemDoubleClick?.(e, item)}
                             >
                                 {visibleColumns?.map(col => (
-                                    <td key={col} className={getCellClass?.(col, item)}>
+                                    <td key={col} className={cx(columns[col]?.className)}>
                                         {columns[col].cell?.(item, itemIndex) ?? (
                                             <span>{columns[col].getter?.(item, itemIndex) as ReactNode}</span>
                                         )}

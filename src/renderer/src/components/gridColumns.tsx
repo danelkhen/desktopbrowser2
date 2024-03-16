@@ -13,6 +13,7 @@ import { c } from "../services/c"
 export const gridColumns: GridColumns<IFile> = {
     type: {
         getter: t => t.type,
+        className: c.type,
         cell: file => (file.type && icons[file.type] && icons[file.type]) || null,
         header: () => "",
         sortGetter: x => (x.type && dispatcher.getFileTypeOrder(x.type)) ?? 0,

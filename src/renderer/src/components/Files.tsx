@@ -96,27 +96,27 @@ const GrdFiles = css`
 
     > table {
         width: 100%;
-        > tbody > tr {
-            transition: all 0.3s ease;
-            -webkit-font-smoothing: antialiased;
-            border: 1px solid #0c0c0c;
-            color: #999;
-            > td {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                box-sizing: border-box;
-                padding: 10px 0px;
+        > tbody {
+            > tr {
+                transition: all 0.3s ease;
+                -webkit-font-smoothing: antialiased;
+                border: 1px solid #0c0c0c;
+                color: #999;
+                > td {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    box-sizing: border-box;
+                    padding: 10px 0px;
+                }
             }
         }
-        > thead > tr,
-        > tbody > tr {
-            > .type {
-                /* width: 35px; */
-                text-overflow: clip;
-                padding: 10px 5px;
-                > .lnr {
-                    font-size: 18px;
+        > thead,
+        > tbody {
+            > tr {
+                > .${c.type} {
+                    /* text-overflow: clip; */
+                    padding: 10px 5px;
                 }
             }
         }
