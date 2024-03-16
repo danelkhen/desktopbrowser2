@@ -2,6 +2,7 @@ import { css, cx } from "@emotion/css"
 import React, { ReactElement, ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { colors } from "../GlobalStyle"
+import { c } from "../services/c"
 
 export function Dropdown({ toggler, popup }: { toggler: ReactElement<HTMLButtonElement>; popup: ReactNode }) {
     const [show, setShow] = useState(false)
@@ -32,7 +33,7 @@ export function Dropdown({ toggler, popup }: { toggler: ReactElement<HTMLButtonE
         }
     }, [toggle])
 
-    const updatedToggler = React.cloneElement(toggler, { className: cx(toggler.props.className, "dropdown-toggle") })
+    const updatedToggler = React.cloneElement(toggler, { className: cx(toggler.props.className, c.dropdownToggle) })
     const ref = useRef<HTMLDivElement>(null)
     const ref2 = useRef<HTMLDivElement>(null)
     useLayoutEffect(() => {
@@ -60,9 +61,8 @@ export function Dropdown({ toggler, popup }: { toggler: ReactElement<HTMLButtonE
 function shouldToggleDropDown(e: React.MouseEvent | Event) {
     const el = e.target as HTMLElement
     const dropDownEl = el.closest(`.${popupStyle}`)
-    const isInDropDown = dropDownEl !== null
-    const isInToggleBtn = el.closest(".dropdown-toggle") !== null
-
+    const isInDropDown = !!dropDownEl
+    const isInToggleBtn = !!el.closest(`.${c.dropdownToggle}`)
     return { isInDropDown, isInToggleBtn }
 }
 

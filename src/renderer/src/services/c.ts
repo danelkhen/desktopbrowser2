@@ -7,4 +7,5 @@ export const c = {
     asc: "asc",
     desc: "desc",
     name: "name",
+    dropdownToggle: "dropdown-toggle",
 } as const
