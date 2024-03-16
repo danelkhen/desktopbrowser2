@@ -17,6 +17,8 @@ export function Files({
     columns,
     files,
     sorting,
+    noHead,
+    noBody,
 }: {
     setSelectedFiles: (v: Set<IFile>) => void
     selectedFiles: Set<IFile>
@@ -24,6 +26,8 @@ export function Files({
     columns: GridColumns<IFile>
     files: IFile[]
     sorting: SortConfig
+    noHead?: boolean
+    noBody?: boolean
 }) {
     const onItemMouseDown = useCallback(
         (e: React.MouseEvent, file: IFile) => {
@@ -80,6 +84,8 @@ export function Files({
             }}
             columns={columns}
             visibleColumns={visibleGridColumns}
+            noHead={noHead}
+            noBody={noBody}
         />
     )
 }
@@ -115,8 +121,6 @@ const GrdFiles = css`
             }
         }
         > thead {
-            position: sticky;
-            top: 110px;
             > tr {
                 background-color: #060606;
                 border-bottom: 1px solid #333;

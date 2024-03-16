@@ -33,6 +33,8 @@ export interface GridProps<T> {
     getCellClass?: (column: ColumnKey, item: T) => string
     orderBy?: (column: ColumnKey) => void
     visibleColumns: ColumnKey[]
+    noHead?: boolean
+    noBody?: boolean
 }
 
 export function Grid<T>({
@@ -47,6 +49,8 @@ export function Grid<T>({
     getHeaderClass,
     getCellClass,
     visibleColumns,
+    noHead,
+    noBody,
 }: GridProps<T>) {
     return (
         <div className={cx(containerStyle, className)}>
@@ -54,34 +58,38 @@ export function Grid<T>({
                 <colgroup>
                     {visibleColumns?.map(col => <col key={col} style={{ width: columns[col]?.width }}></col>)}
                 </colgroup>
-                <thead>
-                    <tr>
-                        {visibleColumns?.map(col => (
-                            <th key={col} className={getHeaderClass?.(col)} onClick={() => orderBy?.(col)}>
-                                {columns[col].header?.() ?? col}
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {items?.map((item, itemIndex) => (
-                        <tr
-                            key={itemIndex}
-                            className={getRowClass?.(item)}
-                            onMouseDown={e => onItemMouseDown?.(e, item)}
-                            onClick={e => onItemClick?.(e, item)}
-                            onDoubleClick={e => onItemDoubleClick?.(e, item)}
-                        >
+                {!noHead && (
+                    <thead>
+                        <tr>
                             {visibleColumns?.map(col => (
-                                <td key={col} className={getCellClass?.(col, item)}>
-                                    {columns[col].cell?.(item, itemIndex) ?? (
-                                        <span>{columns[col].getter?.(item, itemIndex) as ReactNode}</span>
-                                    )}
-                                </td>
+                                <th key={col} className={getHeaderClass?.(col)} onClick={() => orderBy?.(col)}>
+                                    {columns[col].header?.() ?? col}
+                                </th>
                             ))}
                         </tr>
-                    ))}
-                </tbody>
+                    </thead>
+                )}
+                {!noBody && (
+                    <tbody>
+                        {items?.map((item, itemIndex) => (
+                            <tr
+                                key={itemIndex}
+                                className={getRowClass?.(item)}
+                                onMouseDown={e => onItemMouseDown?.(e, item)}
+                                onClick={e => onItemClick?.(e, item)}
+                                onDoubleClick={e => onItemDoubleClick?.(e, item)}
+                            >
+                                {visibleColumns?.map(col => (
+                                    <td key={col} className={getCellClass?.(col, item)}>
+                                        {columns[col].cell?.(item, itemIndex) ?? (
+                                            <span>{columns[col].getter?.(item, itemIndex) as ReactNode}</span>
+                                        )}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                )}
             </table>
         </div>
     )

@@ -14,15 +14,12 @@ import { iterableLast } from "../lib/iterableLast"
 import { queryToReq } from "../lib/queryToReq"
 import { dispatcher } from "../services/Dispatcher"
 import { store } from "../services/store"
-import { AddressBar } from "./AddressBar"
 import { Files } from "./Files"
 import { ColumnKey } from "./Grid"
-import { MainMenu } from "./MainMenu"
-import { QuickFind } from "./QuickFind"
+import { Header } from "./Header"
 import { gridColumns } from "./gridColumns"
 
 const pageSize = 200
-
 export function FileBrowser() {
     console.log("FileBrowser render")
     const navigate = useNavigate()
@@ -70,20 +67,24 @@ export function FileBrowser() {
 
     return (
         <div className={style}>
-            <header>
-                <MainMenu selectedFile={selectedFile} req={req} dispatcher={dispatcher} sorting={sorting} res={res} />
-                <AddressBar
-                    gotoPath={gotoPath}
-                    path={path}
-                    setPath={setPath}
-                    search={search2}
-                    setSearch={setSearch2}
-                    pageIndex={pageIndex}
-                    totalPages={totalPages}
-                    setPageIndex={setPageIndex}
-                />
-                <QuickFind allFiles={allFiles} onFindFiles={v => setSelectedFiles(new Set(v))} />
-            </header>
+            <Header
+                selectedFile={selectedFile}
+                req={req}
+                sorting={sorting}
+                res={res}
+                gotoPath={gotoPath}
+                path={path}
+                setPath={setPath}
+                search2={search2}
+                setSearch2={setSearch2}
+                pageIndex={pageIndex}
+                totalPages={totalPages}
+                setPageIndex={setPageIndex}
+                allFiles={allFiles}
+                setSelectedFiles={setSelectedFiles}
+                selectedFiles={selectedFiles}
+                files={files}
+            />
             <Files
                 selectedFiles={selectedFiles}
                 allFiles={allFiles}
@@ -91,10 +92,42 @@ export function FileBrowser() {
                 columns={gridColumns}
                 files={files}
                 sorting={sorting}
+                noHead
             />
         </div>
     )
 }
+
+function getSortConfig(req: IListFilesReq) {
+    const active: ColumnKey[] = []
+    const isDescending: Record<ColumnKey, boolean> = {}
+    const cols = req.sort ?? []
+    if (req.foldersFirst && !cols.find(t => t.name === Column.type)) {
+        active.push(Column.type)
+    }
+    // if (req.ByInnerSelection && !cols.find(t => t.Name === Column.hasInnerSelection)) {
+    //     active.push(Column.hasInnerSelection)
+    // }
+    for (const col of cols ?? []) {
+        active.push(col.name)
+        if (col.desc) {
+            isDescending[col.name] = true
+        }
+    }
+    console.log("setSorting", active)
+    const sorting: SortConfig = { active, isDescending }
+    return sorting
+}
+
+function parseRequest(path: string, search: string) {
+    const req2: IListFilesReq = queryToReq(search)
+    const req: IListFilesReq = { ...req2, path: decodeURIComponent(path) }
+    return req
+}
+
+const style = css`
+    label: FileBrowser;
+`
 
 // const navStyle = css`
 //     label: navStyle;
@@ -127,38 +160,3 @@ export function FileBrowser() {
 //         width: 100%;
 //     }
 // `
-
-function getSortConfig(req: IListFilesReq) {
-    const active: ColumnKey[] = []
-    const isDescending: Record<ColumnKey, boolean> = {}
-    const cols = req.sort ?? []
-    if (req.foldersFirst && !cols.find(t => t.name === Column.type)) {
-        active.push(Column.type)
-    }
-    // if (req.ByInnerSelection && !cols.find(t => t.Name === Column.hasInnerSelection)) {
-    //     active.push(Column.hasInnerSelection)
-    // }
-    for (const col of cols ?? []) {
-        active.push(col.name)
-        if (col.desc) {
-            isDescending[col.name] = true
-        }
-    }
-    console.log("setSorting", active)
-    const sorting: SortConfig = { active, isDescending }
-    return sorting
-}
-
-function parseRequest(path: string, search: string) {
-    const req2: IListFilesReq = queryToReq(search)
-    const req: IListFilesReq = { ...req2, path: decodeURIComponent(path) }
-    return req
-}
-
-const style = css`
-    header {
-        position: sticky;
-        top: 0;
-        background-color: #111;
-    }
-`
