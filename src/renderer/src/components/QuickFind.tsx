@@ -1,7 +1,8 @@
 import { useRef, useState } from "react"
 import { sleep } from "../lib/sleep"
 import { IFile } from "../../../shared/IFile"
-import { cx } from "@emotion/css"
+import { css, cx } from "@emotion/css"
+import { Input } from "@mui/material"
 
 export function QuickFind({ allFiles, onFindFiles }: QuickFindProps) {
     const [value, setValue] = useState("")
@@ -31,11 +32,11 @@ export function QuickFind({ allFiles, onFindFiles }: QuickFindProps) {
     }
 
     return (
-        <input
+        <Input
             id="tbQuickFind"
             value={value}
             onChange={e => onChange(e.currentTarget.value)}
-            className={cx(value.length > 0 && "HasValue")}
+            className={cx(style, value.length > 0 && "HasValue")}
         />
     )
 }
@@ -44,3 +45,19 @@ export interface QuickFindProps {
     allFiles: IFile[]
     onFindFiles(files: IFile[]): void
 }
+
+const style = css`
+    label: QuickFind;
+    && {
+        position: absolute;
+    }
+    top: 0;
+    right: 0;
+    border: 0;
+    background-color: transparent;
+    opacity: 0;
+
+    &.HasValue {
+        opacity: 1;
+    }
+`

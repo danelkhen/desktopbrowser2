@@ -1,10 +1,15 @@
 import * as _ from "lodash"
 import path from "path"
-import { FileRelativesInfo } from "../../shared/FileRelativesInfo"
 import { getFile } from "./getFile"
 import { listFiles } from "./listFiles"
 import { normalizePath } from "./normalizePath"
+import { IFile } from "../../shared/IFile"
 
+interface FileRelativesInfo {
+    ParentFolder?: IFile
+    NextSibling?: IFile
+    PreviousSibling?: IFile
+}
 export async function getFileRelatives(p: string): Promise<FileRelativesInfo> {
     p = normalizePath(p)
     if (!p || p === "/") return {}

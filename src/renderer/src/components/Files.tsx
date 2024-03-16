@@ -85,6 +85,7 @@ export function Files({
 }
 
 const GrdFiles = css`
+    label: GrdFiles;
     user-select: none;
 
     > table {
@@ -115,7 +116,7 @@ const GrdFiles = css`
         }
         > thead {
             position: sticky;
-            top: 83px;
+            top: 110px;
             > tr {
                 background-color: #060606;
                 border-bottom: 1px solid #333;

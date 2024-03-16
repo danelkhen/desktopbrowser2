@@ -4,13 +4,6 @@ export function usePaging<T>(items: T[], { pageSize = 100 }: { pageSize: number 
     const [pageIndex, setPageIndex] = useState(0)
 
     return useMemo(() => {
-        function nextPage() {
-            setPageIndex(pageIndex + 1)
-        }
-        function prevPage() {
-            setPageIndex(pageIndex - 1)
-        }
-
         function applyPaging(target: T[]) {
             const totalPages = Math.ceil(target.length / pageSize)
             let pageIndex2 = pageIndex
@@ -31,8 +24,6 @@ export function usePaging<T>(items: T[], { pageSize = 100 }: { pageSize: number 
             pageIndex: page.pageIndex,
             totalPages: page.totalPages,
             setPageIndex,
-            prevPage,
-            nextPage,
         }
         return x
     }, [pageIndex, pageSize, items, setPageIndex])
@@ -43,6 +34,6 @@ export interface Pager<T> {
     totalPages: number
     paged: T[]
     setPageIndex: (v: number) => void
-    prevPage: () => void
-    nextPage: () => void
+    // prevPage: () => void
+    // nextPage: () => void
 }

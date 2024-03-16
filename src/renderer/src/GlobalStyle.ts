@@ -1,6 +1,3 @@
-import { injectGlobal } from "@emotion/css"
-import { c } from "./services/c"
-
 export const lightTheme = {
     fg1: "#333",
     fg2: "#666",
@@ -31,103 +28,84 @@ export const darkTheme = {
 
 export const colors = darkTheme
 
-injectGlobal`
-    @font-face {
-        font-family: "FreightSansProBook-Regular";
-        src: url("/fonts/FreightSansProBook-Regular.eot");
-    }
+// const globalStyle = css`
+//     @font-face {
+//         font-family: "FreightSansProBook-Regular";
+//         src: url("/fonts/FreightSansProBook-Regular.eot");
+//     }
 
-    @font-face {
-        font-family: "FreightTextBold";
-        src: url("/fonts/FreightTextBold.eot");
-    }
+//     @font-face {
+//         font-family: "FreightTextBold";
+//         src: url("/fonts/FreightTextBold.eot");
+//     }
 
-    html {
-        margin: 0;
-        padding: 0;
-    }
+//     html {
+//         margin: 0;
+//         padding: 0;
+//     }
 
-    body {
-        background-color: #060606;
-        font-family: "PT Sans", "helvetica-neue", helvetica, sans-serif;
-        -webkit-font-smoothing: antialiased;
-        line-height: 1.5;
-        font-size: 1em;
-        margin: 0;
-        padding: 0 0 50px 0;
-        cursor: default;
-        color: ${colors.fg1};
-    }
+//     body {
+//         background-color: #060606;
+//         font-family: "PT Sans", "helvetica-neue", helvetica, sans-serif;
+//         -webkit-font-smoothing: antialiased;
+//         line-height: 1.5;
+//         font-size: 1em;
+//         margin: 0;
+//         padding: 0 0 50px 0;
+//         cursor: default;
+//         color: ${colors.fg1};
+//     }
 
-    input,
-    select {
-        box-sizing: border-box;
-        color: ${colors.fg1};
-        background-color: ${colors.bg1};
-        font-size: inherit;
-    }
+//     input,
+//     select {
+//         box-sizing: border-box;
+//         color: ${colors.fg1};
+//         background-color: ${colors.bg1};
+//         font-size: inherit;
+//     }
 
-    button {
-        color: ${colors.fg1};
-        background-color: ${colors.bg1};
-        font-size: inherit;
-    }
+//     button {
+//         color: ${colors.fg1};
+//         background-color: ${colors.bg1};
+//         font-size: inherit;
+//     }
 
-    a {
-        color: inherit;
-    }
+//     a {
+//         color: inherit;
+//     }
 
-    header {
-        position: sticky;
-        top: 0;
-        background-color: #222;
-    }
-    #tbPath {
-        width: 100%;
-        font-size: inherit;
-    }
+//     #tbPath {
+//         width: 100%;
+//         font-size: inherit;
+//     }
 
-    a.${c.name} {
-        text-decoration: none;
-        &:hover {
-            border-bottom: 1px solid ${colors.fg3};
-        }
-    }
+//     a.${c.name} {
+//         text-decoration: none;
+//         &:hover {
+//             border-bottom: 1px solid ${colors.fg3};
+//         }
+//     }
 
-    .container-fluid {
-        padding-left: 0;
-    }
+//     .container-fluid {
+//         padding-left: 0;
+//     }
 
-    .form-group {
-        margin-bottom: 0;
-    }
+//     .form-group {
+//         margin-bottom: 0;
+//     }
 
-    .lnr {
-        /*color: #0F52BA;*/
-        font-size: 20px;
-        /* To get crisp results, use sizes that are
-  a multiple of 20; because Linearicons was
-  designed on a 20 by 20 grid. */
-    }
+//     .lnr {
+//         /*color: #0F52BA;*/
+//         font-size: 20px;
+//         /* To get crisp results, use sizes that are
+//   a multiple of 20; because Linearicons was
+//   designed on a 20 by 20 grid. */
+//     }
 
-    #tbQuickFind {
-        position: absolute;
-        top: 0;
-        right: 0;
-        border: 0;
-        background-color: transparent;
-        opacity: 0;
-    }
-
-    #tbQuickFind.HasValue {
-        opacity: 1;
-    }
-
-
-    .hidden {
-        display: none;
-    }
-`
+//     .hidden {
+//         display: none;
+//     }
+// `
 
 // eslint-disable-next-line @typescript-eslint/no-empty-function
-export function injectGlobalStyle() {}
+// export function injectGlobalStyle() {}

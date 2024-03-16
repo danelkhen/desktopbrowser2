@@ -4,7 +4,6 @@ import { useNavigate } from "react-router"
 import { useLocation } from "react-router-dom"
 import { Column } from "../../../shared/Column"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
-import { colors } from "../GlobalStyle"
 import { useAppState } from "../hooks/useAppState"
 import { useFilter } from "../hooks/useFilter"
 import { usePaging } from "../hooks/usePaging"
@@ -16,7 +15,6 @@ import { queryToReq } from "../lib/queryToReq"
 import { dispatcher } from "../services/Dispatcher"
 import { store } from "../services/store"
 import { AddressBar } from "./AddressBar"
-import { Clock } from "./Clock"
 import { Files } from "./Files"
 import { ColumnKey } from "./Grid"
 import { MainMenu } from "./MainMenu"
@@ -54,7 +52,7 @@ export function FileBrowser() {
     const sorted = useSorting(allFiles, sorting)
     const filtered2 = useFilter(req, sorted)
     const filtered = useSearch(search2, filtered2)
-    const { paged, nextPage, prevPage, totalPages, pageIndex } = usePaging(filtered, {
+    const { paged, totalPages, pageIndex, setPageIndex } = usePaging(filtered, {
         pageSize,
     })
     const files = paged
@@ -71,21 +69,10 @@ export function FileBrowser() {
     const gotoPath = useCallback(() => dispatcher.GotoPath(path), [path])
 
     return (
-        <>
+        <div className={style}>
             <header>
-                <div className={navStyle}>
-                    <MainMenu
-                        selectedFile={selectedFile}
-                        req={req}
-                        dispatcher={dispatcher}
-                        sorting={sorting}
-                        res={res}
-                    />
-                    <Clock />
-                </div>
+                <MainMenu selectedFile={selectedFile} req={req} dispatcher={dispatcher} sorting={sorting} res={res} />
                 <AddressBar
-                    prevPage={prevPage}
-                    nextPage={nextPage}
                     gotoPath={gotoPath}
                     path={path}
                     setPath={setPath}
@@ -93,6 +80,7 @@ export function FileBrowser() {
                     setSearch={setSearch2}
                     pageIndex={pageIndex}
                     totalPages={totalPages}
+                    setPageIndex={setPageIndex}
                 />
                 <QuickFind allFiles={allFiles} onFindFiles={v => setSelectedFiles(new Set(v))} />
             </header>
@@ -104,40 +92,41 @@ export function FileBrowser() {
                 files={files}
                 sorting={sorting}
             />
-        </>
+        </div>
     )
 }
 
-const navStyle = css`
-    font-size: 10px;
-    /* background-color: ${colors.bg1}; */
-    background-color: #181818;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    color: ${colors.fg2};
-    .find {
-        display: flex;
-    }
-    > li {
-        display: flex;
-        list-style: none;
-    }
-    > li > a {
-        text-decoration: none;
-        padding: 10px;
-        display: flex;
-    }
-    &.hidden {
-        visibility: hidden;
-    }
+// const navStyle = css`
+//     label: navStyle;
+//     font-size: 10px;
+//     /* background-color: ${colors.bg1}; */
+//     background-color: #181818;
+//     margin: 0;
+//     padding: 0;
+//     display: flex;
+//     color: ${colors.fg2};
+//     .find {
+//         display: flex;
+//     }
+//     > li {
+//         display: flex;
+//         list-style: none;
+//     }
+//     > li > a {
+//         text-decoration: none;
+//         padding: 10px;
+//         display: flex;
+//     }
+//     &.hidden {
+//         visibility: hidden;
+//     }
 
-    &.fixed {
-        position: fixed;
-        top: 0;
-        width: 100%;
-    }
-`
+//     &.fixed {
+//         position: fixed;
+//         top: 0;
+//         width: 100%;
+//     }
+// `
 
 function getSortConfig(req: IListFilesReq) {
     const active: ColumnKey[] = []
@@ -162,6 +151,14 @@ function getSortConfig(req: IListFilesReq) {
 
 function parseRequest(path: string, search: string) {
     const req2: IListFilesReq = queryToReq(search)
-    const req: IListFilesReq = { ...req2, path: path }
+    const req: IListFilesReq = { ...req2, path: decodeURIComponent(path) }
     return req
 }
+
+const style = css`
+    header {
+        position: sticky;
+        top: 0;
+        background-color: #111;
+    }
+`

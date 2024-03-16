@@ -22,6 +22,7 @@ export function Clock() {
 }
 
 const style = css`
+    label: Clock;
     display: flex;
     flex-direction: row;
     font-size: 16px;

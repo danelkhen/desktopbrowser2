@@ -26,7 +26,7 @@ export async function* invokeStreaming<T>(pc: IWsReq): AsyncIterableIterator<T> 
     const events = send(JSON.stringify(pc))
     for await (const data of events) {
         if (data.startsWith("ERROR: ")) {
-            const json = data.substring("ERROR ".length)
+            const json = data.substring("ERROR: ".length)
             if (json.length > 0) {
                 // TODO: const x = JSON.parse(json)
             }

@@ -88,6 +88,7 @@ export function Grid<T>({
 }
 
 const tableStyle = css`
+    label: Grid;
     border-collapse: collapse;
     table-layout: fixed;
     border-spacing: 0;
@@ -140,6 +141,7 @@ const tableStyle = css`
     }
 `
 const containerStyle = css`
+    label: GridContainer;
     > .Pager {
         display: inline-block;
         margin: 0 5px;

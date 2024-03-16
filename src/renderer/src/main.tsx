@@ -1,9 +1,26 @@
 import { createRoot } from "react-dom/client"
 import { RouterProvider } from "react-router-dom"
 import { router } from "./router"
-import { injectGlobalStyle } from "./GlobalStyle"
+import "@fontsource/roboto/300.css"
+import "@fontsource/roboto/400.css"
+import "@fontsource/roboto/500.css"
+import "@fontsource/roboto/700.css"
 
-injectGlobalStyle()
+import { ThemeProvider, createTheme } from "@mui/material/styles"
+import CssBaseline from "@mui/material/CssBaseline"
+
+const darkTheme = createTheme({
+    palette: {
+        mode: "dark",
+    },
+})
+
+// injectGlobalStyle()
 const container = document.querySelector("#root") as HTMLElement
 const root = createRoot(container)
-root.render(<RouterProvider router={router} />)
+root.render(
+    <ThemeProvider theme={darkTheme}>
+        <CssBaseline />
+        <RouterProvider router={router} />
+    </ThemeProvider>
+)

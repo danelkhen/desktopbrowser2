@@ -1,8 +1,9 @@
-import { css } from "@emotion/css"
+import { Box, ListItemIcon, ListItemText, Menu, MenuItem, MenuList } from "@mui/material"
 import React, { useCallback } from "react"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
+import { IListFilesRes } from "../../../shared/IListFilesRes"
 import ExploreIcon from "../assets/icons/explore.svg?react"
 import FolderIcon from "../assets/icons/folder.svg?react"
 import GoogleIcon from "../assets/icons/google.svg?react"
@@ -16,10 +17,8 @@ import TrashIcon from "../assets/icons/trash.svg?react"
 import UpIcon from "../assets/icons/up.svg?react"
 import { SortConfig } from "../hooks/useSorting"
 import { Dispatcher } from "../services/Dispatcher"
-import { Dropdown } from "./Dropdown"
-import { MenuButton, ToggleMenuButton } from "./MenuButton"
-import { IListFilesRes } from "../../../shared/IListFilesRes"
-import { Menu } from "./Menu"
+import { Clock } from "./Clock"
+import { css } from "@emotion/css"
 
 export function MainMenu({
     req,
@@ -43,140 +42,160 @@ export function MainMenu({
 
     const contextFile = selectedFile ?? res.file ?? null
     const { goto, google, subs, exploreFile, OrderByInnerSelection, updateReq } = dispatcher
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+    const [anchorEl2, setAnchorEl2] = React.useState<null | HTMLElement>(null)
     return (
-        <div className={MenuDiv}>
-            <div className={ButtonsDiv}>
-                <div className={ButtonGroup}>
-                    <MenuButton icon={<UpIcon />} action={goto.up}>
-                        Up
-                    </MenuButton>
-                    <MenuButton icon={<PrevIcon />} action={goto.prev}>
-                        Prev
-                    </MenuButton>
-                    <MenuButton icon={<NextIcon />} action={goto.next}>
-                        Next
-                    </MenuButton>
-                </div>
-                <div className={ButtonGroup}>
-                    <ToggleMenuButton
-                        icon={<FolderIcon />}
-                        action={() => updateReq({ folderSize: !req.folderSize })}
-                        isActive={!!req.folderSize}
+        <div className={style}>
+            <MenuList className="menuGroup">
+                <MenuItem onClick={goto.up}>
+                    <ListItemIcon>
+                        <UpIcon />
+                    </ListItemIcon>
+                    <ListItemText>Up</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={goto.prev}>
+                    <ListItemIcon>
+                        <PrevIcon />
+                    </ListItemIcon>
+                    <ListItemText>Prev</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={goto.next}>
+                    <ListItemIcon>
+                        <NextIcon />
+                    </ListItemIcon>
+                    <ListItemText>Next</ListItemText>
+                </MenuItem>
+            </MenuList>
+            <MenuList className="menuGroup">
+                <MenuItem onClick={() => updateReq({ folderSize: !req.folderSize })} selected={!!req.folderSize}>
+                    <ListItemIcon>
+                        <FolderIcon />
+                    </ListItemIcon>
+                    <ListItemText>Folder</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={google}>
+                    <ListItemIcon>
+                        <GoogleIcon />
+                    </ListItemIcon>
+                    <ListItemText>Google</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={subs}>
+                    <ListItemIcon>
+                        <SubtitleIcon />
+                    </ListItemIcon>
+                    <ListItemText>Subs</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={() => contextFile && exploreFile(contextFile)} disabled={!contextFile}>
+                    <ListItemIcon>
+                        <ExploreIcon />
+                    </ListItemIcon>
+                    <ListItemText>Explore</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={() => updateReq({ hideWatched: !req.hideWatched })} selected={!!req.hideWatched}>
+                    <ListItemIcon>
+                        <NewIcon />
+                    </ListItemIcon>
+                    <ListItemText>New</ListItemText>
+                </MenuItem>
+            </MenuList>
+            <MenuList className="menuGroup">
+                <MenuItem onClick={() => Delete()}>
+                    <ListItemIcon>
+                        <TrashIcon />
+                    </ListItemIcon>
+                    <ListItemText>Delete</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={e => setAnchorEl(e.currentTarget)}>
+                    <ListItemIcon>
+                        <SortIcon />
+                    </ListItemIcon>
+                    <ListItemText>Sort</ListItemText>
+                </MenuItem>
+                <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)}>
+                    <MenuItem
+                        onClick={OrderByInnerSelection}
+                        selected={dispatcher.isSortedBy(sorting, Column.hasInnerSelection)}
                     >
-                        Folder
-                    </ToggleMenuButton>
-                    <MenuButton icon={<GoogleIcon />} action={google}></MenuButton>
-                    <MenuButton icon={<SubtitleIcon />} action={subs}></MenuButton>
-                    <MenuButton
-                        icon={<ExploreIcon />}
-                        action={() => contextFile && exploreFile(contextFile)}
-                        disabled={!contextFile}
+                        Watched
+                    </MenuItem>
+                    <MenuItem
+                        onClick={() => updateReq({ foldersFirst: !req.foldersFirst })}
+                        selected={!!req.foldersFirst}
                     >
-                        Explore
-                    </MenuButton>
-                    <ToggleMenuButton
-                        icon={<NewIcon />}
-                        action={() => updateReq({ hideWatched: !req.hideWatched })}
-                        isActive={!!req.hideWatched}
-                    >
-                        New
-                    </ToggleMenuButton>
-                </div>
-                <div className={ButtonGroup}>
-                    <MenuButton icon={<TrashIcon />} action={Delete}></MenuButton>
-                    <Dropdown
-                        toggler={<MenuButton icon={<SortIcon />}></MenuButton>}
-                        popup={
-                            <Menu>
-                                <ToggleMenuButton
-                                    action={OrderByInnerSelection}
-                                    isActive={dispatcher.isSortedBy(sorting, Column.hasInnerSelection)}
-                                >
-                                    Watched
-                                </ToggleMenuButton>
-                                <ToggleMenuButton
-                                    action={() => updateReq({ foldersFirst: !req.foldersFirst })}
-                                    isActive={!!req.foldersFirst}
-                                >
-                                    Folders first
-                                </ToggleMenuButton>
-                            </Menu>
-                        }
-                    />
-                    <Dropdown
-                        toggler={<MenuButton icon={<MoreIcon />}>More</MenuButton>}
-                        popup={
-                            <Menu>
-                                <ToggleMenuButton
-                                    action={() => updateReq({ hideFolders: !req.hideFolders })}
-                                    isActive={!!req.hideFolders}
-                                >
-                                    Hide Folders
-                                </ToggleMenuButton>
-                                <ToggleMenuButton
-                                    action={() => updateReq({ hideFiles: !req.hideFiles })}
-                                    isActive={!!req.hideFiles}
-                                >
-                                    Hide Files
-                                </ToggleMenuButton>
-                                <ToggleMenuButton
-                                    action={() => updateReq({ recursive: !req.recursive })}
-                                    isActive={!!req.recursive}
-                                >
-                                    Recursive
-                                </ToggleMenuButton>
-                                <ToggleMenuButton
-                                    action={() => updateReq({ keepView: !req.keepView })}
-                                    isActive={!!req.keepView}
-                                >
-                                    Keep
-                                </ToggleMenuButton>
-                                <ToggleMenuButton
-                                    action={() => updateReq({ hidden: !req.hidden })}
-                                    isActive={!!req.hidden}
-                                >
-                                    Hidden
-                                </ToggleMenuButton>
-                                <ToggleMenuButton action={() => updateReq({ vlc: !req.vlc })} isActive={!!req.vlc}>
-                                    VLC
-                                </ToggleMenuButton>
-                            </Menu>
-                        }
-                    />
-                </div>
-            </div>
+                        Folders first
+                    </MenuItem>
+                </Menu>
+                <MenuItem onClick={e => setAnchorEl(e.currentTarget)}>
+                    <ListItemIcon>
+                        <MoreIcon />
+                    </ListItemIcon>
+                    <ListItemText>More</ListItemText>
+                </MenuItem>
+                <Menu anchorEl={anchorEl2} open={!!anchorEl2} onClose={() => setAnchorEl2(null)}>
+                    <MenuItem onClick={() => updateReq({ hideFolders: !req.hideFolders })} selected={!!req.hideFolders}>
+                        Hide Folders
+                    </MenuItem>
+                    <MenuItem onClick={() => updateReq({ hideFiles: !req.hideFiles })} selected={!!req.hideFiles}>
+                        Hide Files
+                    </MenuItem>
+                    <MenuItem onClick={() => updateReq({ recursive: !req.recursive })} selected={!!req.recursive}>
+                        Recursive
+                    </MenuItem>
+                    <MenuItem onClick={() => updateReq({ keepView: !req.keepView })} selected={!!req.keepView}>
+                        Keep
+                    </MenuItem>
+                    <MenuItem onClick={() => updateReq({ hidden: !req.hidden })} selected={!!req.hidden}>
+                        Hidden
+                    </MenuItem>
+                    <MenuItem onClick={() => updateReq({ vlc: !req.vlc })} selected={!!req.vlc}>
+                        VLC
+                    </MenuItem>
+                </Menu>
+            </MenuList>
+            <Box sx={{ flex: 1 }}></Box>
+            <MenuList className="menuGroup">
+                <MenuItem>
+                    <Clock />
+                </MenuItem>
+            </MenuList>
         </div>
     )
 }
 
-const ButtonGroup = css`
+const style = css`
+    label: MainMenu;
     display: flex;
-    flex-direction: row;
-    background-color: #0c0c0c;
-    text-align: center;
-    margin-right: 1em;
-    border-radius: 20px;
-    > button:first-child {
-        border-left: none;
-        border-top-left-radius: 20px;
-        border-bottom-left-radius: 20px;
+    gap: 10px;
+    padding: 10px 10px 0 10px;
+    font-size: 14px;
+    ul.menuGroup {
+        display: flex;
+        padding: 0;
+        > li {
+            border: 1px solid #282828;
+            line-height: 2;
+            margin-left: -1px;
+            font-size: inherit;
+
+            &:first-of-type {
+                border-radius: 25px 0 0 25px;
+                padding-left: 28px;
+                margin-left: 0;
+            }
+            &:last-of-type {
+                border-radius: 0 25px 25px 0;
+                padding-right: 28px;
+            }
+            &:first-of-type:last-of-type {
+                border-radius: 25px;
+            }
+            .MuiListItemIcon-root {
+                min-width: 0;
+                padding-right: 10px;
+            }
+            .MuiListItemText-primary {
+                font-size: inherit;
+            }
+        }
     }
-    > button:last-child {
-        border-right: none;
-        border-top-right-radius: 20px;
-        border-bottom-right-radius: 20px;
-    }
-`
-const MenuDiv = css`
-    display: flex;
-    flex: 1;
-    padding: 0.5em;
-    border-bottom: 1px solid #282828;
-    margin-right: 0;
-    max-width: 100%;
-`
-const ButtonsDiv = css`
-    display: flex;
-    flex: 1;
-    flex-direction: row;
 `
