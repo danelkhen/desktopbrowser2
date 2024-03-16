@@ -30,7 +30,11 @@ export class Dispatcher {
     private async setFileMetadata(value: IFileMeta) {
         const meta = await this.getFileMetadata(value.key)
         if (_.isEqual(meta, value)) return
+        console.log({ meta, value })
         if (!value.selectedFiles?.length) {
+            if (!meta) {
+                return
+            }
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { [value.key]: removed, ...rest } = store.state.filesMd ?? {}
             store.update({ filesMd: rest })

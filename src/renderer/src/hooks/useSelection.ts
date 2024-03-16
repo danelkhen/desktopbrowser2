@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { Selection } from "../lib/Selection"
@@ -8,31 +8,40 @@ import { dispatcher } from "../services/Dispatcher"
 import { c } from "../services/c"
 import { fileRow } from "../services/fileRow"
 import { calcItemsOnScreen } from "./calcItemsOnScreen"
+import { useAppState } from "./useAppState"
 
-export function useSelection({
-    res,
-    selectedFiles,
-    setSelectedFiles,
-}: {
-    readonly res: IListFilesRes
-    readonly selectedFiles: Set<IFile>
-    setSelectedFiles: (v: Set<IFile>) => void
-}) {
-    useEffect(() => {
-        const fm = res.file?.name ? dispatcher.getFileMetadata(res.file?.name ?? "") : null
+export function useSelection({ res }: { readonly res: IListFilesRes }) {
+    const { filesMd } = useAppState()
+    const [_extraSelectedFiles, _setExtraSelectedFiles] = useState<IFile[]>([])
+    const selectedFiles = useMemo(() => {
+        const fm = res.file?.name ? filesMd[res.file?.name] : null
         const selectedFileName = fm?.selectedFiles?.[0] ?? null
         const files = res?.files?.filter(t => t.name === selectedFileName) ?? []
-        setSelectedFiles(new Set(files))
-    }, [setSelectedFiles, res.file?.name, res?.files])
+        return new Set([...files, ..._extraSelectedFiles])
+    }, [_extraSelectedFiles, filesMd, res.file?.name, res?.files])
+    const selectedFile = useMemo(() => iterableLast(selectedFiles), [selectedFiles])
 
-    useEffect(() => {
-        if (!res?.file?.name) {
-            return
-        }
-        const file = iterableLast(selectedFiles)
-        console.log("saveSelectionAndSetSelectedItems", res.file.name, file?.name)
-        void dispatcher.saveSelectedFile(res.file.name, file?.name ?? null)
-    }, [res.file?.name, selectedFiles])
+    const setSelectedFiles = useCallback(
+        async (selectedFiles: Set<IFile>) => {
+            if (!res?.file?.name) {
+                return
+            }
+            const selectedFile = iterableLast(selectedFiles)
+            console.log("saveSelectionAndSetSelectedItems", res.file.name, selectedFile?.name)
+            _setExtraSelectedFiles(Array.from(selectedFiles).slice(0, selectedFiles.size - 1))
+            await dispatcher.saveSelectedFile(res.file.name, selectedFile?.name ?? null)
+        },
+        [res?.file?.name]
+    )
+
+    // useEffect(() => {
+    //     if (!res?.file?.name) {
+    //         return
+    //     }
+    //     const file = iterableLast(selectedFiles)
+    //     console.log("saveSelectionAndSetSelectedItems", res.file.name, file?.name)
+    //     void dispatcher.saveSelectedFile(res.file.name, file?.name ?? null)
+    // }, [res.file?.name, selectedFiles])
     useEffect(() => {
         console.log("verifySelectionInView", selectedFiles)
         void verifySelectionInView()
@@ -49,7 +58,7 @@ export function useSelection({
             if (target.matches("input:not(#tbQuickFind),select")) return
             ;(document.querySelector("#tbQuickFind") as HTMLElement).focus()
             const newSelection = selection.keyDown(e)
-            setSelectedFiles(newSelection.selected)
+            void setSelectedFiles(newSelection.selected)
             if (e.defaultPrevented) return
             if (e.key === "Enter") {
                 const file = selectedFile
@@ -64,13 +73,7 @@ export function useSelection({
         return () => window.removeEventListener("keydown", Win_keydown)
     }, [res, selectedFiles, setSelectedFiles])
 
-    const service = useMemo(() => {
-        return {
-            selectedFile: iterableLast(selectedFiles),
-        }
-    }, [selectedFiles])
-
-    return service
+    return { selectedFile, setSelectedFiles, selectedFiles }
 }
 
 async function verifySelectionInView() {

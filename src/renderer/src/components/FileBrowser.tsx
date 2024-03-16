@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router"
 import { useLocation } from "react-router-dom"
 import { Column } from "../../../shared/Column"
-import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { colors } from "../GlobalStyle"
 import { useAppState } from "../hooks/useAppState"
@@ -45,7 +44,6 @@ export function FileBrowser() {
         void dispatcher.fetchAllFilesMetadata()
     }, [])
 
-    const [selectedFiles, setSelectedFiles] = useState(new Set<IFile>())
     const { res } = useAppState()
 
     const [search2, setSearch2] = useState("")
@@ -65,10 +63,8 @@ export function FileBrowser() {
         setPath(req.path ?? "")
     }, [req.path])
 
-    useSelection({
+    const { selectedFiles, setSelectedFiles } = useSelection({
         res,
-        selectedFiles,
-        setSelectedFiles,
     })
     const selectedFile = useMemo(() => iterableLast(selectedFiles), [selectedFiles])
 
