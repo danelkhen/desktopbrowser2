@@ -19,6 +19,7 @@ import { Dispatcher } from "../services/Dispatcher"
 import { Dropdown } from "./Dropdown"
 import { MenuButton, ToggleMenuButton } from "./MenuButton"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
+import { Menu } from "./Menu"
 
 export function MainMenu({
     req,
@@ -86,7 +87,7 @@ export function MainMenu({
                     <Dropdown
                         toggler={<MenuButton icon={<SortIcon />}></MenuButton>}
                         popup={
-                            <div className="menu">
+                            <Menu>
                                 <ToggleMenuButton
                                     action={OrderByInnerSelection}
                                     isActive={dispatcher.isSortedBy(sorting, Column.hasInnerSelection)}
@@ -99,13 +100,13 @@ export function MainMenu({
                                 >
                                     Folders first
                                 </ToggleMenuButton>
-                            </div>
+                            </Menu>
                         }
                     />
                     <Dropdown
                         toggler={<MenuButton icon={<MoreIcon />}>More</MenuButton>}
                         popup={
-                            <div className="menu">
+                            <Menu>
                                 <ToggleMenuButton
                                     action={() => updateReq({ hideFolders: !req.hideFolders })}
                                     isActive={!!req.hideFolders}
@@ -139,7 +140,7 @@ export function MainMenu({
                                 <ToggleMenuButton action={() => updateReq({ vlc: !req.vlc })} isActive={!!req.vlc}>
                                     VLC
                                 </ToggleMenuButton>
-                            </div>
+                            </Menu>
                         }
                     />
                 </div>
