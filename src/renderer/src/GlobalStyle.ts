@@ -1,4 +1,4 @@
-import { injectGlobal as inj } from "@emotion/css"
+import { injectGlobal } from "@emotion/css"
 import { c } from "./services/c"
 
 export const lightTheme = {
@@ -31,7 +31,7 @@ export const darkTheme = {
 
 export const colors = darkTheme
 
-inj`
+injectGlobal`
     @font-face {
         font-family: "FreightSansProBook-Regular";
         src: url("/fonts/FreightSansProBook-Regular.eot");
@@ -89,10 +89,9 @@ inj`
 
     a.${c.name} {
         text-decoration: none;
-    }
-
-    a.${c.name}:hover {
-        border-bottom: 1px solid ${colors.fg3};
+        &:hover {
+            border-bottom: 1px solid ${colors.fg3};
+        }
     }
 
     .container-fluid {
@@ -124,18 +123,6 @@ inj`
         opacity: 1;
     }
 
-    .imdb label {
-        margin-right: 10px;
-    }
-
-    .imdb .poster {
-        float: right;
-    }
-
-    .imdb .poster img {
-        max-width: 300px;
-        max-height: 300px;
-    }
 
     .hidden {
         display: none;

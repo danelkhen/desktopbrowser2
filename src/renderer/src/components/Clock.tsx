@@ -1,6 +1,7 @@
 import { DateTime } from "luxon"
 import { useEffect, useState } from "react"
 import { sleep } from "../lib/sleep"
+import { css } from "@emotion/css"
 
 export function Clock() {
     const [time, setTime] = useState(DateTime.now().toFormat("HH:mm\n ccc, MMM d"))
@@ -17,9 +18,13 @@ export function Clock() {
             run = false
         }
     }, [])
-    return (
-        <span className="clock" id="clock">
-            {time}
-        </span>
-    )
+    return <span className={style}>{time}</span>
 }
+
+const style = css`
+    display: flex;
+    flex-direction: row;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    color: #999;
+`

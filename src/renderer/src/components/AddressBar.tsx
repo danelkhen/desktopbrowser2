@@ -15,11 +15,11 @@ export function AddressBar({
     search: string
     pageIndex: number
     totalPages: number | null
-    setPath(v: string): void
-    setSearch(v: string): void
-    gotoPath(): void
-    prevPage(): void
-    nextPage(): void
+    setPath: (v: string) => void
+    setSearch: (v: string) => void
+    gotoPath: () => void
+    prevPage: () => void
+    nextPage: () => void
 }) {
     return (
         <div className={style}>
@@ -28,7 +28,6 @@ export function AddressBar({
                     type="text"
                     name="path"
                     id="tbPath"
-                    className="form-control"
                     placeholder="Path"
                     value={path}
                     onChange={e => setPath(e.currentTarget.value)}
@@ -39,14 +38,14 @@ export function AddressBar({
             </form>
             <div className="right-side">
                 {(totalPages || 0) > 1 && (
-                    <span id="pager" className="Pager btn-group btn-group-sm">
-                        <button className="btn btn-default navbar-btn PrevPage" onMouseDown={prevPage}>
+                    <span id="pager" className="Pager">
+                        <button className="PrevPage" onMouseDown={prevPage}>
                             {"<"}
                         </button>
-                        <button className="btn btn-default navbar-btn PagerInfo">
+                        <button className="PagerInfo">
                             {pageIndex + 1} / {totalPages}
                         </button>
-                        <button className="btn btn-default navbar-btn NextPage" onMouseDown={nextPage}>
+                        <button className="NextPage" onMouseDown={nextPage}>
                             {">"}
                         </button>
                     </span>
@@ -57,7 +56,6 @@ export function AddressBar({
                         id="tbSearch"
                         value={search}
                         onChange={e => setSearch(e.currentTarget.value)}
-                        className="form-control"
                         placeholder="Find Something"
                     />
                 </span>

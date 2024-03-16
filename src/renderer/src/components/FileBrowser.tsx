@@ -19,7 +19,7 @@ import { AddressBar } from "./AddressBar"
 import { Clock } from "./Clock"
 import { Files } from "./Files"
 import { ColumnKey } from "./Grid"
-import { Menu } from "./Menu"
+import { MainMenu } from "./MainMenu"
 import { QuickFind } from "./QuickFind"
 import { gridColumns } from "./gridColumns"
 
@@ -74,7 +74,13 @@ export function FileBrowser() {
         <>
             <header>
                 <div className={navStyle}>
-                    <Menu selectedFile={selectedFile} req={req} dispatcher={dispatcher} sorting={sorting} res={res} />
+                    <MainMenu
+                        selectedFile={selectedFile}
+                        req={req}
+                        dispatcher={dispatcher}
+                        sorting={sorting}
+                        res={res}
+                    />
                     <Clock />
                 </div>
                 <AddressBar
@@ -130,13 +136,6 @@ const navStyle = css`
         position: fixed;
         top: 0;
         width: 100%;
-    }
-    .clock {
-        display: flex;
-        flex-direction: row;
-        font-size: 16px;
-        -webkit-font-smoothing: antialiased;
-        color: #999;
     }
 `
 
