@@ -1,5 +1,17 @@
 import { css } from "@emotion/css"
-import { ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Pagination } from "@mui/material"
+import {
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
+    MenuList,
+    Pagination,
+    listClasses,
+    listItemIconClasses,
+    listItemTextClasses,
+    menuItemClasses,
+    paginationClasses,
+} from "@mui/material"
 import React, { useCallback } from "react"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
@@ -174,15 +186,16 @@ const style = css`
     gap: 10px;
     padding: 10px 10px 0 10px;
     font-size: 14px;
-    .MuiPagination-root {
+    flex-wrap: wrap;
+    .${paginationClasses.root} {
         display: flex;
         flex: 1;
         justify-content: center;
     }
-    > .MuiList-root {
+    > .${listClasses.root} {
         display: flex;
         padding: 0;
-        .MuiMenuItem-root {
+        .${menuItemClasses.root} {
             border: 1px solid #282828;
             margin-left: -1px;
             &:first-of-type {
@@ -197,13 +210,13 @@ const style = css`
             &:first-of-type:last-of-type {
                 border-radius: 25px;
             }
-            .MuiListItemIcon-root {
+            .${listItemIconClasses.root} {
                 min-width: 0;
                 padding-right: 10px;
             }
         }
     }
-    .MuiMenuItem-root {
+    .${menuItemClasses.root} {
         font-size: inherit;
         line-height: 2;
         &:hover {
@@ -216,7 +229,7 @@ const style = css`
             }
         }
 
-        .MuiListItemText-primary {
+        .${listItemTextClasses.primary} {
             font-size: inherit;
         }
     }
