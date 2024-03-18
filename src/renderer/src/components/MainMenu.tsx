@@ -29,13 +29,12 @@ import SubtitleIcon from "../assets/icons/subtitle.svg?react"
 import TrashIcon from "../assets/icons/trash.svg?react"
 import UpIcon from "../assets/icons/up.svg?react"
 import { SortConfig } from "../hooks/useSorting"
-import { Dispatcher } from "../services/Dispatcher"
+import { dispatcher } from "../services/Dispatcher"
 import { Clock } from "./Clock"
 
 export function MainMenu({
     req,
     selectedFile,
-    dispatcher,
     sorting,
     res,
     pageIndex,
@@ -45,7 +44,6 @@ export function MainMenu({
     req: IListFilesReq
     res: IListFilesRes
     selectedFile?: IFile
-    dispatcher: Dispatcher
     sorting: SortConfig
     totalPages: number | null
     pageIndex: number
@@ -55,29 +53,30 @@ export function MainMenu({
         (e?: React.KeyboardEvent) =>
             selectedFile && dispatcher.deleteOrTrash({ file: selectedFile, isShiftDown: e?.shiftKey ?? false }),
 
-        [dispatcher, selectedFile]
+        [selectedFile]
     )
 
     const contextFile = selectedFile ?? res.file ?? null
-    const { goto, google, subs, exploreFile, OrderByInnerSelection, updateReq } = dispatcher
+    const { canUp, canPrev, canNext, up, prev, next, google, subs, exploreFile, orderByInnerSelection, updateReq } =
+        dispatcher
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
     const [anchorEl2, setAnchorEl2] = React.useState<null | HTMLElement>(null)
     return (
         <div className={style}>
             <MenuList>
-                <MenuItem onClick={goto.up}>
+                <MenuItem onClick={up} disabled={!canUp}>
                     <ListItemIcon>
                         <UpIcon />
                     </ListItemIcon>
                     <ListItemText>Up</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={goto.prev}>
+                <MenuItem onClick={prev} disabled={!canPrev}>
                     <ListItemIcon>
                         <PrevIcon />
                     </ListItemIcon>
                     <ListItemText>Prev</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={goto.next}>
+                <MenuItem onClick={next} disabled={!canNext}>
                     <ListItemIcon>
                         <NextIcon />
                     </ListItemIcon>
@@ -131,7 +130,7 @@ export function MainMenu({
                 </MenuItem>
                 <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)} className={style}>
                     <MenuItem
-                        onClick={OrderByInnerSelection}
+                        onClick={orderByInnerSelection}
                         selected={dispatcher.isSortedBy(sorting, Column.hasInnerSelection)}
                     >
                         Watched

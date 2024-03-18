@@ -20,15 +20,15 @@ import _ from "lodash"
 export class Dispatcher {
     navigate?: NavigateFunction
 
-    fetchAllFilesMetadata = async () => {
+    fetchAllFilesMeta = async () => {
         const x = await api.getAllFilesMeta()
         const obj: { [key: string]: IFileMeta } = {}
         x.map(t => (obj[t.key] = t))
         store.update({ filesMd: obj })
     }
 
-    private async setFileMetadata(value: IFileMeta) {
-        const meta = await this.getFileMetadata(value.key)
+    private async setFileMeta(value: IFileMeta) {
+        const meta = await this.getFileMeta(value.key)
         if (_.isEqual(meta, value)) return
         console.log({ meta, value })
         if (!value.selectedFiles?.length) {
@@ -45,18 +45,18 @@ export class Dispatcher {
         store.update({ filesMd: { ...store.state.filesMd, [value.key]: value } })
         await api.saveFileMeta(value)
     }
-    getFileMetadata = (key: string): IFileMeta | null => {
+    getFileMeta = (key: string): IFileMeta | null => {
         const x = store.state.filesMd?.[key]
         if (!x) return null
         return x
     }
     getSavedSelectedFile = (folder: string) => {
-        const x = this.getFileMetadata(folder)
+        const x = this.getFileMeta(folder)
         return x?.selectedFiles?.[0] ?? null
     }
     saveSelectedFile = async (folderName: string, filename: string | null) => {
         const meta: IFileMeta = { key: folderName, selectedFiles: filename ? [filename] : undefined, collection: "" }
-        await this.setFileMetadata(meta)
+        await this.setFileMeta(meta)
     }
 
     hasInnerSelection = (file: IFile) => {
@@ -184,21 +184,13 @@ export class Dispatcher {
         return true
     }
 
-    goto = {
-        up: () => this.up(),
-        prev: () => this.GotoFolder(store.state.res?.prev),
-        next: () => this.GotoFolder(store.state.res?.next),
-    }
-    canGoto = {
-        up: () => store.state.req.path !== "/",
-        prev: () => !!store.state.res?.prev,
-        next: () => !!store.state.res?.next,
-    }
-
-    OrderByInnerSelection = () => this.orderBy(Column.hasInnerSelection)
-
+    prev = () => this.GotoFolder(store.state.res?.prev)
+    next = () => this.GotoFolder(store.state.res?.next)
+    canUp = () => store.state.req.path !== "/"
+    canPrev = () => !!store.state.res?.prev
+    canNext = () => !!store.state.res?.next
+    orderByInnerSelection = () => this.orderBy(Column.hasInnerSelection)
     google = () => store.state.res?.file && openInNewWindow(getGoogleSearchLink(store.state.res?.file))
-
     subs = () => store.state.res?.file && openInNewWindow(getSubtitleSearchLink(store.state.res?.file))
 }
 

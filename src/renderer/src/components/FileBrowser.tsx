@@ -37,7 +37,7 @@ export function FileBrowser() {
     }, [req, sorting])
 
     useEffect(() => {
-        void dispatcher.fetchAllFilesMetadata()
+        void dispatcher.fetchAllFilesMeta()
     }, [])
 
     const { res } = useAppState()
@@ -72,7 +72,6 @@ export function FileBrowser() {
                 <MainMenu
                     selectedFile={selectedFile}
                     req={req}
-                    dispatcher={dispatcher}
                     sorting={sorting}
                     res={res}
                     totalPages={totalPages}
