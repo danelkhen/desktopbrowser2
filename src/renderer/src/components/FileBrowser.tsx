@@ -69,17 +69,17 @@ export function FileBrowser() {
     return (
         <div className={style}>
             <header className={style}>
-                <MainMenu selectedFile={selectedFile} req={req} dispatcher={dispatcher} sorting={sorting} res={res} />
-                <AddressBar
-                    gotoPath={gotoPath}
-                    path={path}
-                    setPath={setPath}
-                    search={search2}
-                    setSearch={setSearch2}
-                    pageIndex={pageIndex}
+                <MainMenu
+                    selectedFile={selectedFile}
+                    req={req}
+                    dispatcher={dispatcher}
+                    sorting={sorting}
+                    res={res}
                     totalPages={totalPages}
+                    pageIndex={pageIndex}
                     setPageIndex={setPageIndex}
                 />
+                <AddressBar gotoPath={gotoPath} path={path} setPath={setPath} search={search2} setSearch={setSearch2} />
                 <QuickFind allFiles={allFiles} onFindFiles={v => setSelectedFiles(new Set(v))} />
                 <Files
                     selectedFiles={selectedFiles}

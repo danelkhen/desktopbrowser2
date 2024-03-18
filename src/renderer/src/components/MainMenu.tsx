@@ -1,4 +1,5 @@
-import { Box, ListItemIcon, ListItemText, Menu, MenuItem, MenuList } from "@mui/material"
+import { css } from "@emotion/css"
+import { ListItemIcon, ListItemText, Menu, MenuItem, MenuList, Pagination } from "@mui/material"
 import React, { useCallback } from "react"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
@@ -18,7 +19,6 @@ import UpIcon from "../assets/icons/up.svg?react"
 import { SortConfig } from "../hooks/useSorting"
 import { Dispatcher } from "../services/Dispatcher"
 import { Clock } from "./Clock"
-import { css } from "@emotion/css"
 
 export function MainMenu({
     req,
@@ -26,12 +26,18 @@ export function MainMenu({
     dispatcher,
     sorting,
     res,
+    pageIndex,
+    totalPages,
+    setPageIndex,
 }: {
     req: IListFilesReq
     res: IListFilesRes
     selectedFile?: IFile
     dispatcher: Dispatcher
     sorting: SortConfig
+    totalPages: number | null
+    pageIndex: number
+    setPageIndex: (v: number) => void
 }) {
     const Delete = useCallback(
         (e?: React.KeyboardEvent) =>
@@ -152,7 +158,7 @@ export function MainMenu({
                     </MenuItem>
                 </Menu>
             </MenuList>
-            <Box sx={{ flex: 1 }}></Box>
+            <Pagination count={totalPages || 1} onChange={(e, v) => setPageIndex(v - 1)} page={pageIndex + 1} />
             <MenuList>
                 <MenuItem>
                     <Clock />
@@ -168,6 +174,11 @@ const style = css`
     gap: 10px;
     padding: 10px 10px 0 10px;
     font-size: 14px;
+    .MuiPagination-root {
+        display: flex;
+        flex: 1;
+        justify-content: center;
+    }
     > .MuiList-root {
         display: flex;
         padding: 0;

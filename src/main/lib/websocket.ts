@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import * as http from "http"
+import log from "electron-log/main"
 import * as ws from "ws"
 import { IWsReq } from "../../shared/IWsReq"
-import log from "electron-log/main"
+import http from "http"
 
 export function setupWebsockets(server: http.Server, service: any) {
     log.info("setupWebsockets")
-    const wss = new ws.WebSocketServer({ path: "/api", server })
+    const wss = new ws.WebSocketServer({ noServer: true })
 
     wss.on("connection", (ws, req) => {
         log.info("wss.onconnection", req.url)
@@ -39,6 +39,15 @@ export function setupWebsockets(server: http.Server, service: any) {
             }
         })
         ws.on("error", e => log.info("ws.error", e))
+    })
+    server.on("upgrade", (request, socket, head) => {
+        console.log("server.onupgrade", request.url)
+        if (request.url !== "/api") {
+            return
+        }
+        wss.handleUpgrade(request, socket, head, ws => {
+            wss.emit("connection", ws, request)
+        })
     })
 }
 

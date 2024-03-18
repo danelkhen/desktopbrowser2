@@ -1,11 +1,12 @@
 import express from "express"
+import proxy from "express-http-proxy"
 import http from "http"
 import os from "os"
 import { join } from "path"
+import { api } from "../api/api"
 import { config } from "../config"
 import { handleServiceRequest } from "../lib/handleServiceRequest"
 import { setupWebsockets } from "../lib/websocket"
-import { api } from "../api/api"
 
 export async function setupWebServer() {
     console.log(config)
@@ -15,23 +16,20 @@ export async function setupWebServer() {
 
     const exp = express()
     exp.use(express.json())
-    exp.use("/api/:action", handleServiceRequest(api))
+    exp.use("/api/:action", handleServiceRequest(api), () => {})
+    exp.use("/api", () => {})
+
     console.log("renderer dir", join(__dirname, "../renderer"))
 
     if (config.dev && config.ELECTRON_RENDERER_URL) {
-        console.log("using proxy", config.ELECTRON_RENDERER_URL)
-        // exp.use(proxy(config.ELECTRON_RENDERER_URL))
-        // mainWindow.loadURL(process.env["ELECTRON_RENDERER_URL"])
+        console.log("dev mode - using proxy", config.ELECTRON_RENDERER_URL)
+        exp.use(proxy(config.ELECTRON_RENDERER_URL))
     } else {
         exp.use("/", express.static(join(__dirname, "../renderer")))
-        exp.use("/resources", express.static(join(__dirname, "../../resources")))
-        // mainWindow.loadFile(join(__dirname, "../renderer/index.html"))
+        exp.get("/*", (req, res) => {
+            res.sendFile(join(__dirname, "../renderer/index.html"))
+        })
     }
-
-    exp.get("/*", (req: express.Request, res: express.Response) => {
-        // res.sendFile(path.join(rootDir, "client/dist/index.html"))
-        res.sendFile(join(__dirname, "../renderer/index.html"))
-    })
 
     const server = http.createServer(exp)
     setupWebsockets(server, api)

@@ -1,5 +1,5 @@
 import { css } from "@emotion/css"
-import { Box, Input, Pagination } from "@mui/material"
+import { Box, Input } from "@mui/material"
 
 export function AddressBar({
     gotoPath,
@@ -7,18 +7,12 @@ export function AddressBar({
     search,
     setPath,
     setSearch,
-    pageIndex,
-    totalPages,
-    setPageIndex,
 }: {
     path: string
     search: string
-    pageIndex: number
-    totalPages: number | null
     setPath: (v: string) => void
     setSearch: (v: string) => void
     gotoPath: () => void
-    setPageIndex: (v: number) => void
 }) {
     return (
         <Box className={style}>
@@ -37,7 +31,6 @@ export function AddressBar({
                     spellCheck="false"
                 />
             </Box>
-            <Pagination count={totalPages || 1} onChange={(e, v) => setPageIndex(v - 1)} page={pageIndex + 1} />
             <span className="find">
                 <Input
                     disableUnderline
