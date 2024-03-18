@@ -9,4 +9,7 @@ export const c = {
     name: "name",
     dropdownToggle: "dropdown-toggle",
     type: "type",
+    size: "size",
+    modified: "modified",
+    ext: "ext",
 } as const

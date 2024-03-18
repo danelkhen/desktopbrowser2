@@ -21,9 +21,6 @@ export interface GridProps<T> {
     columns: GridColumns<T>
     className?: string
     items: T[]
-    // headers?: Partial<Meta<K, () => ReactElement>>
-    // children?: { [key: ColumnKey]: (item: T, index: number) => ReactNode }
-    // columns: ColumnsConfig<T, K>
 
     getRowClass?: (item: T) => string
     onItemClick?: (e: React.MouseEvent, item: T) => void
@@ -31,7 +28,6 @@ export interface GridProps<T> {
     onItemDoubleClick?: (e: React.MouseEvent, item: T) => void
 
     getHeaderClass?: (column: ColumnKey) => string
-    getCellClass?: (column: ColumnKey, item: T) => string
     orderBy?: (column: ColumnKey) => void
     visibleColumns: ColumnKey[]
     noHead?: boolean
@@ -56,7 +52,9 @@ export function Grid<T>({
         <div className={cx(containerStyle, className)}>
             <table className={tableStyle}>
                 <colgroup>
-                    {visibleColumns?.map(col => <col key={col} style={{ width: columns[col]?.width }}></col>)}
+                    {visibleColumns?.map(col => (
+                        <col key={col} className={columns[col]?.className} style={{ width: columns[col]?.width }}></col>
+                    ))}
                 </colgroup>
                 {!noHead && (
                     <thead>

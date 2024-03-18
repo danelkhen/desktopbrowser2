@@ -8,7 +8,6 @@ import { AddressBar } from "./AddressBar"
 import { Files } from "./Files"
 import { MainMenu } from "./MainMenu"
 import { QuickFind } from "./QuickFind"
-import { gridColumns } from "./gridColumns"
 
 export function Header({
     selectedFile,
@@ -18,8 +17,8 @@ export function Header({
     gotoPath,
     path,
     setPath,
-    search2,
-    setSearch2,
+    search,
+    setSearch,
     pageIndex,
     totalPages,
     setPageIndex,
@@ -35,8 +34,8 @@ export function Header({
     gotoPath: () => void
     path: string
     setPath: (v: string) => void
-    search2: string
-    setSearch2: (v: string) => void
+    search: string
+    setSearch: (v: string) => void
     pageIndex: number
     totalPages: number
     setPageIndex: (v: number) => void
@@ -52,8 +51,8 @@ export function Header({
                 gotoPath={gotoPath}
                 path={path}
                 setPath={setPath}
-                search={search2}
-                setSearch={setSearch2}
+                search={search}
+                setSearch={setSearch}
                 pageIndex={pageIndex}
                 totalPages={totalPages}
                 setPageIndex={setPageIndex}
@@ -63,7 +62,6 @@ export function Header({
                 selectedFiles={selectedFiles}
                 allFiles={allFiles}
                 setSelectedFiles={setSelectedFiles}
-                columns={gridColumns}
                 files={files}
                 sorting={sorting}
                 noBody

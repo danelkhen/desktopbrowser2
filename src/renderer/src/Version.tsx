@@ -1,3 +1,4 @@
+import { css } from "@emotion/css"
 import { useEffect, useState } from "react"
 
 export function Version() {
@@ -11,9 +12,9 @@ export function Version() {
         }
     }, [])
     return (
-        <div>
+        <div className={style}>
             Current version: <span id="version">v{APP_VERSION}</span>
-            <div>
+            <div className="messages">
                 {messages.map((message, i) => (
                     <div key={i}>{message}</div>
                 ))}
@@ -21,3 +22,10 @@ export function Version() {
         </div>
     )
 }
+
+const style = css`
+    .messages {
+        overflow: auto;
+        max-height: 200px;
+    }
+`

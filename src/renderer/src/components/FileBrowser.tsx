@@ -17,7 +17,6 @@ import { store } from "../services/store"
 import { Files } from "./Files"
 import { ColumnKey } from "./Grid"
 import { Header } from "./Header"
-import { gridColumns } from "./gridColumns"
 
 const pageSize = 200
 export function FileBrowser() {
@@ -75,8 +74,8 @@ export function FileBrowser() {
                 gotoPath={gotoPath}
                 path={path}
                 setPath={setPath}
-                search2={search2}
-                setSearch2={setSearch2}
+                search={search2}
+                setSearch={setSearch2}
                 pageIndex={pageIndex}
                 totalPages={totalPages}
                 setPageIndex={setPageIndex}
@@ -89,7 +88,6 @@ export function FileBrowser() {
                 selectedFiles={selectedFiles}
                 allFiles={allFiles}
                 setSelectedFiles={setSelectedFiles}
-                columns={gridColumns}
                 files={files}
                 sorting={sorting}
                 noHead

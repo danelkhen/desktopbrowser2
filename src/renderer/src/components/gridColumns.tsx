@@ -20,13 +20,13 @@ export const gridColumns: GridColumns<IFile> = {
         width: "35px",
     },
     name: {
+        className: c.name,
         getter: t => t.name,
         cell: file => (
             <span>
                 <a className={c.name}>{file.name}</a>
             </span>
         ),
-        // width: "100%",
     },
     size: {
         getter: t => t.size,

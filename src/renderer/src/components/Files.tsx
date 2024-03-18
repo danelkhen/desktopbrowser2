@@ -1,20 +1,19 @@
 import { css, cx } from "@emotion/css"
 import React, { useCallback } from "react"
 import { IFile } from "../../../shared/IFile"
-import { SortConfig } from "../hooks/useSorting"
-import { dispatcher } from "../services/Dispatcher"
-import { Selection } from "../lib/Selection"
-import { c } from "../services/c"
-import { Grid, GridColumns } from "./Grid"
-import { visibleGridColumns } from "./gridColumns"
 import { calcItemsOnScreen } from "../hooks/calcItemsOnScreen"
+import { SortConfig } from "../hooks/useSorting"
+import { Selection } from "../lib/Selection"
+import { dispatcher } from "../services/Dispatcher"
+import { c } from "../services/c"
 import { fileRow } from "../services/fileRow"
+import { Grid } from "./Grid"
+import { gridColumns, visibleGridColumns } from "./gridColumns"
 
 export function Files({
     selectedFiles,
     allFiles,
     setSelectedFiles,
-    columns,
     files,
     sorting,
     noHead,
@@ -23,7 +22,6 @@ export function Files({
     setSelectedFiles: (v: Set<IFile>) => void
     selectedFiles: Set<IFile>
     allFiles: IFile[]
-    columns: GridColumns<IFile>
     files: IFile[]
     sorting: SortConfig
     noHead?: boolean
@@ -82,7 +80,7 @@ export function Files({
                 )
                 return s
             }}
-            columns={columns}
+            columns={gridColumns}
             visibleColumns={visibleGridColumns}
             noHead={noHead}
             noBody={noBody}
