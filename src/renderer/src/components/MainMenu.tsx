@@ -46,7 +46,7 @@ export function MainMenu({
     const [anchorEl2, setAnchorEl2] = React.useState<null | HTMLElement>(null)
     return (
         <div className={style}>
-            <MenuList className="menuGroup">
+            <MenuList>
                 <MenuItem onClick={goto.up}>
                     <ListItemIcon>
                         <UpIcon />
@@ -66,7 +66,7 @@ export function MainMenu({
                     <ListItemText>Next</ListItemText>
                 </MenuItem>
             </MenuList>
-            <MenuList className="menuGroup">
+            <MenuList>
                 <MenuItem onClick={() => updateReq({ folderSize: !req.folderSize })} selected={!!req.folderSize}>
                     <ListItemIcon>
                         <FolderIcon />
@@ -98,7 +98,7 @@ export function MainMenu({
                     <ListItemText>New</ListItemText>
                 </MenuItem>
             </MenuList>
-            <MenuList className="menuGroup">
+            <MenuList>
                 <MenuItem onClick={() => Delete()}>
                     <ListItemIcon>
                         <TrashIcon />
@@ -111,7 +111,7 @@ export function MainMenu({
                     </ListItemIcon>
                     <ListItemText>Sort</ListItemText>
                 </MenuItem>
-                <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)}>
+                <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)} className={style}>
                     <MenuItem
                         onClick={OrderByInnerSelection}
                         selected={dispatcher.isSortedBy(sorting, Column.hasInnerSelection)}
@@ -125,13 +125,13 @@ export function MainMenu({
                         Folders first
                     </MenuItem>
                 </Menu>
-                <MenuItem onClick={e => setAnchorEl(e.currentTarget)}>
+                <MenuItem onClick={e => setAnchorEl2(e.currentTarget)}>
                     <ListItemIcon>
                         <MoreIcon />
                     </ListItemIcon>
                     <ListItemText>More</ListItemText>
                 </MenuItem>
-                <Menu anchorEl={anchorEl2} open={!!anchorEl2} onClose={() => setAnchorEl2(null)}>
+                <Menu anchorEl={anchorEl2} open={!!anchorEl2} onClose={() => setAnchorEl2(null)} className={style}>
                     <MenuItem onClick={() => updateReq({ hideFolders: !req.hideFolders })} selected={!!req.hideFolders}>
                         Hide Folders
                     </MenuItem>
@@ -153,7 +153,7 @@ export function MainMenu({
                 </Menu>
             </MenuList>
             <Box sx={{ flex: 1 }}></Box>
-            <MenuList className="menuGroup">
+            <MenuList>
                 <MenuItem>
                     <Clock />
                 </MenuItem>
@@ -168,15 +168,12 @@ const style = css`
     gap: 10px;
     padding: 10px 10px 0 10px;
     font-size: 14px;
-    ul.menuGroup {
+    > .MuiList-root {
         display: flex;
         padding: 0;
-        > li {
+        .MuiMenuItem-root {
             border: 1px solid #282828;
-            line-height: 2;
             margin-left: -1px;
-            font-size: inherit;
-
             &:first-of-type {
                 border-radius: 25px 0 0 25px;
                 padding-left: 28px;
@@ -193,9 +190,23 @@ const style = css`
                 min-width: 0;
                 padding-right: 10px;
             }
-            .MuiListItemText-primary {
-                font-size: inherit;
+        }
+    }
+    .MuiMenuItem-root {
+        font-size: inherit;
+        line-height: 2;
+        &:hover {
+            /* background-color: #864aff; */
+        }
+        &.Mui-selected {
+            background-color: #a276f8;
+            &:hover {
+                background-color: #864aff;
             }
+        }
+
+        .MuiListItemText-primary {
+            font-size: inherit;
         }
     }
 `

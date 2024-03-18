@@ -14,9 +14,11 @@ import { iterableLast } from "../lib/iterableLast"
 import { queryToReq } from "../lib/queryToReq"
 import { dispatcher } from "../services/Dispatcher"
 import { store } from "../services/store"
+import { AddressBar } from "./AddressBar"
 import { Files } from "./Files"
 import { ColumnKey } from "./Grid"
-import { Header } from "./Header"
+import { MainMenu } from "./MainMenu"
+import { QuickFind } from "./QuickFind"
 
 const pageSize = 200
 export function FileBrowser() {
@@ -66,24 +68,28 @@ export function FileBrowser() {
 
     return (
         <div className={style}>
-            <Header
-                selectedFile={selectedFile}
-                req={req}
-                sorting={sorting}
-                res={res}
-                gotoPath={gotoPath}
-                path={path}
-                setPath={setPath}
-                search={search2}
-                setSearch={setSearch2}
-                pageIndex={pageIndex}
-                totalPages={totalPages}
-                setPageIndex={setPageIndex}
-                allFiles={allFiles}
-                setSelectedFiles={setSelectedFiles}
-                selectedFiles={selectedFiles}
-                files={files}
-            />
+            <header className={style}>
+                <MainMenu selectedFile={selectedFile} req={req} dispatcher={dispatcher} sorting={sorting} res={res} />
+                <AddressBar
+                    gotoPath={gotoPath}
+                    path={path}
+                    setPath={setPath}
+                    search={search2}
+                    setSearch={setSearch2}
+                    pageIndex={pageIndex}
+                    totalPages={totalPages}
+                    setPageIndex={setPageIndex}
+                />
+                <QuickFind allFiles={allFiles} onFindFiles={v => setSelectedFiles(new Set(v))} />
+                <Files
+                    selectedFiles={selectedFiles}
+                    allFiles={allFiles}
+                    setSelectedFiles={setSelectedFiles}
+                    files={files}
+                    sorting={sorting}
+                    noBody
+                />
+            </header>
             <Files
                 selectedFiles={selectedFiles}
                 allFiles={allFiles}
@@ -125,4 +131,9 @@ function parseRequest(path: string, search: string) {
 
 const style = css`
     label: FileBrowser;
+    header {
+        position: sticky;
+        top: 0;
+        background-color: #111;
+    }
 `
