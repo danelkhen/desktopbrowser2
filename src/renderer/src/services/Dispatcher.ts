@@ -23,7 +23,7 @@ export class Dispatcher {
         const x = await api.getAllFolderSelections()
         // const obj: { [key: string]: IFileMeta } = {}
         // x.map(t => (obj[t.key] = t))
-        store.update({ filesMd: x })
+        store.update({ folderSelections: x })
     }
 
     async setFolderSelection(key: string, value: string | null) {
@@ -34,21 +34,21 @@ export class Dispatcher {
             if (!meta) {
                 return
             }
-            const newMd = produce(store.state.filesMd, draft => {
+            const newMd = produce(store.state.folderSelections, draft => {
                 delete draft[key]
             })
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             // const { [key]: removed, ...rest } = store.state.filesMd ?? {}
-            store.update({ filesMd: newMd })
+            store.update({ folderSelections: newMd })
             console.log("deleteFileMeta", key)
             await api.deleteFolderSelection(key)
             return
         }
-        store.update({ filesMd: { ...store.state.filesMd, [key]: value } })
+        store.update({ folderSelections: { ...store.state.folderSelections, [key]: value } })
         await api.saveFolderSelection({ key, value })
     }
     getFolderSelection = (key: string): string | null => {
-        const x = store.state.filesMd?.[key]
+        const x = store.state.folderSelections?.[key]
         if (!x) return null
         return x
     }

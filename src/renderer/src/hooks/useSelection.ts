@@ -11,7 +11,7 @@ import { calcItemsOnScreen } from "./calcItemsOnScreen"
 import { useAppState } from "./useAppState"
 
 export function useSelection({ res }: { readonly res: IListFilesRes }) {
-    const { filesMd } = useAppState()
+    const { folderSelections: filesMd } = useAppState()
     const [_extraSelectedFiles, _setExtraSelectedFiles] = useState<IFile[]>([])
     const selectedFiles = useMemo(() => {
         const fm = res.file?.name ? filesMd[res.file?.name] : null
