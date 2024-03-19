@@ -4,10 +4,10 @@ import { Api } from "../../../shared/Api"
 
 export const api: Api = {
     listFiles: req => wsInvoke({ funcName: "listFiles", args: [req] }),
-    saveFileMeta: req => httpInvoke("/api/saveFileMeta", req),
-    getFileMeta: req => httpInvoke("/api/getFileMeta", req),
-    deleteFileMeta: req => httpInvoke("/api/deleteFileMeta", req),
-    getAllFilesMeta: () => httpInvoke("/api/getAllFilesMeta"),
+    saveFolderSelection: req => httpInvoke("/api/saveFolderSelection", req),
+    deleteFolderSelection: req => httpInvoke("/api/deleteFolderSelection", req),
+    getAllFolderSelections: () => httpInvoke("/api/getAllFolderSelections"),
+    getFolderSelection: req => httpInvoke("/api/getFolderSelection", req),
     execute: req => httpInvoke("/api/execute", req),
     explore: req => httpInvoke("/api/explore", req),
     del: req => httpInvoke("/api/del", req),

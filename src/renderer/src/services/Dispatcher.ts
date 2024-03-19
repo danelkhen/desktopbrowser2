@@ -1,8 +1,8 @@
 import { produce } from "immer"
+import _ from "lodash"
 import { NavigateFunction } from "react-router"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
-import { IFileMeta } from "../../../shared/IFileMeta"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { ColumnKey } from "../components/Grid"
 import { gridColumns } from "../components/gridColumns"
@@ -15,23 +15,22 @@ import { pathToUrl } from "../lib/pathToUrl"
 import { reqToQuery } from "../lib/reqToQuery"
 import { api } from "./api"
 import { store } from "./store"
-import _ from "lodash"
 
 export class Dispatcher {
     navigate?: NavigateFunction
 
     fetchAllFilesMeta = async () => {
-        const x = await api.getAllFilesMeta()
+        const x = await api.getAllFolderSelections()
         // const obj: { [key: string]: IFileMeta } = {}
         // x.map(t => (obj[t.key] = t))
         store.update({ filesMd: x })
     }
 
-    private async setFileMeta(key: string, value: IFileMeta) {
-        const meta = await this.getFileMeta(key)
+    async setFolderSelection(key: string, value: string | null) {
+        const meta = await this.getFolderSelection(key)
         if (_.isEqual(meta, value)) return
         console.log({ meta, value })
-        if (!value.selectedFiles?.length) {
+        if (!value) {
             if (!meta) {
                 return
             }
@@ -42,28 +41,24 @@ export class Dispatcher {
             // const { [key]: removed, ...rest } = store.state.filesMd ?? {}
             store.update({ filesMd: newMd })
             console.log("deleteFileMeta", key)
-            await api.deleteFileMeta({ key })
+            await api.deleteFolderSelection(key)
             return
         }
         store.update({ filesMd: { ...store.state.filesMd, [key]: value } })
-        await api.saveFileMeta({ key, value })
+        await api.saveFolderSelection({ key, value })
     }
-    getFileMeta = (key: string): IFileMeta | null => {
+    getFolderSelection = (key: string): string | null => {
         const x = store.state.filesMd?.[key]
         if (!x) return null
         return x
     }
-    getSavedSelectedFile = (folder: string) => {
-        const x = this.getFileMeta(folder)
-        return x?.selectedFiles?.[0] ?? null
-    }
-    saveSelectedFile = async (folderName: string, filename: string | null) => {
-        const meta: IFileMeta = { selectedFiles: filename ? [filename] : undefined }
-        await this.setFileMeta(folderName, meta)
-    }
+    // setFolderSelection = async (folderName: string, filename: string | null) => {
+    //     const meta: IFileMeta = { selectedFiles: filename ? [filename] : undefined }
+    //     await this.setFolderSelection(folderName, meta)
+    // }
 
     hasInnerSelection = (file: IFile) => {
-        return !!dispatcher.getSavedSelectedFile(file.name)
+        return !!dispatcher.getFolderSelection(file.name)
     }
 
     getFileTypeOrder(type: string): number {

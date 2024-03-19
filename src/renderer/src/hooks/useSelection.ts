@@ -15,7 +15,7 @@ export function useSelection({ res }: { readonly res: IListFilesRes }) {
     const [_extraSelectedFiles, _setExtraSelectedFiles] = useState<IFile[]>([])
     const selectedFiles = useMemo(() => {
         const fm = res.file?.name ? filesMd[res.file?.name] : null
-        const selectedFileName = fm?.selectedFiles?.[0] ?? null
+        const selectedFileName = fm ?? null
         const files = res?.files?.filter(t => t.name === selectedFileName) ?? []
         return new Set([...files, ..._extraSelectedFiles])
     }, [_extraSelectedFiles, filesMd, res.file?.name, res?.files])
@@ -29,7 +29,7 @@ export function useSelection({ res }: { readonly res: IListFilesRes }) {
             const selectedFile = iterableLast(selectedFiles)
             console.log("saveSelectionAndSetSelectedItems", res.file.name, selectedFile?.name)
             _setExtraSelectedFiles(Array.from(selectedFiles).slice(0, selectedFiles.size - 1))
-            await dispatcher.saveSelectedFile(res.file.name, selectedFile?.name ?? null)
+            await dispatcher.setFolderSelection(res.file.name, selectedFile?.name ?? null)
         },
         [res?.file?.name]
     )

@@ -3,8 +3,7 @@ import log from "electron-log/main"
 import { autoUpdater } from "electron-updater"
 import fs from "fs/promises"
 import { rimraf } from "rimraf"
-import { Api } from "../../shared/Api"
-import { IFileMeta } from "../../shared/IFileMeta"
+import { Api, FolderSelections } from "../../shared/Api"
 import { IListFilesRes } from "../../shared/IListFilesRes"
 import { vlcPlay } from "../lib/vlc"
 import { db } from "../services"
@@ -14,21 +13,21 @@ import { getFiles } from "./getFiles"
 import { toCurrentPlatformPath } from "./toCurrentPlatformPath"
 
 export const api: Api = {
-    getFileMeta({ key }) {
-        return db.files.get(key)
+    getFolderSelection: key => {
+        return db.folderSelection.get(key)
     },
-    async getAllFilesMeta() {
-        const list: { [key: string]: IFileMeta | undefined } = {}
-        for await (const [key, file] of db.files.iterator()) {
+    getAllFolderSelections: async () => {
+        const list: FolderSelections = {}
+        for await (const [key, file] of db.folderSelection.iterator()) {
             list[key] = file
         }
         return list
     },
-    async saveFileMeta(req) {
-        await db.files.put(req.key, req.value)
+    saveFolderSelection: async req => {
+        await db.folderSelection.put(req.key, req.value)
     },
-    async deleteFileMeta({ key }) {
-        await db.files.del(key)
+    deleteFolderSelection: async key => {
+        await db.folderSelection.del(key)
     },
     listFiles: async req => {
         if (!req.path) {
@@ -88,24 +87,24 @@ export const api: Api = {
         await shell.trashItem(path)
     },
 
-    async appInspect() {
+    appInspect: async () => {
         const win = BrowserWindow.getFocusedWindow()
         win?.webContents.openDevTools({ mode: "detach" })
     },
-    appOpen() {
+    appOpen: () => {
         return shell.openExternal("http://localhost:7779")
     },
-    async appExit() {
+    appExit: async () => {
         return app.quit()
     },
-    async checkForUpdates() {
+    checkForUpdates: async () => {
         const res = await autoUpdater.checkForUpdatesAndNotify()
         return res
     },
-    async appGetVersion() {
+    appGetVersion: async () => {
         return app.getVersion()
     },
-    async appHide() {
+    appHide: async () => {
         BrowserWindow.getAllWindows().forEach(t => t.hide())
     },
 }

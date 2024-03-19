@@ -42,7 +42,7 @@ export const gridColumns: GridColumns<IFile> = {
     },
     ext: { getter: t => t.ext, cell: file => !file.isFolder && <span>{file.ext}</span>, width: "150px" },
     hasInnerSelection: {
-        getter: t => !!t?.isFolder && !!dispatcher.getSavedSelectedFile(t.name),
+        getter: t => !!t?.isFolder && !!dispatcher.getFolderSelection(t.name),
         descendingFirst: true,
     },
 }

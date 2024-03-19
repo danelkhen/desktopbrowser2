@@ -7,8 +7,8 @@ export function useFilter(req: IListFilesReq, list: IFile[]) {
     return useMemo(() => {
         if (!req.hideWatched) return list
         return list.filter(t => {
-            const md = dispatcher.getFileMeta(t.name)
-            return !md?.selectedFiles?.length // && !md?.watched
+            const md = dispatcher.getFolderSelection(t.name)
+            return !md // && !md?.watched
         })
     }, [req.hideWatched, list])
 }
