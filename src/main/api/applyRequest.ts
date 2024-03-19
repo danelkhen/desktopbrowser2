@@ -22,8 +22,9 @@ export async function applyRequest(files: IFile[], req: IListFilesReq): Promise<
         )
     }
     if (req.hideWatched) {
-        const res = await db.files.getMany(files.map(t => t.name))
-        const obj = Object.fromEntries(res.map(t => [t.key, t]))
+        const keys = files.map(t => t.name)
+        const res = await db.files.getMany(keys)
+        const obj = Object.fromEntries(res.map((t, i) => [keys[i], t]))
         files = files.filter(t => !!obj[t.name])
     }
     if (req.folderSize && !req.hideFolders) {

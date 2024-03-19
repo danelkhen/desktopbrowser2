@@ -18,14 +18,14 @@ export const api: Api = {
         return db.files.get(key)
     },
     async getAllFilesMeta() {
-        const list: IFileMeta[] = []
+        const list: { [key: string]: IFileMeta | undefined } = {}
         for await (const [key, file] of db.files.iterator()) {
-            list.push({ ...file, key })
+            list[key] = file
         }
         return list
     },
     async saveFileMeta(req) {
-        await db.files.put(req.key, req)
+        await db.files.put(req.key, req.value)
     },
     async deleteFileMeta({ key }) {
         await db.files.del(key)

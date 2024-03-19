@@ -3,9 +3,9 @@ import { IListFilesReq } from "./IListFilesReq"
 import { IListFilesRes } from "./IListFilesRes"
 
 export interface Api {
-    saveFileMeta(md: IFileMeta): Promise<void>
+    saveFileMeta(req: { key: string; value: IFileMeta }): Promise<void>
     deleteFileMeta(req: { key: string }): Promise<void>
-    getAllFilesMeta(): Promise<IFileMeta[]>
+    getAllFilesMeta(): Promise<{ [key: string]: IFileMeta | undefined }>
     getFileMeta(req: { key: string }): Promise<IFileMeta>
     listFiles(req: IListFilesReq): Promise<IListFilesRes>
     execute(req: { path: string; vlc?: boolean }): void

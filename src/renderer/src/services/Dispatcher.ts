@@ -22,28 +22,31 @@ export class Dispatcher {
 
     fetchAllFilesMeta = async () => {
         const x = await api.getAllFilesMeta()
-        const obj: { [key: string]: IFileMeta } = {}
-        x.map(t => (obj[t.key] = t))
-        store.update({ filesMd: obj })
+        // const obj: { [key: string]: IFileMeta } = {}
+        // x.map(t => (obj[t.key] = t))
+        store.update({ filesMd: x })
     }
 
-    private async setFileMeta(value: IFileMeta) {
-        const meta = await this.getFileMeta(value.key)
+    private async setFileMeta(key: string, value: IFileMeta) {
+        const meta = await this.getFileMeta(key)
         if (_.isEqual(meta, value)) return
         console.log({ meta, value })
         if (!value.selectedFiles?.length) {
             if (!meta) {
                 return
             }
+            const newMd = produce(store.state.filesMd, draft => {
+                delete draft[key]
+            })
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { [value.key]: removed, ...rest } = store.state.filesMd ?? {}
-            store.update({ filesMd: rest })
-            console.log("deleteFileMeta", value.key)
-            await api.deleteFileMeta({ key: value.key })
+            // const { [key]: removed, ...rest } = store.state.filesMd ?? {}
+            store.update({ filesMd: newMd })
+            console.log("deleteFileMeta", key)
+            await api.deleteFileMeta({ key })
             return
         }
-        store.update({ filesMd: { ...store.state.filesMd, [value.key]: value } })
-        await api.saveFileMeta(value)
+        store.update({ filesMd: { ...store.state.filesMd, [key]: value } })
+        await api.saveFileMeta({ key, value })
     }
     getFileMeta = (key: string): IFileMeta | null => {
         const x = store.state.filesMd?.[key]
@@ -55,8 +58,8 @@ export class Dispatcher {
         return x?.selectedFiles?.[0] ?? null
     }
     saveSelectedFile = async (folderName: string, filename: string | null) => {
-        const meta: IFileMeta = { key: folderName, selectedFiles: filename ? [filename] : undefined }
-        await this.setFileMeta(meta)
+        const meta: IFileMeta = { selectedFiles: filename ? [filename] : undefined }
+        await this.setFileMeta(folderName, meta)
     }
 
     hasInnerSelection = (file: IFile) => {
