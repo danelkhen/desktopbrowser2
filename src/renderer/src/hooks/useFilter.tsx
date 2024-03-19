@@ -8,7 +8,7 @@ export function useFilter(req: IListFilesReq, list: IFile[]) {
         if (!req.hideWatched) return list
         return list.filter(t => {
             const md = dispatcher.getFileMeta(t.name)
-            return !md?.watched && !md?.selectedFiles?.length
+            return !md?.selectedFiles?.length // && !md?.watched
         })
     }, [req.hideWatched, list])
 }
