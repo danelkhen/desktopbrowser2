@@ -24,7 +24,7 @@ export function useSelection({
     folderSelections: FolderSelections
     setFolderSelections: Dispatch<SetStateAction<FolderSelections>>
 }) {
-    const { setFolderSelection, up, Open } = useDispatcher(req, res, setRes, folderSelections, setFolderSelections)
+    const { setFolderSelection, up, Open } = useDispatcher({ req, res, setRes, folderSelections, setFolderSelections })
     // const { folderSelections: filesMd } = useAppState()
     const [_extraSelectedFiles, _setExtraSelectedFiles] = useState<IFile[]>([])
 

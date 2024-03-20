@@ -30,8 +30,6 @@ export function FileBrowser() {
     const [folderSelections, setFolderSelections] = useState<FolderSelections>({})
     const gridColumns = useGridColumns(folderSelections)
 
-    // const { res } = useAppState()
-
     const [search2, setSearch2] = useState("")
     const [path, setPath] = useState("")
 
@@ -57,7 +55,7 @@ export function FileBrowser() {
         setFolderSelections,
     })
     const selectedFile = useMemo(() => iterableLast(selectedFiles), [selectedFiles])
-    const { GotoPath, reloadFiles } = useDispatcher(req, res, setRes, folderSelections, setFolderSelections)
+    const { GotoPath, reloadFiles } = useDispatcher({ req, res, setRes, folderSelections, setFolderSelections })
     useEffect(() => {
         void reloadFiles()
     }, [reloadFiles])

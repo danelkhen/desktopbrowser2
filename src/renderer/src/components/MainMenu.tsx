@@ -70,11 +70,10 @@ export function MainMenu({
         google,
         subs,
         exploreFile,
-        // orderByInnerSelection,
         isSortedBy,
         navToReq,
         orderBy,
-    } = useDispatcher(req, res, setRes, folderSelections, setFolderSelections)
+    } = useDispatcher({ req, res, setRes, folderSelections, setFolderSelections })
 
     const Delete = useCallback(
         (e?: React.KeyboardEvent) =>

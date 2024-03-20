@@ -13,7 +13,7 @@ export function useFilter(
     folderSelections: FolderSelections,
     setFolderSelections: Dispatch<SetStateAction<FolderSelections>>
 ) {
-    const { getFolderSelection } = useDispatcher(req, res, setRes, folderSelections, setFolderSelections)
+    const { getFolderSelection } = useDispatcher({ req, res, setRes, folderSelections, setFolderSelections })
     return useMemo(() => {
         if (!req.hideWatched) return list
         return list.filter(t => {

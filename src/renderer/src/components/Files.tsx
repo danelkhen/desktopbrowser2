@@ -40,13 +40,13 @@ export function Files({
     folderSelections: FolderSelections
     setFolderSelections: Dispatch<SetStateAction<FolderSelections>>
 }) {
-    const { Open, orderBy, isSortedBy, hasInnerSelection } = useDispatcher(
+    const { Open, orderBy, isSortedBy, hasInnerSelection } = useDispatcher({
         req,
         res,
         setRes,
         folderSelections,
-        setFolderSelections
-    )
+        setFolderSelections,
+    })
     const onItemMouseDown = useCallback(
         (e: React.MouseEvent, file: IFile) => {
             const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${fileRow}`))

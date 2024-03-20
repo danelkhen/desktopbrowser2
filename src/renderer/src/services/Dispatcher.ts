@@ -17,29 +17,28 @@ import { openInNewWindow } from "../lib/openInNewWindow"
 import { pathToUrl } from "../lib/pathToUrl"
 import { api } from "./api"
 
-export function useDispatcher(
-    req: IListFilesReq,
-    res: IListFilesRes | null,
-    setRes: Dispatch<SetStateAction<IListFilesRes>>,
-    folderSelections: FolderSelections,
+export function useDispatcher({
+    req,
+    res,
+    setRes,
+    folderSelections,
+    setFolderSelections,
+}: {
+    req: IListFilesReq
+    res: IListFilesRes
+    setRes: Dispatch<SetStateAction<IListFilesRes>>
+    folderSelections: FolderSelections
     setFolderSelections: Dispatch<SetStateAction<FolderSelections>>
-) {
+}) {
     const navigate = useNavigate()
     const getNavUrl = (v: IListFilesReq | ((prev: IListFilesReq) => IListFilesReq)) => {
         const prev = req
         const v2 = typeof v === "function" ? v(prev) : v
         return requestToUrl(v2)
-        // if (v2 === prev) return
-        // if (_.isEqual(v2, prev)) return
-        // console.log("navigateToReq", v2)
-        // return requestToUrl(v2)
     }
     const navToReq = (v: IListFilesReq | ((prev: IListFilesReq) => IListFilesReq)) => {
-        // const prev = req
         const prevUrl = getNavUrl(req)
         const newUrl = getNavUrl(v)
-        // const v2 = typeof v === "function" ? v(prev) : v
-        // if (v2 === prev) return
         if (_.isEqual(prevUrl, newUrl)) return
         console.log("navigateToReq", newUrl)
         navigate?.(newUrl)
@@ -56,8 +55,6 @@ export function useDispatcher(
             const newMd = produce(folderSelections, draft => {
                 delete draft[key]
             })
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            // const { [key]: removed, ...rest } = store.state.filesMd ?? {}
             setFolderSelections(newMd)
             console.log("deleteFileMeta", key)
             await api.deleteFolderSelection(key)
@@ -187,7 +184,6 @@ export function useDispatcher(
         setFolderSelection,
         getFolderSelection,
         hasInnerSelection,
-        // updateReq,
         deleteAndRefresh,
         trashAndRefresh,
         deleteOrTrash,
@@ -204,7 +200,6 @@ export function useDispatcher(
         canUp,
         canPrev,
         canNext,
-        // orderByInnerSelection,
         google,
         subs,
         navToReq,
