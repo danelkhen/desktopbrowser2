@@ -1,24 +1,40 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react"
 import { IFile } from "../../../shared/IFile"
+import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { Selection } from "../lib/Selection"
 import { iterableLast } from "../lib/iterableLast"
 import { sleep } from "../lib/sleep"
-import { dispatcher } from "../services/Dispatcher"
+import { useDispatcher } from "../services/Dispatcher"
 import { c } from "../services/c"
 import { fileRow } from "../services/fileRow"
 import { calcItemsOnScreen } from "./calcItemsOnScreen"
-import { useAppState } from "./useAppState"
+import { FolderSelections } from "../../../shared/Api"
 
-export function useSelection({ res }: { readonly res: IListFilesRes }) {
-    const { folderSelections: filesMd } = useAppState()
+export function useSelection({
+    req,
+    res,
+    setRes,
+    folderSelections,
+    setFolderSelections,
+}: {
+    req: IListFilesReq
+    readonly res: IListFilesRes
+    setRes: Dispatch<SetStateAction<IListFilesRes>>
+    folderSelections: FolderSelections
+    setFolderSelections: Dispatch<SetStateAction<FolderSelections>>
+}) {
+    const { setFolderSelection, up, Open } = useDispatcher(req, res, setRes, folderSelections, setFolderSelections)
+    // const { folderSelections: filesMd } = useAppState()
     const [_extraSelectedFiles, _setExtraSelectedFiles] = useState<IFile[]>([])
+
     const selectedFiles = useMemo(() => {
-        const fm = res.file?.name ? filesMd[res.file?.name] : null
+        const fm = res.file?.name ? folderSelections[res.file?.name] : null
         const selectedFileName = fm ?? null
         const files = res?.files?.filter(t => t.name === selectedFileName) ?? []
         return new Set([...files, ..._extraSelectedFiles])
-    }, [_extraSelectedFiles, filesMd, res.file?.name, res?.files])
+    }, [_extraSelectedFiles, folderSelections, res.file?.name, res?.files])
+
     const selectedFile = useMemo(() => iterableLast(selectedFiles), [selectedFiles])
 
     const setSelectedFiles = useCallback(
@@ -29,9 +45,9 @@ export function useSelection({ res }: { readonly res: IListFilesRes }) {
             const selectedFile = iterableLast(selectedFiles)
             console.log("saveSelectionAndSetSelectedItems", res.file.name, selectedFile?.name)
             _setExtraSelectedFiles(Array.from(selectedFiles).slice(0, selectedFiles.size - 1))
-            await dispatcher.setFolderSelection(res.file.name, selectedFile?.name ?? null)
+            await setFolderSelection(res.file.name, selectedFile?.name ?? null)
         },
-        [res?.file?.name]
+        [res?.file?.name, setFolderSelection]
     )
 
     // useEffect(() => {
@@ -64,14 +80,14 @@ export function useSelection({ res }: { readonly res: IListFilesRes }) {
                 const file = selectedFile
                 if (!file) return
                 e.preventDefault()
-                void dispatcher.Open(selectedFile)
+                void Open(selectedFile)
             } else if (e.key === "Backspace") {
-                dispatcher.up()
+                up()
             }
         }
         window.addEventListener("keydown", Win_keydown)
         return () => window.removeEventListener("keydown", Win_keydown)
-    }, [res, selectedFiles, setSelectedFiles])
+    }, [Open, res?.files, selectedFiles, setSelectedFiles, up])
 
     return { selectedFile, setSelectedFiles, selectedFiles }
 }

@@ -1,16 +1,22 @@
 import { css, cx } from "@emotion/css"
-import React, { useCallback } from "react"
+import React, { Dispatch, SetStateAction, useCallback } from "react"
 import { IFile } from "../../../shared/IFile"
+import { IListFilesReq } from "../../../shared/IListFilesReq"
+import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { calcItemsOnScreen } from "../hooks/calcItemsOnScreen"
 import { SortConfig } from "../hooks/useSorting"
 import { Selection } from "../lib/Selection"
-import { dispatcher } from "../services/Dispatcher"
+import { useDispatcher } from "../services/Dispatcher"
 import { c } from "../services/c"
 import { fileRow } from "../services/fileRow"
 import { Grid } from "./Grid"
-import { gridColumns, visibleGridColumns } from "./gridColumns"
+import { useGridColumns, visibleGridColumns } from "./gridColumns"
+import { FolderSelections } from "../../../shared/Api"
 
 export function Files({
+    req,
+    res,
+    setRes,
     selectedFiles,
     allFiles,
     setSelectedFiles,
@@ -18,7 +24,11 @@ export function Files({
     sorting,
     noHead,
     noBody,
+    folderSelections,
+    setFolderSelections,
 }: {
+    req: IListFilesReq
+    res: IListFilesRes
     setSelectedFiles: (v: Set<IFile>) => void
     selectedFiles: Set<IFile>
     allFiles: IFile[]
@@ -26,7 +36,17 @@ export function Files({
     sorting: SortConfig
     noHead?: boolean
     noBody?: boolean
+    setRes: Dispatch<SetStateAction<IListFilesRes>>
+    folderSelections: FolderSelections
+    setFolderSelections: Dispatch<SetStateAction<FolderSelections>>
 }) {
+    const { Open, orderBy, isSortedBy, hasInnerSelection } = useDispatcher(
+        req,
+        res,
+        setRes,
+        folderSelections,
+        setFolderSelections
+    )
     const onItemMouseDown = useCallback(
         (e: React.MouseEvent, file: IFile) => {
             const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${fileRow}`))
@@ -37,24 +57,31 @@ export function Files({
         [allFiles, selectedFiles, setSelectedFiles]
     )
 
-    const onItemClick = useCallback((e: React.MouseEvent, file: IFile) => {
-        // const selection = new Selection(allFiles, selectedFiles)
-        const target = e.target as HTMLElement
-        if (!target.matches(`a.${c.name}`)) {
-            return
-        }
-        e.preventDefault()
-        void dispatcher.Open(file)
-    }, [])
+    const onItemClick = useCallback(
+        (e: React.MouseEvent, file: IFile) => {
+            // const selection = new Selection(allFiles, selectedFiles)
+            const target = e.target as HTMLElement
+            if (!target.matches(`a.${c.name}`)) {
+                return
+            }
+            e.preventDefault()
+            void Open(file)
+        },
+        [Open]
+    )
 
-    const onItemDoubleClick = useCallback((e: React.MouseEvent, file: IFile) => {
-        if (file === null) {
-            return
-        }
-        e.preventDefault()
-        void dispatcher.Open(file)
-    }, [])
+    const onItemDoubleClick = useCallback(
+        (e: React.MouseEvent, file: IFile) => {
+            if (file === null) {
+                return
+            }
+            e.preventDefault()
+            void Open(file)
+        },
+        [Open]
+    )
 
+    const gridColumns = useGridColumns(folderSelections)
     return (
         <Grid<IFile>
             className={GrdFiles}
@@ -62,12 +89,12 @@ export function Files({
             getHeaderClass={col =>
                 cx(
                     col,
-                    dispatcher.isSortedBy(sorting, col) && c.sorted,
-                    dispatcher.isSortedBy(sorting, col, false) && c.asc,
-                    dispatcher.isSortedBy(sorting, col, true) && c.desc
+                    isSortedBy(sorting, col) && c.sorted,
+                    isSortedBy(sorting, col, false) && c.asc,
+                    isSortedBy(sorting, col, true) && c.desc
                 )
             }
-            orderBy={dispatcher.orderBy}
+            orderBy={t => orderBy(t, gridColumns)}
             onItemMouseDown={onItemMouseDown}
             onItemClick={onItemClick}
             onItemDoubleClick={onItemDoubleClick}
@@ -75,7 +102,7 @@ export function Files({
                 const s = cx(
                     fileRow,
                     file.isFolder && c.isFolder,
-                    dispatcher.hasInnerSelection(file) && c.hasInnerSelection,
+                    hasInnerSelection(file) && c.hasInnerSelection,
                     selectedFiles.has(file) && c.selected
                 )
                 return s

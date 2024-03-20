@@ -1,150 +1,142 @@
 import { produce } from "immer"
 import _ from "lodash"
-import { NavigateFunction } from "react-router"
+import { Dispatch, SetStateAction, useCallback } from "react"
+import { useNavigate } from "react-router-dom"
+import { FolderSelections } from "../../../shared/Api"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
-import { ColumnKey } from "../components/Grid"
-import { gridColumns } from "../components/gridColumns"
+import { IListFilesRes } from "../../../shared/IListFilesRes"
+import { ColumnKey, GridColumns } from "../components/Grid"
+import { requestToUrl } from "../components/parseRequest"
 import { SortConfig } from "../hooks/useSorting"
 import { getGoogleSearchLink } from "../lib/getGoogleSearchLink"
 import { getSubtitleSearchLink } from "../lib/getSubtitleSearchLink"
 import { isExecutable } from "../lib/isExecutable"
 import { openInNewWindow } from "../lib/openInNewWindow"
 import { pathToUrl } from "../lib/pathToUrl"
-import { reqToQuery } from "../lib/reqToQuery"
 import { api } from "./api"
-import { store } from "./store"
 
-export class Dispatcher {
-    navigate?: NavigateFunction
-
-    fetchAllFilesMeta = async () => {
-        const x = await api.getAllFolderSelections()
-        // const obj: { [key: string]: IFileMeta } = {}
-        // x.map(t => (obj[t.key] = t))
-        store.update({ folderSelections: x })
+export function useDispatcher(
+    req: IListFilesReq,
+    res: IListFilesRes | null,
+    setRes: Dispatch<SetStateAction<IListFilesRes>>,
+    folderSelections: FolderSelections,
+    setFolderSelections: Dispatch<SetStateAction<FolderSelections>>
+) {
+    const navigate = useNavigate()
+    const getNavUrl = (v: IListFilesReq | ((prev: IListFilesReq) => IListFilesReq)) => {
+        const prev = req
+        const v2 = typeof v === "function" ? v(prev) : v
+        return requestToUrl(v2)
+        // if (v2 === prev) return
+        // if (_.isEqual(v2, prev)) return
+        // console.log("navigateToReq", v2)
+        // return requestToUrl(v2)
+    }
+    const navToReq = (v: IListFilesReq | ((prev: IListFilesReq) => IListFilesReq)) => {
+        // const prev = req
+        const prevUrl = getNavUrl(req)
+        const newUrl = getNavUrl(v)
+        // const v2 = typeof v === "function" ? v(prev) : v
+        // if (v2 === prev) return
+        if (_.isEqual(prevUrl, newUrl)) return
+        console.log("navigateToReq", newUrl)
+        navigate?.(newUrl)
     }
 
-    async setFolderSelection(key: string, value: string | null) {
-        const meta = await this.getFolderSelection(key)
+    const setFolderSelection = async (key: string, value: string | null) => {
+        const meta = await getFolderSelection(key)
         if (_.isEqual(meta, value)) return
         console.log({ meta, value })
         if (!value) {
             if (!meta) {
                 return
             }
-            const newMd = produce(store.state.folderSelections, draft => {
+            const newMd = produce(folderSelections, draft => {
                 delete draft[key]
             })
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             // const { [key]: removed, ...rest } = store.state.filesMd ?? {}
-            store.update({ folderSelections: newMd })
+            setFolderSelections(newMd)
             console.log("deleteFileMeta", key)
             await api.deleteFolderSelection(key)
             return
         }
-        store.update({ folderSelections: { ...store.state.folderSelections, [key]: value } })
+        setFolderSelections({ ...folderSelections, [key]: value })
         await api.saveFolderSelection({ key, value })
     }
-    getFolderSelection = (key: string): string | null => {
-        const x = store.state.folderSelections?.[key]
+    const getFolderSelection = (key: string): string | null => {
+        const x = folderSelections?.[key]
         if (!x) return null
         return x
     }
-    // setFolderSelection = async (folderName: string, filename: string | null) => {
-    //     const meta: IFileMeta = { selectedFiles: filename ? [filename] : undefined }
-    //     await this.setFolderSelection(folderName, meta)
-    // }
 
-    hasInnerSelection = (file: IFile) => {
-        return !!dispatcher.getFolderSelection(file.name)
+    const hasInnerSelection = (file: IFile) => {
+        return !!getFolderSelection(file.name)
     }
 
-    getFileTypeOrder(type: string): number {
-        const order = ["folder", "link", "file"].reverse()
-        return order.indexOf(type)
-    }
-
-    updateReq = (v: Partial<IListFilesReq>) => {
-        return this.setReq({ ...store.state.req, ...v })
-    }
-    private setReq(v: IListFilesReq) {
-        const navigateToReq = (req: IListFilesReq) => {
-            console.log("navigateToReq", req)
-            const { path: Path, ...rest } = req
-            this.navigate?.({ pathname: pathToUrl(Path), search: reqToQuery(rest) })
-        }
-        const prev = store.state.req
-        if (v === prev) return
-        const p1 = JSON.stringify(prev)
-        const p2 = JSON.stringify(v)
-        if (p1 === p2) return
-        console.log({ prev, v })
-        navigateToReq(v)
-    }
-
-    private deleteAndRefresh = async (file: IFile) => {
+    const deleteAndRefresh = async (file: IFile) => {
         if (!file.path) return
         const fileOrFolder = file.isFolder ? "folder" : "file"
         if (!window.confirm("Are you sure you wan to delete the " + fileOrFolder + "?\n" + file.path)) return
         await api.del({ path: file.path })
-        await this.reloadFiles()
+        await reloadFiles()
     }
 
-    private trashAndRefresh = async (file: IFile) => {
+    const trashAndRefresh = async (file: IFile) => {
         if (!file.path) return
         await api.trash({ path: file.path })
-        await this.reloadFiles()
+        await reloadFiles()
     }
 
-    deleteOrTrash = async ({ file, isShiftDown }: { file: IFile; isShiftDown: boolean }) => {
+    const deleteOrTrash = async ({ file, isShiftDown }: { file: IFile; isShiftDown: boolean }) => {
         if (isShiftDown) {
-            await this.deleteAndRefresh(file)
+            await deleteAndRefresh(file)
             return
         }
-        await this.trashAndRefresh(file)
+        await trashAndRefresh(file)
     }
 
-    exploreFile = async (file: IFile) => {
+    const exploreFile = async (file: IFile) => {
         if (!file?.path) return
         await api.explore({ path: file.path })
     }
 
-    async fetchFiles(req: IListFilesReq) {
-        const res = await api.listFiles(req)
-        store.update({ res })
-    }
-    reloadFiles = async () => {
-        if (store.state.req.folderSize) {
-            const req2 = { ...store.state.req, FolderSize: false }
-            await this.fetchFiles(req2)
+    const reloadFiles = useCallback(async () => {
+        const fetchFiles = async (req: IListFilesReq) => {
+            const res = await api.listFiles(req)
+            setRes(res)
         }
-        await this.fetchFiles(store.state.req)
-    }
+        if (req.folderSize) {
+            const req2 = { ...req, FolderSize: false }
+            await fetchFiles(req2)
+        }
+        await fetchFiles(req)
+    }, [req, setRes])
 
-    up = () => {
-        const parent = store.state.res?.parent?.path
-        const current = store.state.req.path
+    const up = () => {
+        const parent = res?.parent?.path
+        const current = req.path
         if (!parent || current === parent || pathToUrl(current) === pathToUrl(parent)) {
-            this.GotoPath("/")
+            GotoPath("/")
             return
         }
-        this.GotoPath(parent)
+        GotoPath(parent)
     }
-    GotoFolder = (file?: IFile) => {
-        if (!file) return
-        file.path && this.GotoPath(file.path)
-    }
-
-    GotoPath = (path: string) => {
-        this.updateReq({ path: path })
+    const GotoFolder = (file: IFile | undefined) => {
+        GotoPath(file?.path)
     }
 
-    Open = async (file: IFile) => {
+    const GotoPath = (path: string | undefined) => {
+        if (!path) return
+        navToReq(t => ({ ...t, path }))
+    }
+
+    const Open = async (file: IFile) => {
         if (!file) return
         if (file.isFolder || file.type === "link") {
-            this.GotoFolder(file)
+            GotoFolder(file)
             return
         }
         const prompt = file.ext ? isExecutable(file.ext) : true
@@ -156,8 +148,8 @@ export class Dispatcher {
         console.info(res)
     }
 
-    orderBy = (column: ColumnKey) => {
-        const sort = produce(store.state.req.sort ?? [], sort => {
+    const orderBy = (column: ColumnKey, gridColumns: GridColumns<IFile>) => {
+        const sort = produce(req.sort ?? [], sort => {
             const index = sort.findIndex(t => t.name === column)
             if (index === 0) {
                 if (!!sort[index].desc === !!gridColumns[column].descendingFirst) {
@@ -173,23 +165,49 @@ export class Dispatcher {
             }
             sort.unshift({ name: column as Column, desc: gridColumns[column].descendingFirst })
         })
-        this.updateReq({ sort })
+        navToReq(t => ({ ...t, sort }))
     }
 
-    isSortedBy = (sorting: SortConfig, key: ColumnKey, desc?: boolean): boolean => {
+    const isSortedBy = (sorting: SortConfig, key: ColumnKey, desc?: boolean): boolean => {
         if (!sorting.active.includes(key)) return false
         if (desc !== undefined) return !!sorting.isDescending[key] === desc
         return true
     }
 
-    prev = () => this.GotoFolder(store.state.res?.prev)
-    next = () => this.GotoFolder(store.state.res?.next)
-    canUp = () => store.state.req.path !== "/"
-    canPrev = () => !!store.state.res?.prev
-    canNext = () => !!store.state.res?.next
-    orderByInnerSelection = () => this.orderBy(Column.hasInnerSelection)
-    google = () => store.state.res?.file && openInNewWindow(getGoogleSearchLink(store.state.res?.file))
-    subs = () => store.state.res?.file && openInNewWindow(getSubtitleSearchLink(store.state.res?.file))
-}
+    const prev = () => GotoFolder(res?.prev)
+    const next = () => GotoFolder(res?.next)
+    const canUp = () => req.path !== "/"
+    const canPrev = () => !!res?.prev
+    const canNext = () => !!res?.next
 
-export const dispatcher = new Dispatcher()
+    const google = () => res?.file && openInNewWindow(getGoogleSearchLink(res?.file))
+    const subs = () => res?.file && openInNewWindow(getSubtitleSearchLink(res?.file))
+
+    return {
+        setFolderSelection,
+        getFolderSelection,
+        hasInnerSelection,
+        // updateReq,
+        deleteAndRefresh,
+        trashAndRefresh,
+        deleteOrTrash,
+        exploreFile,
+        reloadFiles,
+        up,
+        GotoFolder,
+        GotoPath,
+        Open,
+        orderBy,
+        isSortedBy,
+        prev,
+        next,
+        canUp,
+        canPrev,
+        canNext,
+        // orderByInnerSelection,
+        google,
+        subs,
+        navToReq,
+        getNavUrl,
+    }
+}

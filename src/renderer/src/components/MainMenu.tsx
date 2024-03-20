@@ -12,7 +12,7 @@ import {
     menuItemClasses,
     paginationClasses,
 } from "@mui/material"
-import React, { useCallback } from "react"
+import React, { Dispatch, SetStateAction, useCallback } from "react"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
@@ -29,8 +29,10 @@ import SubtitleIcon from "../assets/icons/subtitle.svg?react"
 import TrashIcon from "../assets/icons/trash.svg?react"
 import UpIcon from "../assets/icons/up.svg?react"
 import { SortConfig } from "../hooks/useSorting"
-import { dispatcher } from "../services/Dispatcher"
+import { useDispatcher } from "../services/Dispatcher"
 import { Clock } from "./Clock"
+import { FolderSelections } from "../../../shared/Api"
+import { GridColumns } from "./Grid"
 
 export function MainMenu({
     req,
@@ -40,6 +42,10 @@ export function MainMenu({
     pageIndex,
     totalPages,
     setPageIndex,
+    setRes,
+    folderSelections,
+    setFolderSelections,
+    gridColumns,
 }: {
     req: IListFilesReq
     res: IListFilesRes
@@ -48,19 +54,45 @@ export function MainMenu({
     totalPages: number | null
     pageIndex: number
     setPageIndex: (v: number) => void
+    setRes: Dispatch<SetStateAction<IListFilesRes>>
+    folderSelections: FolderSelections
+    setFolderSelections: Dispatch<SetStateAction<FolderSelections>>
+    gridColumns: GridColumns<IFile>
 }) {
+    const {
+        deleteOrTrash,
+        canUp,
+        canPrev,
+        canNext,
+        up,
+        prev,
+        next,
+        google,
+        subs,
+        exploreFile,
+        // orderByInnerSelection,
+        isSortedBy,
+        navToReq,
+        orderBy,
+    } = useDispatcher(req, res, setRes, folderSelections, setFolderSelections)
+
     const Delete = useCallback(
         (e?: React.KeyboardEvent) =>
-            selectedFile && dispatcher.deleteOrTrash({ file: selectedFile, isShiftDown: e?.shiftKey ?? false }),
+            selectedFile && deleteOrTrash({ file: selectedFile, isShiftDown: e?.shiftKey ?? false }),
 
-        [selectedFile]
+        [deleteOrTrash, selectedFile]
     )
 
     const contextFile = selectedFile ?? res.file ?? null
-    const { canUp, canPrev, canNext, up, prev, next, google, subs, exploreFile, orderByInnerSelection, updateReq } =
-        dispatcher
+
+    // const navigate = useNavigate()
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
     const [anchorEl2, setAnchorEl2] = React.useState<null | HTMLElement>(null)
+    function updateReq(x: Partial<IListFilesReq>) {
+        navToReq(t => ({ ...t, ...x }))
+    }
+
+    const orderByInnerSelection = () => orderBy(Column.hasInnerSelection, gridColumns)
     return (
         <div className={style}>
             <MenuList>
@@ -129,10 +161,7 @@ export function MainMenu({
                     <ListItemText>Sort</ListItemText>
                 </MenuItem>
                 <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)} className={style}>
-                    <MenuItem
-                        onClick={orderByInnerSelection}
-                        selected={dispatcher.isSortedBy(sorting, Column.hasInnerSelection)}
-                    >
+                    <MenuItem onClick={orderByInnerSelection} selected={isSortedBy(sorting, Column.hasInnerSelection)}>
                         Watched
                     </MenuItem>
                     <MenuItem

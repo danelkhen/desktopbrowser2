@@ -1,14 +1,13 @@
 import _ from "lodash"
 import { useMemo } from "react"
-import { ColumnKey } from "../components/Grid"
-import { gridColumns } from "../components/gridColumns"
+import { ColumnKey, GridColumns } from "../components/Grid"
 
 export interface SortConfig {
     readonly isDescending: Record<ColumnKey, boolean>
     readonly active: readonly ColumnKey[]
 }
 
-export function useSorting<T>(items: T[], config: SortConfig) {
+export function useSorting<T>(items: T[], config: SortConfig, gridColumns: GridColumns<T>) {
     console.log("useSorting", config)
     return useMemo(() => {
         function getOrderBy() {
@@ -29,5 +28,5 @@ export function useSorting<T>(items: T[], config: SortConfig) {
             by.order.map(t => (t ? "desc" : "asc"))
         )
         return sorted
-    }, [config, items])
+    }, [config.active, config.isDescending, gridColumns, items])
 }

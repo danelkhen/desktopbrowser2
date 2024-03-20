@@ -1,54 +1,44 @@
 import { css } from "@emotion/css"
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { useNavigate } from "react-router"
-import { useLocation } from "react-router-dom"
+import { useEffect, useMemo, useState } from "react"
 import { Column } from "../../../shared/Column"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
-import { useAppState } from "../hooks/useAppState"
+import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { useFilter } from "../hooks/useFilter"
 import { usePaging } from "../hooks/usePaging"
 import { useSearch } from "../hooks/useSearch"
 import { useSelection } from "../hooks/useSelection"
 import { SortConfig, useSorting } from "../hooks/useSorting"
 import { iterableLast } from "../lib/iterableLast"
-import { queryToReq } from "../lib/queryToReq"
-import { dispatcher } from "../services/Dispatcher"
-import { store } from "../services/store"
+import { useDispatcher } from "../services/Dispatcher"
+import { api } from "../services/api"
+import { useReq } from "../services/useReq"
 import { AddressBar } from "./AddressBar"
 import { Files } from "./Files"
 import { ColumnKey } from "./Grid"
 import { MainMenu } from "./MainMenu"
 import { QuickFind } from "./QuickFind"
+import { FolderSelections } from "../../../shared/Api"
+import { useGridColumns } from "./gridColumns"
 
 const pageSize = 200
 export function FileBrowser() {
     console.log("FileBrowser render")
-    const navigate = useNavigate()
-    dispatcher.navigate = navigate
+    const req = useReq()
+    const [res, setRes] = useState<IListFilesRes>({})
 
-    const { pathname, search } = useLocation()
-    const req = useMemo(() => parseRequest(pathname, search), [pathname, search])
     const sorting = useMemo(() => getSortConfig(req), [req])
-    useEffect(() => {
-        store.update({
-            req,
-        })
-        void dispatcher.reloadFiles()
-    }, [req, sorting])
+    const [folderSelections, setFolderSelections] = useState<FolderSelections>({})
+    const gridColumns = useGridColumns(folderSelections)
 
-    useEffect(() => {
-        void dispatcher.fetchAllFilesMeta()
-    }, [])
-
-    const { res } = useAppState()
+    // const { res } = useAppState()
 
     const [search2, setSearch2] = useState("")
     const [path, setPath] = useState("")
 
     const allFiles = res.files ?? []
 
-    const sorted = useSorting(allFiles, sorting)
-    const filtered2 = useFilter(req, sorted)
+    const sorted = useSorting(allFiles, sorting, gridColumns)
+    const filtered2 = useFilter(req, sorted, res, setRes, folderSelections, setFolderSelections)
     const filtered = useSearch(search2, filtered2)
     const { paged, totalPages, pageIndex, setPageIndex } = usePaging(filtered, {
         pageSize,
@@ -60,11 +50,24 @@ export function FileBrowser() {
     }, [req.path])
 
     const { selectedFiles, setSelectedFiles } = useSelection({
+        req,
         res,
+        setRes,
+        folderSelections,
+        setFolderSelections,
     })
     const selectedFile = useMemo(() => iterableLast(selectedFiles), [selectedFiles])
+    const { GotoPath, reloadFiles } = useDispatcher(req, res, setRes, folderSelections, setFolderSelections)
+    useEffect(() => {
+        void reloadFiles()
+    }, [reloadFiles])
 
-    const gotoPath = useCallback(() => dispatcher.GotoPath(path), [path])
+    useEffect(() => {
+        void (async () => {
+            const x = await api.getAllFolderSelections()
+            setFolderSelections(x)
+        })()
+    }, [])
 
     return (
         <div className={style}>
@@ -77,25 +80,45 @@ export function FileBrowser() {
                     totalPages={totalPages}
                     pageIndex={pageIndex}
                     setPageIndex={setPageIndex}
+                    setRes={setRes}
+                    folderSelections={folderSelections}
+                    setFolderSelections={setFolderSelections}
+                    gridColumns={gridColumns}
                 />
-                <AddressBar gotoPath={gotoPath} path={path} setPath={setPath} search={search2} setSearch={setSearch2} />
+                <AddressBar
+                    gotoPath={() => GotoPath(path)}
+                    path={path}
+                    setPath={setPath}
+                    search={search2}
+                    setSearch={setSearch2}
+                />
                 <QuickFind allFiles={allFiles} onFindFiles={v => setSelectedFiles(new Set(v))} />
                 <Files
+                    req={req}
+                    res={res}
+                    setRes={setRes}
                     selectedFiles={selectedFiles}
                     allFiles={allFiles}
                     setSelectedFiles={setSelectedFiles}
                     files={files}
                     sorting={sorting}
                     noBody
+                    folderSelections={folderSelections}
+                    setFolderSelections={setFolderSelections}
                 />
             </header>
             <Files
+                req={req}
+                res={res}
+                setRes={setRes}
                 selectedFiles={selectedFiles}
                 allFiles={allFiles}
                 setSelectedFiles={setSelectedFiles}
                 files={files}
                 sorting={sorting}
                 noHead
+                folderSelections={folderSelections}
+                setFolderSelections={setFolderSelections}
             />
         </div>
     )
@@ -120,12 +143,6 @@ function getSortConfig(req: IListFilesReq) {
     console.log("setSorting", active)
     const sorting: SortConfig = { active, isDescending }
     return sorting
-}
-
-function parseRequest(path: string, search: string) {
-    const req2: IListFilesReq = queryToReq(search)
-    const req: IListFilesReq = { ...req2, path: decodeURIComponent(path) }
-    return req
 }
 
 const style = css`

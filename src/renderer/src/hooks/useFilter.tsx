@@ -1,14 +1,24 @@
-import { useMemo } from "react"
-import { dispatcher } from "../services/Dispatcher"
+import { Dispatch, SetStateAction, useMemo } from "react"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
+import { useDispatcher } from "../services/Dispatcher"
+import { IListFilesRes } from "../../../shared/IListFilesRes"
+import { FolderSelections } from "../../../shared/Api"
 
-export function useFilter(req: IListFilesReq, list: IFile[]) {
+export function useFilter(
+    req: IListFilesReq,
+    list: IFile[],
+    res: IListFilesRes,
+    setRes: Dispatch<SetStateAction<IListFilesRes>>,
+    folderSelections: FolderSelections,
+    setFolderSelections: Dispatch<SetStateAction<FolderSelections>>
+) {
+    const { getFolderSelection } = useDispatcher(req, res, setRes, folderSelections, setFolderSelections)
     return useMemo(() => {
         if (!req.hideWatched) return list
         return list.filter(t => {
-            const md = dispatcher.getFolderSelection(t.name)
+            const md = getFolderSelection(t.name)
             return !md // && !md?.watched
         })
-    }, [req.hideWatched, list])
+    }, [getFolderSelection, list, req.hideWatched])
 }
