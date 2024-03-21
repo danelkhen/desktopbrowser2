@@ -1,4 +1,5 @@
 import { css } from "@emotion/css"
+import RefreshIcon from "@mui/icons-material/Refresh"
 import {
     ListItemIcon,
     ListItemText,
@@ -18,6 +19,7 @@ import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { SortConfig } from "../../../shared/SortConfig"
+import { colors } from "../GlobalStyle"
 import ExploreIcon from "../assets/icons/explore.svg?react"
 import FolderIcon from "../assets/icons/folder.svg?react"
 import GoogleIcon from "../assets/icons/google.svg?react"
@@ -35,8 +37,6 @@ import { api } from "../services/api"
 import { AppLinkBehavior } from "./AppLink"
 import { Clock } from "./Clock"
 import { GetNavUrl } from "./GetNavUrl"
-import { colors } from "../GlobalStyle"
-
 export function MainMenu({
     req,
     selectedFile,
@@ -122,6 +122,12 @@ export function MainMenu({
                         <NextIcon />
                     </ListItemIcon>
                     <ListItemText>Next</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={reloadFiles}>
+                    <ListItemIcon>
+                        <RefreshIcon />
+                    </ListItemIcon>
+                    <ListItemText>Refresh</ListItemText>
                 </MenuItem>
             </MenuList>
             <MenuList>
@@ -276,6 +282,9 @@ const style = css`
         display: flex;
         flex: 1;
         justify-content: flex-end;
+        > ul {
+            flex-wrap: nowrap;
+        }
     }
     > .${listClasses.root} {
         display: flex;
