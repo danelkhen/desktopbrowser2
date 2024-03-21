@@ -46,9 +46,7 @@ export function MainMenu({
     totalPages,
     setPageIndex,
     reloadFiles,
-    exploreFile,
     isSortedBy,
-    navToReq,
     getNavUrl,
     getSortBy,
 }: {
@@ -60,9 +58,7 @@ export function MainMenu({
     pageIndex: number
     setPageIndex: (v: number) => void
     reloadFiles: () => Promise<void>
-    exploreFile: (file: IFile) => Promise<void>
     isSortedBy: (sorting: SortConfig, key: string, desc?: boolean | undefined) => boolean
-    navToReq: (v: IListFilesReq | ((prev: IListFilesReq) => IListFilesReq)) => void
     getSortBy: (column: string) => SortColumn[]
     getNavUrl: GetNavUrl
 }) {
@@ -95,9 +91,6 @@ export function MainMenu({
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
     const [anchorEl2, setAnchorEl2] = React.useState<null | HTMLElement>(null)
-    function updateReq(x: Partial<IListFilesReq>) {
-        navToReq(t => ({ ...t, ...x }))
-    }
 
     return (
         <div className={style}>
@@ -156,7 +149,10 @@ export function MainMenu({
                     </ListItemIcon>
                     <ListItemText>Subs</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={() => contextFile && exploreFile(contextFile)} disabled={!contextFile}>
+                <MenuItem
+                    onClick={() => contextFile?.path && api.explore({ path: contextFile.path })}
+                    disabled={!contextFile}
+                >
                     <ListItemIcon>
                         <ExploreIcon />
                     </ListItemIcon>
@@ -195,7 +191,8 @@ export function MainMenu({
                         Watched
                     </MenuItem>
                     <MenuItem
-                        onClick={() => updateReq({ foldersFirst: !req.foldersFirst })}
+                        component={AppLink}
+                        href={getNavUrl(t => ({ ...t, foldersFirst: !req.foldersFirst }))}
                         selected={!!req.foldersFirst}
                     >
                         Folders first

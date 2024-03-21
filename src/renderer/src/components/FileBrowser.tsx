@@ -8,7 +8,6 @@ import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
-import { useFilter } from "../hooks/useFilter"
 import { usePaging } from "../hooks/usePaging"
 import { useSearch } from "../hooks/useSearch"
 import { useSelection } from "../hooks/useSelection"
@@ -48,7 +47,7 @@ export function FileBrowser() {
     const navToReq = (v: IListFilesReq | ((prev: IListFilesReq) => IListFilesReq)) => {
         const prevUrl = getNavUrl(req)
         const newUrl = getNavUrl(v)
-        if (_.isEqual(prevUrl, newUrl)) return
+        if (prevUrl === newUrl) return
         console.log("navigateToReq", newUrl)
         navigate?.(newUrl)
     }
@@ -79,19 +78,7 @@ export function FileBrowser() {
     }
 
     const hasInnerSelection = (file: IFile) => {
-        return !!getFolderSelection(file.name)
-    }
-
-    const exploreFile = async (file: IFile) => {
-        if (!file?.path) return
-        await api.explore({ path: file.path })
-    }
-
-    const up = () => {
-        GotoPath(res?.parent?.path ?? "/")
-    }
-    const GotoFolder = (file: IFile | undefined) => {
-        GotoPath(file?.path)
+        return !!folderSelections?.[file.name]
     }
 
     const GotoPath = (path: string | undefined) => {
@@ -100,16 +87,15 @@ export function FileBrowser() {
     }
 
     const Open = async (file: IFile) => {
-        if (!file) return
+        if (!file?.path) return
         if (file.isFolder || file.type === "link") {
-            GotoFolder(file)
+            navToReq(t => ({ ...t, path: file.path }))
             return
         }
         const prompt = file.ext ? isExecutable(file.ext) : true
         if (prompt && !window.confirm("This is an executable file, are you sure you want to run it?")) {
             return
         }
-        if (!file.path) return
         const res = await api.execute({ path: file.path, vlc: new URLSearchParams(location.search).has("vlc") })
         console.info(res)
     }
@@ -144,16 +130,17 @@ export function FileBrowser() {
         if (desc !== undefined) return !!sorting.isDescending[key] === desc
         return true
     }
+    const [pageIndex, setPageIndex] = useState(0)
 
     const allFiles = res.files ?? []
+    let files = allFiles
 
-    const sorted = useSorting(allFiles, sorting, gridColumns)
-    const filtered2 = useFilter({ req, list: sorted, getFolderSelection })
-    const filtered = useSearch(searchText, filtered2)
-    const { paged, totalPages, pageIndex, setPageIndex } = usePaging(filtered, {
-        pageSize,
-    })
-    const files = paged
+    files = useSearch(searchText, files)
+    files = useSorting(files, sorting, gridColumns)
+
+    const totalPages = Math.ceil(files.length / pageSize)
+
+    files = usePaging(files, { pageIndex, pageSize })
 
     const reloadFiles = useCallback(async () => {
         const fetchFiles = async (req: IListFilesReq) => {
@@ -174,7 +161,6 @@ export function FileBrowser() {
     const { selectedFiles, setSelectedFiles } = useSelection({
         Open,
         setFolderSelection,
-        up,
         res,
         folderSelections,
     })
@@ -203,9 +189,7 @@ export function FileBrowser() {
                     pageIndex={pageIndex}
                     setPageIndex={setPageIndex}
                     reloadFiles={reloadFiles}
-                    exploreFile={exploreFile}
                     isSortedBy={isSortedBy}
-                    navToReq={navToReq}
                     getNavUrl={getNavUrl}
                     getSortBy={getSortBy}
                 />

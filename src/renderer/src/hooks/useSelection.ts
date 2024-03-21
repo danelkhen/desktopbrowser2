@@ -13,13 +13,11 @@ export function useSelection({
     res,
     folderSelections,
     setFolderSelection,
-    up,
     Open,
 }: {
     readonly res: IListFilesRes
     folderSelections: FolderSelections
     setFolderSelection: (key: string, value: string | null) => Promise<void>
-    up: () => void
     Open: (file: IFile) => Promise<void>
 }) {
     const [_extraSelectedFiles, _setExtraSelectedFiles] = useState<IFile[]>([])
@@ -77,13 +75,14 @@ export function useSelection({
                 if (!file) return
                 e.preventDefault()
                 void Open(selectedFile)
-            } else if (e.key === "Backspace") {
-                up()
             }
+            // else if (e.key === "Backspace") {
+            //     up()
+            // }
         }
         window.addEventListener("keydown", Win_keydown)
         return () => window.removeEventListener("keydown", Win_keydown)
-    }, [Open, res?.files, selectedFiles, setSelectedFiles, up])
+    }, [Open, res?.files, selectedFiles, setSelectedFiles])
 
     return { selectedFile, setSelectedFiles, selectedFiles }
 }

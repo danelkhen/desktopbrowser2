@@ -1,39 +1,18 @@
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 
-export function usePaging<T>(items: T[], { pageSize = 100 }: { pageSize: number }): Pager<T> {
-    const [pageIndex, setPageIndex] = useState(0)
-
+export function usePaging<T>(items: T[], { pageIndex, pageSize = 100 }: { pageIndex: number; pageSize: number }) {
     return useMemo(() => {
-        function applyPaging(target: T[]) {
-            const totalPages = Math.ceil(target.length / pageSize)
-            let pageIndex2 = pageIndex
-            if (pageIndex2 >= totalPages) {
-                pageIndex2 = totalPages - 1
-            }
-            if (pageIndex2 < 0) {
-                pageIndex2 = 0
-            }
-            const from = pageIndex2 * pageSize
-            const until = from + pageSize
-            const paged = target.slice(from, until)
-            return { paged, totalPages, pageIndex: pageIndex2 }
+        const totalPages = Math.ceil(items.length / pageSize)
+        let pageIndex2 = pageIndex
+        if (pageIndex2 >= totalPages) {
+            pageIndex2 = totalPages - 1
         }
-        const page = applyPaging(items)
-        const x: Pager<T> = {
-            paged: page.paged,
-            pageIndex: page.pageIndex,
-            totalPages: page.totalPages,
-            setPageIndex,
+        if (pageIndex2 < 0) {
+            pageIndex2 = 0
         }
-        return x
-    }, [pageIndex, pageSize, items, setPageIndex])
-}
-
-export interface Pager<T> {
-    pageIndex: number
-    totalPages: number
-    paged: T[]
-    setPageIndex: (v: number) => void
-    // prevPage: () => void
-    // nextPage: () => void
+        const from = pageIndex2 * pageSize
+        const until = from + pageSize
+        const paged = items.slice(from, until)
+        return paged
+    }, [items, pageIndex, pageSize])
 }
