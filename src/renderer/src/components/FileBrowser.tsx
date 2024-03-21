@@ -19,7 +19,8 @@ import { api } from "../services/api"
 import { useReq } from "../services/useReq"
 import { AddressBar } from "./AddressBar"
 import { Files } from "./Files"
-import { ColumnKey, GridColumns } from "./Grid"
+import { GetNavUrl } from "./GetNavUrl"
+import { ColumnKey } from "./Grid"
 import { MainMenu } from "./MainMenu"
 import { QuickFind } from "./QuickFind"
 import { useGridColumns } from "./gridColumns"
@@ -39,7 +40,7 @@ export function FileBrowser() {
     const [path, setPath] = useState("")
 
     const navigate = useNavigate()
-    const getNavUrl = (v: IListFilesReq | ((prev: IListFilesReq) => IListFilesReq)) => {
+    const getNavUrl: GetNavUrl = v => {
         const prev = req
         const v2 = typeof v === "function" ? v(prev) : v
         return requestToUrl(v2)
@@ -113,7 +114,12 @@ export function FileBrowser() {
         console.info(res)
     }
 
-    const orderBy = (column: ColumnKey, gridColumns: GridColumns<IFile>) => {
+    const orderBy = (column: ColumnKey) => {
+        const sort = getSortBy(column)
+        navToReq(t => ({ ...t, sort }))
+    }
+
+    const getSortBy = (column: ColumnKey) => {
         const sort = produce(req.sort ?? [], sort => {
             const index = sort.findIndex(t => t.name === column)
             if (index === 0) {
@@ -130,7 +136,7 @@ export function FileBrowser() {
             }
             sort.unshift({ name: column as Column, desc: gridColumns[column].descendingFirst })
         })
-        navToReq(t => ({ ...t, sort }))
+        return sort
     }
 
     const isSortedBy = (sorting: SortConfig, key: ColumnKey, desc?: boolean): boolean => {
@@ -196,14 +202,12 @@ export function FileBrowser() {
                     totalPages={totalPages}
                     pageIndex={pageIndex}
                     setPageIndex={setPageIndex}
-                    gridColumns={gridColumns}
                     reloadFiles={reloadFiles}
-                    GotoFolder={GotoFolder}
-                    up={up}
                     exploreFile={exploreFile}
                     isSortedBy={isSortedBy}
                     navToReq={navToReq}
-                    orderBy={orderBy}
+                    getNavUrl={getNavUrl}
+                    getSortBy={getSortBy}
                 />
                 <AddressBar
                     gotoPath={() => GotoPath(path)}

@@ -17,6 +17,7 @@ import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
+import { SortColumn } from "../../../shared/SortColumn"
 import ExploreIcon from "../assets/icons/explore.svg?react"
 import FolderIcon from "../assets/icons/folder.svg?react"
 import GoogleIcon from "../assets/icons/google.svg?react"
@@ -31,10 +32,10 @@ import UpIcon from "../assets/icons/up.svg?react"
 import { SortConfig } from "../hooks/useSorting"
 import { getGoogleSearchLink } from "../lib/getGoogleSearchLink"
 import { getSubtitleSearchLink } from "../lib/getSubtitleSearchLink"
-import { openInNewWindow } from "../lib/openInNewWindow"
 import { api } from "../services/api"
+import { AppLink } from "./AppLink"
 import { Clock } from "./Clock"
-import { GridColumns } from "./Grid"
+import { GetNavUrl } from "./GetNavUrl"
 
 export function MainMenu({
     req,
@@ -44,14 +45,12 @@ export function MainMenu({
     pageIndex,
     totalPages,
     setPageIndex,
-    gridColumns,
     reloadFiles,
-    GotoFolder,
-    up,
     exploreFile,
     isSortedBy,
     navToReq,
-    orderBy,
+    getNavUrl,
+    getSortBy,
 }: {
     req: IListFilesReq
     res: IListFilesRes
@@ -60,14 +59,12 @@ export function MainMenu({
     totalPages: number | null
     pageIndex: number
     setPageIndex: (v: number) => void
-    gridColumns: GridColumns<IFile>
     reloadFiles: () => Promise<void>
-    GotoFolder: (file: IFile | undefined) => void
-    up: () => void
     exploreFile: (file: IFile) => Promise<void>
     isSortedBy: (sorting: SortConfig, key: string, desc?: boolean | undefined) => boolean
     navToReq: (v: IListFilesReq | ((prev: IListFilesReq) => IListFilesReq)) => void
-    orderBy: (column: string, gridColumns: GridColumns<IFile>) => void
+    getSortBy: (column: string) => SortColumn[]
+    getNavUrl: GetNavUrl
 }) {
     const deleteAndRefresh = async (file: IFile) => {
         if (!file.path) return
@@ -91,44 +88,45 @@ export function MainMenu({
         await trashAndRefresh(file)
     }
 
-    const prev = () => GotoFolder(res?.prev)
-    const next = () => GotoFolder(res?.next)
-    const canUp = () => req.path !== "/"
-    const canPrev = () => !!res?.prev
-    const canNext = () => !!res?.next
-
-    const google = () => res?.file && openInNewWindow(getGoogleSearchLink(res?.file))
-    const subs = () => res?.file && openInNewWindow(getSubtitleSearchLink(res?.file))
-
     const Delete = (e?: React.KeyboardEvent) =>
         selectedFile && deleteOrTrash({ file: selectedFile, isShiftDown: e?.shiftKey ?? false })
 
     const contextFile = selectedFile ?? res.file ?? null
 
-    // const navigate = useNavigate()
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
     const [anchorEl2, setAnchorEl2] = React.useState<null | HTMLElement>(null)
     function updateReq(x: Partial<IListFilesReq>) {
         navToReq(t => ({ ...t, ...x }))
     }
 
-    const orderByInnerSelection = () => orderBy(Column.hasInnerSelection, gridColumns)
     return (
         <div className={style}>
             <MenuList>
-                <MenuItem onClick={up} disabled={!canUp}>
+                <MenuItem
+                    component={AppLink}
+                    href={getNavUrl(t => ({ ...t, path: res.parent?.path ?? "/" }))}
+                    disabled={req.path === "/"}
+                >
                     <ListItemIcon>
                         <UpIcon />
                     </ListItemIcon>
                     <ListItemText>Up</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={prev} disabled={!canPrev}>
+                <MenuItem
+                    component={AppLink}
+                    href={getNavUrl(t => ({ ...t, path: res.prev?.path }))}
+                    disabled={!res.prev?.path}
+                >
                     <ListItemIcon>
                         <PrevIcon />
                     </ListItemIcon>
                     <ListItemText>Prev</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={next} disabled={!canNext}>
+                <MenuItem
+                    component={AppLink}
+                    href={getNavUrl(t => ({ ...t, path: res.next?.path }))}
+                    disabled={!res.next?.path}
+                >
                     <ListItemIcon>
                         <NextIcon />
                     </ListItemIcon>
@@ -136,19 +134,23 @@ export function MainMenu({
                 </MenuItem>
             </MenuList>
             <MenuList>
-                <MenuItem onClick={() => updateReq({ folderSize: !req.folderSize })} selected={!!req.folderSize}>
+                <MenuItem
+                    component={AppLink}
+                    href={getNavUrl(t => ({ ...t, folderSize: !req.folderSize }))}
+                    selected={!!req.folderSize}
+                >
                     <ListItemIcon>
                         <FolderIcon />
                     </ListItemIcon>
                     <ListItemText>Folder</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={google}>
+                <MenuItem component={AppLink} href={res?.file ? getGoogleSearchLink(res?.file) : ""} target="_blank">
                     <ListItemIcon>
                         <GoogleIcon />
                     </ListItemIcon>
                     <ListItemText>Google</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={subs}>
+                <MenuItem component={AppLink} href={res?.file ? getSubtitleSearchLink(res?.file) : ""} target="_blank">
                     <ListItemIcon>
                         <SubtitleIcon />
                     </ListItemIcon>
@@ -160,7 +162,11 @@ export function MainMenu({
                     </ListItemIcon>
                     <ListItemText>Explore</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={() => updateReq({ hideWatched: !req.hideWatched })} selected={!!req.hideWatched}>
+                <MenuItem
+                    component={AppLink}
+                    href={getNavUrl(t => ({ ...t, hideWatched: !req.hideWatched }))}
+                    selected={!!req.hideWatched}
+                >
                     <ListItemIcon>
                         <NewIcon />
                     </ListItemIcon>
@@ -181,7 +187,11 @@ export function MainMenu({
                     <ListItemText>Sort</ListItemText>
                 </MenuItem>
                 <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)} className={style}>
-                    <MenuItem onClick={orderByInnerSelection} selected={isSortedBy(sorting, Column.hasInnerSelection)}>
+                    <MenuItem
+                        component={AppLink}
+                        href={getNavUrl(t => ({ ...t, sort: getSortBy(Column.hasInnerSelection) }))}
+                        selected={isSortedBy(sorting, Column.hasInnerSelection)}
+                    >
                         Watched
                     </MenuItem>
                     <MenuItem
@@ -198,22 +208,42 @@ export function MainMenu({
                     <ListItemText>More</ListItemText>
                 </MenuItem>
                 <Menu anchorEl={anchorEl2} open={!!anchorEl2} onClose={() => setAnchorEl2(null)} className={style}>
-                    <MenuItem onClick={() => updateReq({ hideFolders: !req.hideFolders })} selected={!!req.hideFolders}>
+                    <MenuItem
+                        component={AppLink}
+                        href={getNavUrl(t => ({ ...t, hideFolders: !req.hideFolders }))}
+                        selected={!!req.hideFolders}
+                    >
                         Hide Folders
                     </MenuItem>
-                    <MenuItem onClick={() => updateReq({ hideFiles: !req.hideFiles })} selected={!!req.hideFiles}>
+                    <MenuItem
+                        component={AppLink}
+                        href={getNavUrl(t => ({ ...t, hideFiles: !req.hideFiles }))}
+                        selected={!!req.hideFiles}
+                    >
                         Hide Files
                     </MenuItem>
-                    <MenuItem onClick={() => updateReq({ recursive: !req.recursive })} selected={!!req.recursive}>
+                    <MenuItem
+                        component={AppLink}
+                        href={getNavUrl(t => ({ ...t, recursive: !req.recursive }))}
+                        selected={!!req.recursive}
+                    >
                         Recursive
                     </MenuItem>
-                    <MenuItem onClick={() => updateReq({ keepView: !req.keepView })} selected={!!req.keepView}>
+                    <MenuItem
+                        component={AppLink}
+                        href={getNavUrl(t => ({ ...t, keepView: !req.keepView }))}
+                        selected={!!req.keepView}
+                    >
                         Keep
                     </MenuItem>
-                    <MenuItem onClick={() => updateReq({ hidden: !req.hidden })} selected={!!req.hidden}>
+                    <MenuItem
+                        component={AppLink}
+                        href={getNavUrl(t => ({ ...t, hidden: !req.hidden }))}
+                        selected={!!req.hidden}
+                    >
                         Hidden
                     </MenuItem>
-                    <MenuItem onClick={() => updateReq({ vlc: !req.vlc })} selected={!!req.vlc}>
+                    <MenuItem component={AppLink} href={getNavUrl(t => ({ ...t, vlc: !req.vlc }))} selected={!!req.vlc}>
                         VLC
                     </MenuItem>
                 </Menu>
@@ -246,16 +276,16 @@ const style = css`
         .${menuItemClasses.root} {
             border: 1px solid #282828;
             margin-left: -1px;
-            &:first-of-type {
+            &:first-child {
                 border-radius: 25px 0 0 25px;
                 padding-left: 28px;
                 margin-left: 0;
             }
-            &:last-of-type {
+            &:last-child {
                 border-radius: 0 25px 25px 0;
                 padding-right: 28px;
             }
-            &:first-of-type:last-of-type {
+            &:first-child:last-child {
                 border-radius: 25px;
             }
             .${listItemIconClasses.root} {

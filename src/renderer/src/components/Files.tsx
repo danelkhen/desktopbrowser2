@@ -7,7 +7,7 @@ import { SortConfig } from "../hooks/useSorting"
 import { Selection } from "../lib/Selection"
 import { c } from "../services/c"
 import { fileRow } from "../services/fileRow"
-import { Grid, GridColumns } from "./Grid"
+import { Grid } from "./Grid"
 import { useGridColumns, visibleGridColumns } from "./gridColumns"
 
 export function Files({
@@ -33,7 +33,7 @@ export function Files({
     noBody?: boolean
     folderSelections: FolderSelections
     Open: (file: IFile) => Promise<void>
-    orderBy: (column: string, gridColumns: GridColumns<IFile>) => void
+    orderBy: (column: string) => void
     isSortedBy: (sorting: SortConfig, key: string, desc?: boolean | undefined) => boolean
     hasInnerSelection: (file: IFile) => boolean
 }) {
@@ -84,7 +84,7 @@ export function Files({
                     isSortedBy(sorting, col, true) && c.desc
                 )
             }
-            orderBy={t => orderBy(t, gridColumns)}
+            orderBy={orderBy}
             onItemMouseDown={onItemMouseDown}
             onItemClick={onItemClick}
             onItemDoubleClick={onItemDoubleClick}

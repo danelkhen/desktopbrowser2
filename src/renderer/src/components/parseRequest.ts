@@ -16,5 +16,5 @@ export function requestToUrlParts(req: IListFilesReq) {
 
 export function requestToUrl(req: IListFilesReq) {
     const { pathname, search } = requestToUrlParts(req)
-    return `${pathname}${search}`
+    return `${pathname}${search ? "?" + search : ""}`
 }
