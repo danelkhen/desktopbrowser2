@@ -35,6 +35,7 @@ import { api } from "../services/api"
 import { AppLinkBehavior } from "./AppLink"
 import { Clock } from "./Clock"
 import { GetNavUrl } from "./GetNavUrl"
+import { colors } from "../GlobalStyle"
 
 export function MainMenu({
     req,
@@ -267,9 +268,9 @@ export function MainMenu({
 const style = css`
     label: MainMenu;
     display: flex;
-    gap: 10px;
-    padding: 10px 10px 0 10px;
-    font-size: 14px;
+    gap: 6px;
+    padding: 6px 6px 0 6px;
+    font-size: 12px;
     flex-wrap: wrap;
     .${paginationClasses.root} {
         display: flex;
@@ -282,14 +283,15 @@ const style = css`
         .${menuItemClasses.root} {
             border: 1px solid #282828;
             margin-left: -1px;
+            /* padding: 0; */
             &:first-child {
                 border-radius: 25px 0 0 25px;
-                padding-left: 28px;
+                padding-left: 25px;
                 margin-left: 0;
             }
             &:last-child {
                 border-radius: 0 25px 25px 0;
-                padding-right: 28px;
+                padding-right: 25px;
             }
             &:first-child:last-child {
                 border-radius: 25px;
@@ -302,7 +304,8 @@ const style = css`
     }
     .${menuItemClasses.root} {
         font-size: inherit;
-        line-height: 2;
+        line-height: 1.75;
+        color: ${colors.fg3};
         &:hover {
             /* background-color: #864aff; */
         }
@@ -315,6 +318,7 @@ const style = css`
 
         .${listItemTextClasses.primary} {
             font-size: inherit;
+            color: inherit;
         }
     }
 `
