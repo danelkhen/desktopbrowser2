@@ -229,17 +229,11 @@ export function FileBrowser() {
 }
 
 function getSortConfig(req: IListFilesReq): SortConfig {
-    // const sorting: SortConfig = {}
     const cols = req.sort ?? {}
     if (req.foldersFirst && !cols[Column.type]) {
         return { [Column.type]: "asc", ...cols }
-        // active.push(Column.type)
     }
     return cols
-    // for (const col of cols ?? []) {
-    //     sorting[col.name] = col.desc ? "desc" : "asc"
-    // }
-    // return sorting
 }
 
 const style = css`

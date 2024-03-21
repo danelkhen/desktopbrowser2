@@ -32,7 +32,7 @@ import UpIcon from "../assets/icons/up.svg?react"
 import { getGoogleSearchLink } from "../lib/getGoogleSearchLink"
 import { getSubtitleSearchLink } from "../lib/getSubtitleSearchLink"
 import { api } from "../services/api"
-import { AppLink } from "./AppLink"
+import { AppLinkBehavior } from "./AppLink"
 import { Clock } from "./Clock"
 import { GetNavUrl } from "./GetNavUrl"
 
@@ -93,7 +93,7 @@ export function MainMenu({
         <div className={style}>
             <MenuList>
                 <MenuItem
-                    component={AppLink}
+                    component={AppLinkBehavior}
                     href={getNavUrl(t => ({ ...t, path: res.parent?.path ?? "/" }))}
                     disabled={req.path === "/"}
                 >
@@ -103,7 +103,7 @@ export function MainMenu({
                     <ListItemText>Up</ListItemText>
                 </MenuItem>
                 <MenuItem
-                    component={AppLink}
+                    component={AppLinkBehavior}
                     href={getNavUrl(t => ({ ...t, path: res.prev?.path }))}
                     disabled={!res.prev?.path}
                 >
@@ -113,7 +113,7 @@ export function MainMenu({
                     <ListItemText>Prev</ListItemText>
                 </MenuItem>
                 <MenuItem
-                    component={AppLink}
+                    component={AppLinkBehavior}
                     href={getNavUrl(t => ({ ...t, path: res.next?.path }))}
                     disabled={!res.next?.path}
                 >
@@ -125,7 +125,7 @@ export function MainMenu({
             </MenuList>
             <MenuList>
                 <MenuItem
-                    component={AppLink}
+                    component={AppLinkBehavior}
                     href={getNavUrl(t => ({ ...t, folderSize: !req.folderSize }))}
                     selected={!!req.folderSize}
                 >
@@ -134,13 +134,21 @@ export function MainMenu({
                     </ListItemIcon>
                     <ListItemText>Folder</ListItemText>
                 </MenuItem>
-                <MenuItem component={AppLink} href={res?.file ? getGoogleSearchLink(res?.file) : ""} target="_blank">
+                <MenuItem
+                    component={AppLinkBehavior}
+                    href={res?.file ? getGoogleSearchLink(res?.file) : ""}
+                    target="_blank"
+                >
                     <ListItemIcon>
                         <GoogleIcon />
                     </ListItemIcon>
                     <ListItemText>Google</ListItemText>
                 </MenuItem>
-                <MenuItem component={AppLink} href={res?.file ? getSubtitleSearchLink(res?.file) : ""} target="_blank">
+                <MenuItem
+                    component={AppLinkBehavior}
+                    href={res?.file ? getSubtitleSearchLink(res?.file) : ""}
+                    target="_blank"
+                >
                     <ListItemIcon>
                         <SubtitleIcon />
                     </ListItemIcon>
@@ -156,14 +164,14 @@ export function MainMenu({
                     <ListItemText>Explore</ListItemText>
                 </MenuItem>
                 <MenuItem
-                    component={AppLink}
+                    component={AppLinkBehavior}
                     href={getNavUrl(t => ({ ...t, hideWatched: !req.hideWatched }))}
                     selected={!!req.hideWatched}
                 >
                     <ListItemIcon>
                         <NewIcon />
                     </ListItemIcon>
-                    <ListItemText>New</ListItemText>
+                    <ListItemText>Unwatched</ListItemText>
                 </MenuItem>
             </MenuList>
             <MenuList>
@@ -181,14 +189,14 @@ export function MainMenu({
                 </MenuItem>
                 <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)} className={style}>
                     <MenuItem
-                        component={AppLink}
+                        component={AppLinkBehavior}
                         href={getNavUrl(t => ({ ...t, sort: getSortBy(Column.hasInnerSelection) }))}
                         selected={isSortedBy(Column.hasInnerSelection)}
                     >
                         Watched
                     </MenuItem>
                     <MenuItem
-                        component={AppLink}
+                        component={AppLinkBehavior}
                         href={getNavUrl(t => ({ ...t, foldersFirst: !req.foldersFirst }))}
                         selected={!!req.foldersFirst}
                     >
@@ -203,41 +211,45 @@ export function MainMenu({
                 </MenuItem>
                 <Menu anchorEl={anchorEl2} open={!!anchorEl2} onClose={() => setAnchorEl2(null)} className={style}>
                     <MenuItem
-                        component={AppLink}
+                        component={AppLinkBehavior}
                         href={getNavUrl(t => ({ ...t, hideFolders: !req.hideFolders }))}
                         selected={!!req.hideFolders}
                     >
                         Hide Folders
                     </MenuItem>
                     <MenuItem
-                        component={AppLink}
+                        component={AppLinkBehavior}
                         href={getNavUrl(t => ({ ...t, hideFiles: !req.hideFiles }))}
                         selected={!!req.hideFiles}
                     >
                         Hide Files
                     </MenuItem>
                     <MenuItem
-                        component={AppLink}
+                        component={AppLinkBehavior}
                         href={getNavUrl(t => ({ ...t, recursive: !req.recursive }))}
                         selected={!!req.recursive}
                     >
                         Recursive
                     </MenuItem>
                     <MenuItem
-                        component={AppLink}
+                        component={AppLinkBehavior}
                         href={getNavUrl(t => ({ ...t, keepView: !req.keepView }))}
                         selected={!!req.keepView}
                     >
                         Keep
                     </MenuItem>
                     <MenuItem
-                        component={AppLink}
+                        component={AppLinkBehavior}
                         href={getNavUrl(t => ({ ...t, hidden: !req.hidden }))}
                         selected={!!req.hidden}
                     >
                         Hidden
                     </MenuItem>
-                    <MenuItem component={AppLink} href={getNavUrl(t => ({ ...t, vlc: !req.vlc }))} selected={!!req.vlc}>
+                    <MenuItem
+                        component={AppLinkBehavior}
+                        href={getNavUrl(t => ({ ...t, vlc: !req.vlc }))}
+                        selected={!!req.vlc}
+                    >
                         VLC
                     </MenuItem>
                 </Menu>
@@ -262,7 +274,7 @@ const style = css`
     .${paginationClasses.root} {
         display: flex;
         flex: 1;
-        justify-content: center;
+        justify-content: flex-end;
     }
     > .${listClasses.root} {
         display: flex;
