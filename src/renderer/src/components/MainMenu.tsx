@@ -270,7 +270,7 @@ const style = css`
     display: flex;
     gap: 6px;
     padding: 6px 6px 0 6px;
-    font-size: 12px;
+    font-size: 10px;
     flex-wrap: wrap;
     .${paginationClasses.root} {
         display: flex;
@@ -286,12 +286,12 @@ const style = css`
             /* padding: 0; */
             &:first-child {
                 border-radius: 25px 0 0 25px;
-                padding-left: 25px;
+                padding-left: 20px;
                 margin-left: 0;
             }
             &:last-child {
                 border-radius: 0 25px 25px 0;
-                padding-right: 25px;
+                padding-right: 20px;
             }
             &:first-child:last-child {
                 border-radius: 25px;
