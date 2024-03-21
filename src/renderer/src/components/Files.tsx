@@ -1,22 +1,16 @@
 import { css, cx } from "@emotion/css"
-import React, { Dispatch, SetStateAction, useCallback } from "react"
+import React, { useCallback } from "react"
+import { FolderSelections } from "../../../shared/Api"
 import { IFile } from "../../../shared/IFile"
-import { IListFilesReq } from "../../../shared/IListFilesReq"
-import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { calcItemsOnScreen } from "../hooks/calcItemsOnScreen"
 import { SortConfig } from "../hooks/useSorting"
 import { Selection } from "../lib/Selection"
-import { useDispatcher } from "../services/Dispatcher"
 import { c } from "../services/c"
 import { fileRow } from "../services/fileRow"
-import { Grid } from "./Grid"
+import { Grid, GridColumns } from "./Grid"
 import { useGridColumns, visibleGridColumns } from "./gridColumns"
-import { FolderSelections } from "../../../shared/Api"
 
 export function Files({
-    req,
-    res,
-    setRes,
     selectedFiles,
     allFiles,
     setSelectedFiles,
@@ -25,10 +19,11 @@ export function Files({
     noHead,
     noBody,
     folderSelections,
-    setFolderSelections,
+    Open,
+    orderBy,
+    isSortedBy,
+    hasInnerSelection,
 }: {
-    req: IListFilesReq
-    res: IListFilesRes
     setSelectedFiles: (v: Set<IFile>) => void
     selectedFiles: Set<IFile>
     allFiles: IFile[]
@@ -36,17 +31,12 @@ export function Files({
     sorting: SortConfig
     noHead?: boolean
     noBody?: boolean
-    setRes: Dispatch<SetStateAction<IListFilesRes>>
     folderSelections: FolderSelections
-    setFolderSelections: Dispatch<SetStateAction<FolderSelections>>
+    Open: (file: IFile) => Promise<void>
+    orderBy: (column: string, gridColumns: GridColumns<IFile>) => void
+    isSortedBy: (sorting: SortConfig, key: string, desc?: boolean | undefined) => boolean
+    hasInnerSelection: (file: IFile) => boolean
 }) {
-    const { Open, orderBy, isSortedBy, hasInnerSelection } = useDispatcher({
-        req,
-        res,
-        setRes,
-        folderSelections,
-        setFolderSelections,
-    })
     const onItemMouseDown = useCallback(
         (e: React.MouseEvent, file: IFile) => {
             const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${fileRow}`))

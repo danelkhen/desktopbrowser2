@@ -12,7 +12,7 @@ import {
     menuItemClasses,
     paginationClasses,
 } from "@mui/material"
-import React, { Dispatch, SetStateAction, useCallback } from "react"
+import React from "react"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
@@ -29,9 +29,11 @@ import SubtitleIcon from "../assets/icons/subtitle.svg?react"
 import TrashIcon from "../assets/icons/trash.svg?react"
 import UpIcon from "../assets/icons/up.svg?react"
 import { SortConfig } from "../hooks/useSorting"
-import { useDispatcher } from "../services/Dispatcher"
+import { getGoogleSearchLink } from "../lib/getGoogleSearchLink"
+import { getSubtitleSearchLink } from "../lib/getSubtitleSearchLink"
+import { openInNewWindow } from "../lib/openInNewWindow"
+import { api } from "../services/api"
 import { Clock } from "./Clock"
-import { FolderSelections } from "../../../shared/Api"
 import { GridColumns } from "./Grid"
 
 export function MainMenu({
@@ -42,10 +44,14 @@ export function MainMenu({
     pageIndex,
     totalPages,
     setPageIndex,
-    setRes,
-    folderSelections,
-    setFolderSelections,
     gridColumns,
+    reloadFiles,
+    GotoFolder,
+    up,
+    exploreFile,
+    isSortedBy,
+    navToReq,
+    orderBy,
 }: {
     req: IListFilesReq
     res: IListFilesRes
@@ -54,33 +60,48 @@ export function MainMenu({
     totalPages: number | null
     pageIndex: number
     setPageIndex: (v: number) => void
-    setRes: Dispatch<SetStateAction<IListFilesRes>>
-    folderSelections: FolderSelections
-    setFolderSelections: Dispatch<SetStateAction<FolderSelections>>
     gridColumns: GridColumns<IFile>
+    reloadFiles: () => Promise<void>
+    GotoFolder: (file: IFile | undefined) => void
+    up: () => void
+    exploreFile: (file: IFile) => Promise<void>
+    isSortedBy: (sorting: SortConfig, key: string, desc?: boolean | undefined) => boolean
+    navToReq: (v: IListFilesReq | ((prev: IListFilesReq) => IListFilesReq)) => void
+    orderBy: (column: string, gridColumns: GridColumns<IFile>) => void
 }) {
-    const {
-        deleteOrTrash,
-        canUp,
-        canPrev,
-        canNext,
-        up,
-        prev,
-        next,
-        google,
-        subs,
-        exploreFile,
-        isSortedBy,
-        navToReq,
-        orderBy,
-    } = useDispatcher({ req, res, setRes, folderSelections, setFolderSelections })
+    const deleteAndRefresh = async (file: IFile) => {
+        if (!file.path) return
+        const fileOrFolder = file.isFolder ? "folder" : "file"
+        if (!window.confirm("Are you sure you wan to delete the " + fileOrFolder + "?\n" + file.path)) return
+        await api.del({ path: file.path })
+        await reloadFiles()
+    }
 
-    const Delete = useCallback(
-        (e?: React.KeyboardEvent) =>
-            selectedFile && deleteOrTrash({ file: selectedFile, isShiftDown: e?.shiftKey ?? false }),
+    const trashAndRefresh = async (file: IFile) => {
+        if (!file.path) return
+        await api.trash({ path: file.path })
+        await reloadFiles()
+    }
 
-        [deleteOrTrash, selectedFile]
-    )
+    const deleteOrTrash = async ({ file, isShiftDown }: { file: IFile; isShiftDown: boolean }) => {
+        if (isShiftDown) {
+            await deleteAndRefresh(file)
+            return
+        }
+        await trashAndRefresh(file)
+    }
+
+    const prev = () => GotoFolder(res?.prev)
+    const next = () => GotoFolder(res?.next)
+    const canUp = () => req.path !== "/"
+    const canPrev = () => !!res?.prev
+    const canNext = () => !!res?.next
+
+    const google = () => res?.file && openInNewWindow(getGoogleSearchLink(res?.file))
+    const subs = () => res?.file && openInNewWindow(getSubtitleSearchLink(res?.file))
+
+    const Delete = (e?: React.KeyboardEvent) =>
+        selectedFile && deleteOrTrash({ file: selectedFile, isShiftDown: e?.shiftKey ?? false })
 
     const contextFile = selectedFile ?? res.file ?? null
 

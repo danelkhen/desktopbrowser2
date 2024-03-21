@@ -1,31 +1,27 @@
-import { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { FolderSelections } from "../../../shared/Api"
 import { IFile } from "../../../shared/IFile"
-import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { Selection } from "../lib/Selection"
 import { iterableLast } from "../lib/iterableLast"
 import { sleep } from "../lib/sleep"
-import { useDispatcher } from "../services/Dispatcher"
 import { c } from "../services/c"
 import { fileRow } from "../services/fileRow"
 import { calcItemsOnScreen } from "./calcItemsOnScreen"
-import { FolderSelections } from "../../../shared/Api"
 
 export function useSelection({
-    req,
     res,
-    setRes,
     folderSelections,
-    setFolderSelections,
+    setFolderSelection,
+    up,
+    Open,
 }: {
-    req: IListFilesReq
     readonly res: IListFilesRes
-    setRes: Dispatch<SetStateAction<IListFilesRes>>
     folderSelections: FolderSelections
-    setFolderSelections: Dispatch<SetStateAction<FolderSelections>>
+    setFolderSelection: (key: string, value: string | null) => Promise<void>
+    up: () => void
+    Open: (file: IFile) => Promise<void>
 }) {
-    const { setFolderSelection, up, Open } = useDispatcher({ req, res, setRes, folderSelections, setFolderSelections })
-    // const { folderSelections: filesMd } = useAppState()
     const [_extraSelectedFiles, _setExtraSelectedFiles] = useState<IFile[]>([])
 
     const selectedFiles = useMemo(() => {

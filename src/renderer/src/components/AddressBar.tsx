@@ -6,12 +6,12 @@ export function AddressBar({
     path,
     search,
     setPath,
-    setSearch,
+    setSearchText,
 }: {
     path: string
     search: string
     setPath: (v: string) => void
-    setSearch: (v: string) => void
+    setSearchText: (v: string) => void
     gotoPath: () => void
 }) {
     return (
@@ -37,7 +37,7 @@ export function AddressBar({
                     type="text"
                     id="tbSearch"
                     value={search}
-                    onChange={e => setSearch(e.currentTarget.value)}
+                    onChange={e => setSearchText(e.currentTarget.value)}
                     placeholder="Search"
                 />
             </span>
