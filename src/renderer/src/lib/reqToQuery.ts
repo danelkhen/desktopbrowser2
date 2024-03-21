@@ -3,7 +3,7 @@ import { sortToUrl } from "@renderer/lib/sortToUrl"
 import { IReqQuery } from "./IReqQuery"
 
 export function reqToQuery(rest: IListFilesReq) {
-    console.log("reqToQuery", rest)
+    // console.log("reqToQuery", rest)
     const obj: IReqQuery = {
         foldersFirst: rest.foldersFirst ? "" : undefined,
         search: rest.searchPattern ? rest.searchPattern : undefined,
@@ -12,7 +12,7 @@ export function reqToQuery(rest: IListFilesReq) {
         hideFolders: rest.hideFolders ? "" : undefined,
         hideFiles: rest.hideFiles ? "" : undefined,
         // Path: rest.path ? rest.path : undefined,
-        sort: rest.sort?.length ? sortToUrl(rest.sort) : undefined,
+        sort: rest.sort && Object.keys(rest.sort).length ? sortToUrl(rest.sort) : undefined,
         hidden: rest.hidden ? "" : undefined,
         noCache: rest.noCache ? "" : undefined,
         View: rest.view ? rest.view : undefined,

@@ -1,7 +1,7 @@
-import { SortColumn } from "./SortColumn"
+import { SortConfig } from "./SortConfig"
 
 export interface IListFilesReq {
-    readonly sort?: SortColumn[]
+    readonly sort?: SortConfig
     readonly foldersFirst?: boolean
     readonly searchPattern?: string
     readonly recursive?: boolean

@@ -3,6 +3,7 @@ import { produce } from "immer"
 import _ from "lodash"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { SortConfig } from "src/shared/SortConfig"
 import { FolderSelections } from "../../../shared/Api"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
@@ -11,7 +12,6 @@ import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { usePaging } from "../hooks/usePaging"
 import { useSearch } from "../hooks/useSearch"
 import { useSelection } from "../hooks/useSelection"
-import { SortConfig, useSorting } from "../hooks/useSorting"
 import { isExecutable } from "../lib/isExecutable"
 import { iterableLast } from "../lib/iterableLast"
 import { api } from "../services/api"
@@ -106,28 +106,27 @@ export function FileBrowser() {
     }
 
     const getSortBy = (column: ColumnKey) => {
-        const sort = produce(req.sort ?? [], sort => {
-            const index = sort.findIndex(t => t.name === column)
-            if (index === 0) {
-                if (!!sort[index].desc === !!gridColumns[column].descendingFirst) {
-                    sort[index].desc = !sort[index].desc
-                } else {
-                    sort.shift()
-                }
-                return
-            }
-            if (index > 0) {
-                sort = [{ name: column as Column, desc: gridColumns[column].descendingFirst }]
-                return sort
-            }
-            sort.unshift({ name: column as Column, desc: gridColumns[column].descendingFirst })
-        })
-        return sort
+        const cycle: ("asc" | "desc" | undefined)[] = gridColumns[column].descendingFirst
+            ? ["desc", "asc", undefined]
+            : ["asc", "desc", undefined]
+        const current = sorting[column]
+        const next = cycle[(cycle.indexOf(current) + 1) % cycle.length]
+        const cfg: SortConfig = { ...sorting }
+        if (!next) {
+            delete cfg[column]
+            return cfg
+        }
+        if (!cfg[column]) {
+            delete cfg[column]
+            return { [column]: next, ...cfg }
+        }
+        cfg[column] = next
+        return cfg
     }
 
-    const isSortedBy = (sorting: SortConfig, key: ColumnKey, desc?: boolean): boolean => {
-        if (!sorting.active.includes(key)) return false
-        if (desc !== undefined) return !!sorting.isDescending[key] === desc
+    const isSortedBy = (key: ColumnKey, desc?: boolean): boolean => {
+        if (!sorting[key]) return false
+        if (desc !== undefined) return sorting[key] === (desc ? "desc" : "asc")
         return true
     }
     const [pageIndex, setPageIndex] = useState(0)
@@ -136,7 +135,7 @@ export function FileBrowser() {
     let files = allFiles
 
     files = useSearch(searchText, files)
-    files = useSorting(files, sorting, gridColumns)
+    // files = useSorting(files, sorting, gridColumns)
 
     const totalPages = Math.ceil(files.length / pageSize)
 
@@ -183,7 +182,6 @@ export function FileBrowser() {
                 <MainMenu
                     selectedFile={selectedFile}
                     req={req}
-                    sorting={sorting}
                     res={res}
                     totalPages={totalPages}
                     pageIndex={pageIndex}
@@ -206,12 +204,11 @@ export function FileBrowser() {
                     allFiles={allFiles}
                     setSelectedFiles={setSelectedFiles}
                     files={files}
-                    sorting={sorting}
                     noBody
                     folderSelections={folderSelections}
                     Open={Open}
                     orderBy={orderBy}
-                    isSortedBy={isSortedBy}
+                    sorting={sorting}
                     hasInnerSelection={hasInnerSelection}
                 />
             </header>
@@ -220,37 +217,29 @@ export function FileBrowser() {
                 allFiles={allFiles}
                 setSelectedFiles={setSelectedFiles}
                 files={files}
-                sorting={sorting}
                 noHead
                 folderSelections={folderSelections}
                 Open={Open}
                 orderBy={orderBy}
-                isSortedBy={isSortedBy}
+                sorting={sorting}
                 hasInnerSelection={hasInnerSelection}
             />
         </div>
     )
 }
 
-function getSortConfig(req: IListFilesReq) {
-    const active: ColumnKey[] = []
-    const isDescending: Record<ColumnKey, boolean> = {}
-    const cols = req.sort ?? []
-    if (req.foldersFirst && !cols.find(t => t.name === Column.type)) {
-        active.push(Column.type)
+function getSortConfig(req: IListFilesReq): SortConfig {
+    // const sorting: SortConfig = {}
+    const cols = req.sort ?? {}
+    if (req.foldersFirst && !cols[Column.type]) {
+        return { [Column.type]: "asc", ...cols }
+        // active.push(Column.type)
     }
-    // if (req.ByInnerSelection && !cols.find(t => t.Name === Column.hasInnerSelection)) {
-    //     active.push(Column.hasInnerSelection)
+    return cols
+    // for (const col of cols ?? []) {
+    //     sorting[col.name] = col.desc ? "desc" : "asc"
     // }
-    for (const col of cols ?? []) {
-        active.push(col.name)
-        if (col.desc) {
-            isDescending[col.name] = true
-        }
-    }
-    console.log("setSorting", active)
-    const sorting: SortConfig = { active, isDescending }
-    return sorting
+    // return sorting
 }
 
 const style = css`

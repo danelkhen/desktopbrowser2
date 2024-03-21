@@ -3,38 +3,36 @@ import React, { useCallback } from "react"
 import { FolderSelections } from "../../../shared/Api"
 import { IFile } from "../../../shared/IFile"
 import { calcItemsOnScreen } from "../hooks/calcItemsOnScreen"
-import { SortConfig } from "../hooks/useSorting"
 import { Selection } from "../lib/Selection"
 import { c } from "../services/c"
 import { fileRow } from "../services/fileRow"
 import { Grid } from "./Grid"
 import { useGridColumns, visibleGridColumns } from "./gridColumns"
+import { SortConfig } from "src/shared/SortConfig"
 
 export function Files({
     selectedFiles,
     allFiles,
     setSelectedFiles,
     files,
-    sorting,
     noHead,
     noBody,
     folderSelections,
     Open,
     orderBy,
-    isSortedBy,
+    sorting,
     hasInnerSelection,
 }: {
     setSelectedFiles: (v: Set<IFile>) => void
     selectedFiles: Set<IFile>
     allFiles: IFile[]
     files: IFile[]
-    sorting: SortConfig
     noHead?: boolean
     noBody?: boolean
     folderSelections: FolderSelections
     Open: (file: IFile) => Promise<void>
     orderBy: (column: string) => void
-    isSortedBy: (sorting: SortConfig, key: string, desc?: boolean | undefined) => boolean
+    sorting: SortConfig
     hasInnerSelection: (file: IFile) => boolean
 }) {
     const onItemMouseDown = useCallback(
@@ -79,9 +77,10 @@ export function Files({
             getHeaderClass={col =>
                 cx(
                     col,
-                    isSortedBy(sorting, col) && c.sorted,
-                    isSortedBy(sorting, col, false) && c.asc,
-                    isSortedBy(sorting, col, true) && c.desc
+                    sorting[col] && c.sorted,
+                    sorting[col] && `${c.sorted}-${Object.keys(sorting).indexOf(col)}`,
+                    sorting[col] === "asc" && c.asc,
+                    sorting[col] === "desc" && c.desc
                 )
             }
             orderBy={orderBy}
@@ -101,6 +100,7 @@ export function Files({
             visibleColumns={visibleGridColumns}
             noHead={noHead}
             noBody={noBody}
+            sorting={sorting}
         />
     )
 }

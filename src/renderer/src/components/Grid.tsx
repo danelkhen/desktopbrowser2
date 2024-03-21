@@ -2,6 +2,9 @@ import { css, cx } from "@emotion/css"
 import React, { ReactNode } from "react"
 import { colors } from "../GlobalStyle"
 import { c } from "../services/c"
+import { SortConfig } from "../../../shared/SortConfig"
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 
 export interface GridColumn<T, V> {
     getter?: (item: T, index: number) => V
@@ -32,6 +35,7 @@ export interface GridProps<T> {
     visibleColumns: ColumnKey[]
     noHead?: boolean
     noBody?: boolean
+    sorting?: SortConfig
 }
 
 export function Grid<T>({
@@ -47,6 +51,7 @@ export function Grid<T>({
     visibleColumns,
     noHead,
     noBody,
+    sorting,
 }: GridProps<T>) {
     return (
         <div className={cx(containerStyle, className)}>
@@ -62,6 +67,11 @@ export function Grid<T>({
                             {visibleColumns?.map(col => (
                                 <th key={col} className={getHeaderClass?.(col)} onClick={() => orderBy?.(col)}>
                                     {columns[col].header?.() ?? col}
+                                    {sorting?.[col] === "asc" ? (
+                                        <ArrowDropUpIcon viewBox="6 6 12 12" />
+                                    ) : sorting?.[col] === "desc" ? (
+                                        <ArrowDropDownIcon viewBox="6 6 12 12" />
+                                    ) : null}
                                 </th>
                             ))}
                         </tr>
@@ -105,21 +115,40 @@ const tableStyle = css`
             > th {
                 padding: 4px 8px;
                 white-space: nowrap;
-                cursor: default;
+                cursor: pointer;
                 font-weight: normal;
                 text-align: left;
                 vertical-align: top;
                 box-sizing: border-box;
                 &:hover {
-                    background-color: ${colors.bg2};
+                    /* background-color: ${colors.bg2}; */
                 }
                 &.${c.sorted} {
-                    &.${c.asc} {
+                    &-1 {
+                        svg {
+                            opacity: 0.6;
+                        }
+                    }
+                    &-2 {
+                        svg {
+                            opacity: 0.4;
+                        }
+                    }
+                    &-3 {
+                        svg {
+                            opacity: 0.2;
+                        }
+                    }
+                    /* &.${c.asc} {
                         background-color: ${colors.bg2};
                     }
                     &.${c.desc} {
                         background-color: ${colors.bg3};
-                    }
+                    } */
+                }
+                svg {
+                    font-size: 11px;
+                    margin-left: 4px;
                 }
             }
         }

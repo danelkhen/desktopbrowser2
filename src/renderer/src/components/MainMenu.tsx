@@ -17,7 +17,7 @@ import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
-import { SortColumn } from "../../../shared/SortColumn"
+import { SortConfig } from "../../../shared/SortConfig"
 import ExploreIcon from "../assets/icons/explore.svg?react"
 import FolderIcon from "../assets/icons/folder.svg?react"
 import GoogleIcon from "../assets/icons/google.svg?react"
@@ -29,7 +29,6 @@ import SortIcon from "../assets/icons/sort.svg?react"
 import SubtitleIcon from "../assets/icons/subtitle.svg?react"
 import TrashIcon from "../assets/icons/trash.svg?react"
 import UpIcon from "../assets/icons/up.svg?react"
-import { SortConfig } from "../hooks/useSorting"
 import { getGoogleSearchLink } from "../lib/getGoogleSearchLink"
 import { getSubtitleSearchLink } from "../lib/getSubtitleSearchLink"
 import { api } from "../services/api"
@@ -40,7 +39,6 @@ import { GetNavUrl } from "./GetNavUrl"
 export function MainMenu({
     req,
     selectedFile,
-    sorting,
     res,
     pageIndex,
     totalPages,
@@ -53,13 +51,12 @@ export function MainMenu({
     req: IListFilesReq
     res: IListFilesRes
     selectedFile?: IFile
-    sorting: SortConfig
     totalPages: number | null
     pageIndex: number
     setPageIndex: (v: number) => void
     reloadFiles: () => Promise<void>
-    isSortedBy: (sorting: SortConfig, key: string, desc?: boolean | undefined) => boolean
-    getSortBy: (column: string) => SortColumn[]
+    isSortedBy: (key: string, desc?: boolean | undefined) => boolean
+    getSortBy: (column: string) => SortConfig
     getNavUrl: GetNavUrl
 }) {
     const deleteAndRefresh = async (file: IFile) => {
@@ -186,7 +183,7 @@ export function MainMenu({
                     <MenuItem
                         component={AppLink}
                         href={getNavUrl(t => ({ ...t, sort: getSortBy(Column.hasInnerSelection) }))}
-                        selected={isSortedBy(sorting, Column.hasInnerSelection)}
+                        selected={isSortedBy(Column.hasInnerSelection)}
                     >
                         Watched
                     </MenuItem>
