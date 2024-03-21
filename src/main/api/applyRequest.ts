@@ -14,12 +14,8 @@ export async function applyRequest(files: IFile[], req: IListFilesReq): Promise<
     if (req.hideFiles) {
         files = files.filter(t => t.isFolder)
     }
-    if (req.sort?.length) {
-        files = _.orderBy(
-            files,
-            req.sort.map(t => t.name),
-            req.sort.map(t => (t.desc ? "desc" : "asc"))
-        )
+    if (Object.keys(req.sort ?? {}).length) {
+        files = _.orderBy(files, Object.keys(req.sort!), Object.values(req.sort!))
     }
     if (req.hideWatched) {
         const keys = files.map(t => t.name)
