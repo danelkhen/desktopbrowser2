@@ -130,8 +130,11 @@ const GrdFiles = css`
         > tbody {
             > tr {
                 > .${c.type} {
-                    /* text-overflow: clip; */
-                    padding: 10px 5px;
+                    svg {
+                        font-size: inherit;
+                        vertical-align: middle;
+                    }
+                    padding: 0 5px;
                 }
             }
         }

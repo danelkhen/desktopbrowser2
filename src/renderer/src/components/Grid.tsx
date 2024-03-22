@@ -121,7 +121,7 @@ const tableStyle = css`
                 vertical-align: top;
                 box-sizing: border-box;
                 &:hover {
-                    /* background-color: ${colors.bg2}; */
+                    background-color: ${colors.bg1};
                 }
                 &.${c.sorted} {
                     &-1 {

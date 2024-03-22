@@ -1,14 +1,14 @@
+import FolderOpenOutlinedIcon from "@mui/icons-material/FolderOpenOutlined"
+import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined"
 import { ReactElement } from "react"
+import { FolderSelections } from "../../../shared/Api"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
-import FileEmptyIcon from "../assets/linearicons/svg/file-empty.svg?react"
-import LayersIcon from "../assets/linearicons/svg/layers.svg?react"
-import LinkIcon from "../assets/linearicons/svg/link.svg?react"
+import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined"
 import { formatFriendlyDate } from "../lib/formatFriendlyDate"
 import { formatFriendlySize } from "../lib/formatFriendlySize"
 import { c } from "../services/c"
 import { GridColumns } from "./Grid"
-import { FolderSelections } from "../../../shared/Api"
 
 export function useGridColumns(folderSelections: FolderSelections) {
     const gridColumns: GridColumns<IFile> = {
@@ -52,9 +52,9 @@ export function useGridColumns(folderSelections: FolderSelections) {
 export const visibleGridColumns = [Column.type, Column.name, Column.modified, Column.size, Column.ext]
 
 export const icons: { [key: string]: ReactElement } = {
-    folder: <LayersIcon />,
-    file: <FileEmptyIcon />,
-    link: <LinkIcon />,
+    folder: <FolderOpenOutlinedIcon />,
+    file: <InsertDriveFileOutlinedIcon />,
+    link: <LinkOutlinedIcon />,
 }
 
 function getFileTypeOrder(type: string): number {

@@ -1,5 +1,6 @@
 import { css } from "@emotion/css"
-import RefreshIcon from "@mui/icons-material/Refresh"
+import QueuePlayNextOutlinedIcon from "@mui/icons-material/QueuePlayNextOutlined"
+import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined"
 import {
     ListItemIcon,
     ListItemText,
@@ -20,23 +21,23 @@ import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { SortConfig } from "../../../shared/SortConfig"
 import { colors } from "../GlobalStyle"
-import ExploreIcon from "../assets/icons/explore.svg?react"
-import FolderIcon from "../assets/icons/folder.svg?react"
-import GoogleIcon from "../assets/icons/google.svg?react"
-import MoreIcon from "../assets/icons/more.svg?react"
-import NewIcon from "../assets/icons/new.svg?react"
-import NextIcon from "../assets/icons/next.svg?react"
-import PrevIcon from "../assets/icons/prev.svg?react"
+import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined"
+import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined"
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined"
+import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined"
+import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined"
+import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined"
 import SortIcon from "../assets/icons/sort.svg?react"
 import SubtitleIcon from "../assets/icons/subtitle.svg?react"
 import TrashIcon from "../assets/icons/trash.svg?react"
-import UpIcon from "../assets/icons/up.svg?react"
+import ArrowUpwardOutlinedIcon from "@mui/icons-material/ArrowUpwardOutlined"
 import { getGoogleSearchLink } from "../lib/getGoogleSearchLink"
 import { getSubtitleSearchLink } from "../lib/getSubtitleSearchLink"
 import { api } from "../services/api"
 import { AppLinkBehavior } from "./AppLink"
 import { Clock } from "./Clock"
 import { GetNavUrl } from "./GetNavUrl"
+
 export function MainMenu({
     req,
     selectedFile,
@@ -99,7 +100,7 @@ export function MainMenu({
                     disabled={req.path === "/"}
                 >
                     <ListItemIcon>
-                        <UpIcon />
+                        <ArrowUpwardOutlinedIcon />
                     </ListItemIcon>
                     <ListItemText>Up</ListItemText>
                 </MenuItem>
@@ -109,7 +110,7 @@ export function MainMenu({
                     disabled={!res.prev?.path}
                 >
                     <ListItemIcon>
-                        <PrevIcon />
+                        <ArrowBackOutlinedIcon />
                     </ListItemIcon>
                     <ListItemText>Prev</ListItemText>
                 </MenuItem>
@@ -119,13 +120,13 @@ export function MainMenu({
                     disabled={!res.next?.path}
                 >
                     <ListItemIcon>
-                        <NextIcon />
+                        <ArrowForwardOutlinedIcon />
                     </ListItemIcon>
                     <ListItemText>Next</ListItemText>
                 </MenuItem>
                 <MenuItem onClick={reloadFiles}>
                     <ListItemIcon>
-                        <RefreshIcon />
+                        <RefreshOutlinedIcon />
                     </ListItemIcon>
                     <ListItemText>Refresh</ListItemText>
                 </MenuItem>
@@ -137,7 +138,7 @@ export function MainMenu({
                     selected={!!req.folderSize}
                 >
                     <ListItemIcon>
-                        <FolderIcon />
+                        <FolderOutlinedIcon />
                     </ListItemIcon>
                     <ListItemText>Folder</ListItemText>
                 </MenuItem>
@@ -147,7 +148,7 @@ export function MainMenu({
                     target="_blank"
                 >
                     <ListItemIcon>
-                        <GoogleIcon />
+                        <SearchOutlinedIcon />
                     </ListItemIcon>
                     <ListItemText>Google</ListItemText>
                 </MenuItem>
@@ -166,7 +167,7 @@ export function MainMenu({
                     disabled={!contextFile}
                 >
                     <ListItemIcon>
-                        <ExploreIcon />
+                        <ExploreOutlinedIcon />
                     </ListItemIcon>
                     <ListItemText>Explore</ListItemText>
                 </MenuItem>
@@ -176,7 +177,7 @@ export function MainMenu({
                     selected={!!req.hideWatched}
                 >
                     <ListItemIcon>
-                        <NewIcon />
+                        <QueuePlayNextOutlinedIcon />
                     </ListItemIcon>
                     <ListItemText>Unwatched</ListItemText>
                 </MenuItem>
@@ -212,7 +213,7 @@ export function MainMenu({
                 </Menu>
                 <MenuItem onClick={e => setAnchorEl2(e.currentTarget)}>
                     <ListItemIcon>
-                        <MoreIcon />
+                        <MoreHorizOutlinedIcon />
                     </ListItemIcon>
                     <ListItemText>More</ListItemText>
                 </MenuItem>
@@ -328,6 +329,9 @@ const style = css`
         .${listItemTextClasses.primary} {
             font-size: inherit;
             color: inherit;
+        }
+        svg {
+            font-size: 1.5em;
         }
     }
 `

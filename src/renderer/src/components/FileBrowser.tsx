@@ -106,11 +106,9 @@ export function FileBrowser() {
     }
 
     const getSortBy = (column: ColumnKey) => {
-        const cycle: ("asc" | "desc" | undefined)[] = gridColumns[column].descendingFirst
-            ? ["desc", "asc", undefined]
-            : ["asc", "desc", undefined]
+        const cycle: ("asc" | "desc")[] = gridColumns[column].descendingFirst ? ["desc", "asc"] : ["asc", "desc"]
         const current = sorting[column]
-        const next = cycle[(cycle.indexOf(current) + 1) % cycle.length]
+        const next = cycle[cycle.indexOf(current) + 1] as "asc" | "desc" | undefined
         const cfg: SortConfig = { ...sorting }
         if (!next) {
             delete cfg[column]
