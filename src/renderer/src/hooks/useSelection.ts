@@ -11,11 +11,9 @@ import { calcItemsOnScreen } from "./calcItemsOnScreen"
 export function useSelection({
     res,
     setFolderSelection,
-    Open,
 }: {
     readonly res: IListFilesRes
     setFolderSelection: (key: string, value: string | null) => Promise<void>
-    Open: (file: IFile) => Promise<void>
 }) {
     const [selectedFiles, _setSelectedFiles] = useState<IFile[]>([])
     useEffect(() => {
@@ -24,13 +22,6 @@ export function useSelection({
         const file = res?.files?.find(t => t.name === selectedFileName)
         _setSelectedFiles(file ? [file] : [])
     }, [res.file?.name, res?.files, res.selections])
-
-    // const selectedFiles = useMemo(() => {
-    //     const fm = res.file?.name ? res.selections?.[res.file?.name] : null
-    //     const selectedFileName = fm ?? null
-    //     const files = res?.files?.filter(t => t.name === selectedFileName) ?? []
-    //     return new Set([...files, ..._selectedFiles])
-    // }, [_selectedFiles, res.file?.name, res?.files, res.selections])
 
     const selectedFile: IFile | null = selectedFiles[selectedFiles.length - 1] ?? null
 
@@ -47,17 +38,10 @@ export function useSelection({
         [res?.file?.name, setFolderSelection]
     )
 
-    // useEffect(() => {
-    //     if (!res?.file?.name) {
-    //         return
-    //     }
-    //     const file = iterableLast(selectedFiles)
-    //     console.log("saveSelectionAndSetSelectedItems", res.file.name, file?.name)
-    //     void dispatcher.saveSelectedFile(res.file.name, file?.name ?? null)
-    // }, [res.file?.name, selectedFiles])
     useEffect(() => {
-        console.log("verifySelectionInView", selectedFiles)
+        if (!selectedFiles.length) return
         void verifySelectionInView()
+        console.log("verifySelectionInView", selectedFiles)
     }, [selectedFiles])
 
     // Keyboard selection
@@ -70,27 +54,16 @@ export function useSelection({
                 selected: new Set(selectedFiles),
                 itemsOnScreen,
             })
-            const selectedFile = selection.lastSelected
             const target = e.target as HTMLElement
             if (target.matches("input:not(#tbQuickFind),select")) return
             ;(document.querySelector("#tbQuickFind") as HTMLElement).focus()
             const newSelection = selection.keyDown(e)
             if (newSelection === selection) return
             void setSelectedFiles(Array.from(newSelection.selected))
-            if (e.defaultPrevented) return
-            if (e.key === "Enter") {
-                const file = selectedFile
-                if (!file) return
-                e.preventDefault()
-                void Open(selectedFile)
-            }
-            // else if (e.key === "Backspace") {
-            //     up()
-            // }
         }
         window.addEventListener("keydown", Win_keydown)
         return () => window.removeEventListener("keydown", Win_keydown)
-    }, [Open, res?.files, selectedFiles, setSelectedFiles])
+    }, [res?.files, selectedFiles, setSelectedFiles])
 
     return { selectedFile, setSelectedFiles, selectedFiles }
 }

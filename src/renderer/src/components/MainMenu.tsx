@@ -210,6 +210,20 @@ export function MainMenu({
                     >
                         Folders first
                     </MenuItem>
+                    <MenuItem
+                        component={AppLinkBehavior}
+                        href={getNavUrl(t => ({ ...t, sort: getSortBy(Column.name) }))}
+                        selected={isSortedBy(Column.name)}
+                    >
+                        Name
+                    </MenuItem>
+                    <MenuItem
+                        component={AppLinkBehavior}
+                        href={getNavUrl(t => ({ ...t, foldersFirst: undefined, sort: undefined }))}
+                        disabled={!req.foldersFirst && !req.sort}
+                    >
+                        Clear sorting
+                    </MenuItem>
                 </Menu>
                 <MenuItem onClick={e => setAnchorEl2(e.currentTarget)}>
                     <ListItemIcon>

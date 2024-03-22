@@ -40,18 +40,24 @@ export function FileBrowser() {
     const [path, setPath] = useState("")
 
     const navigate = useNavigate()
-    const getNavUrl: GetNavUrl = v => {
-        const prev = req
-        const v2 = typeof v === "function" ? v(prev) : v
-        return requestToUrl(v2)
-    }
-    const navToReq = (v: IListFilesReq | ((prev: IListFilesReq) => IListFilesReq)) => {
-        const prevUrl = getNavUrl(req)
-        const newUrl = getNavUrl(v)
-        if (prevUrl === newUrl) return
-        console.log("navigateToReq", newUrl)
-        navigate?.(newUrl)
-    }
+    const getNavUrl: GetNavUrl = useCallback<GetNavUrl>(
+        v => {
+            const prev = req
+            const v2 = typeof v === "function" ? v(prev) : v
+            return requestToUrl(v2)
+        },
+        [req]
+    )
+    const navToReq = useCallback(
+        (v: IListFilesReq | ((prev: IListFilesReq) => IListFilesReq)) => {
+            const prevUrl = getNavUrl(req)
+            const newUrl = getNavUrl(v)
+            if (prevUrl === newUrl) return
+            console.log("navigateToReq", newUrl)
+            navigate?.(newUrl)
+        },
+        [getNavUrl, navigate, req]
+    )
 
     const setFolderSelection = async (key: string, value: string | null) => {
         if (!value) {
@@ -70,19 +76,22 @@ export function FileBrowser() {
         navToReq(t => ({ ...t, path }))
     }
 
-    const Open = async (file: IFile) => {
-        if (!file?.path) return
-        if (file.isFolder || file.type === "link") {
-            navToReq(t => ({ ...t, path: file.path }))
-            return
-        }
-        const prompt = file.ext ? isExecutable(file.ext) : true
-        if (prompt && !window.confirm("This is an executable file, are you sure you want to run it?")) {
-            return
-        }
-        const res = await api.execute({ path: file.path, vlc: new URLSearchParams(location.search).has("vlc") })
-        console.info(res)
-    }
+    const Open = useCallback(
+        async (file: IFile) => {
+            if (!file?.path) return
+            if (file.isFolder || file.type === "link") {
+                navToReq(t => ({ ...t, path: file.path }))
+                return
+            }
+            const prompt = file.ext ? isExecutable(file.ext) : true
+            if (prompt && !window.confirm("This is an executable file, are you sure you want to run it?")) {
+                return
+            }
+            const res = await api.execute({ path: file.path, vlc: new URLSearchParams(location.search).has("vlc") })
+            console.info(res)
+        },
+        [navToReq]
+    )
 
     const orderBy = (column: ColumnKey) => {
         const sort = getSortBy(column)
@@ -135,7 +144,6 @@ export function FileBrowser() {
     }, [req.path])
 
     const { selectedFiles, setSelectedFiles } = useSelection({
-        Open,
         setFolderSelection,
         res,
     })
@@ -151,6 +159,19 @@ export function FileBrowser() {
     //         setFolderSelections(x)
     //     })()
     // }, [])
+
+    useEffect(() => {
+        function Win_keydown(e: KeyboardEvent): void {
+            if (e.defaultPrevented) return
+            if (e.key === "Enter") {
+                if (!selectedFile) return
+                e.preventDefault()
+                void Open(selectedFile)
+            }
+        }
+        window.addEventListener("keydown", Win_keydown)
+        return () => window.removeEventListener("keydown", Win_keydown)
+    }, [Open, selectedFile])
 
     return (
         <div className={style}>
