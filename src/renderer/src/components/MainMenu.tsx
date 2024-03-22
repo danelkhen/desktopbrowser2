@@ -237,14 +237,14 @@ export function MainMenu({
                         href={getNavUrl(t => ({ ...t, hideFolders: !req.hideFolders }))}
                         selected={!!req.hideFolders}
                     >
-                        Hide Folders
+                        Hide folders
                     </MenuItem>
                     <MenuItem
                         component={AppLinkBehavior}
                         href={getNavUrl(t => ({ ...t, hideFiles: !req.hideFiles }))}
                         selected={!!req.hideFiles}
                     >
-                        Hide Files
+                        Hide files
                     </MenuItem>
                     <MenuItem
                         component={AppLinkBehavior}
@@ -258,7 +258,7 @@ export function MainMenu({
                         href={getNavUrl(t => ({ ...t, keepView: !req.keepView }))}
                         selected={!!req.keepView}
                     >
-                        Keep
+                        Keep view
                     </MenuItem>
                     <MenuItem
                         component={AppLinkBehavior}
@@ -334,9 +334,10 @@ const style = css`
             /* background-color: #864aff; */
         }
         &.Mui-selected {
+            color: white;
             background-color: #a276f8;
             &:hover {
-                background-color: #864aff;
+                background-color: #a97eff;
             }
         }
 

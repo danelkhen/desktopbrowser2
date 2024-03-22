@@ -3,7 +3,7 @@ import log from "electron-log/main"
 import { autoUpdater } from "electron-updater"
 import fs from "fs/promises"
 import { rimraf } from "rimraf"
-import { Api, FolderSelections } from "../../shared/Api"
+import { Api } from "../../shared/Api"
 import { IListFilesRes } from "../../shared/IListFilesRes"
 import { vlcPlay } from "../lib/vlc"
 import { db } from "../services"
@@ -11,18 +11,11 @@ import { getFile } from "./getFile"
 import { getFileRelatives } from "./getFileRelatives"
 import { getFiles } from "./getFiles"
 import { toCurrentPlatformPath } from "./toCurrentPlatformPath"
+import { applyRequest, applyRequest2 } from "./applyRequest"
+import { applyPaging } from "./applyPaging"
+import { IFile } from "../../shared/IFile"
 
 export const api: Api = {
-    getFolderSelection: key => {
-        return db.folderSelection.get(key)
-    },
-    getAllFolderSelections: async () => {
-        const list: FolderSelections = {}
-        for await (const [key, file] of db.folderSelection.iterator()) {
-            list[key] = file
-        }
-        return list
-    },
     saveFolderSelection: async req => {
         await db.folderSelection.put(req.key, req.value)
     },
@@ -40,11 +33,14 @@ export const api: Api = {
             return res
         }
 
-        const files = await getFiles(req)
         const { next, parent, prev } = await getFileRelatives(req.path)
-        const selections = await db.getFolderSelections(
-            [parent, next, prev, file, ...files].filter(t => !!t).map(t => t!.name)
-        )
+        let files = await getFiles(req)
+        files = await applyRequest(files, req)
+        const contextFiles = [parent, next, prev, file, ...files].filter(t => !!t) as IFile[]
+        const selections = await db.getFolderSelections(contextFiles.map(t => t!.name))
+        files = await applyRequest2(files, req, selections)
+        files = applyPaging(files, req)
+
         const res: IListFilesRes = {
             file: file ?? undefined,
             files: files,

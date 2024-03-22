@@ -17,6 +17,9 @@ export const fileRow = css`
         color: #fff;
         background-color: #a276f8;
         transition: all 0.3s ease;
+        &:hover {
+            background-color: #a97eff;
+        }
     }
 
     &.${c.isFolder}.${c.hasInnerSelection}.${c.selected} {
