@@ -109,16 +109,13 @@ export function FileBrowser() {
         const current = sorting[column]
         const next = cycle[cycle.indexOf(current) + 1] as "asc" | "desc" | undefined
         const cfg: SortConfig = { ...sorting }
-        if (!next) {
+        if (cfg[column]) {
             delete cfg[column]
+        }
+        if (!next) {
             return cfg
         }
-        if (!cfg[column]) {
-            delete cfg[column]
-            return { [column]: next, ...cfg }
-        }
-        cfg[column] = next
-        return cfg
+        return { [column]: next, ...cfg }
     }
 
     const isSortedBy = (key: ColumnKey, desc?: boolean): boolean => {

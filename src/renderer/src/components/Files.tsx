@@ -124,7 +124,6 @@ export function Files({
                                 <th
                                     key={key}
                                     className={cx(
-                                        key,
                                         sorting[key] && c.sorted,
                                         sorting[key] && `${c.sorted}-${Object.keys(sorting).indexOf(key)}`,
                                         sorting[key] === "asc" && c.asc,
