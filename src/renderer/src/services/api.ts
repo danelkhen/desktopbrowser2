@@ -1,9 +1,9 @@
-import { httpInvoke } from "../lib/getHttpInvoker"
-import { wsInvoke } from "../lib/wsInvoke"
 import { Api } from "../../../shared/Api"
+import { httpInvoke } from "../lib/getHttpInvoker"
 
 export const api: Api = {
-    listFiles: req => wsInvoke({ funcName: "listFiles", args: [req] }),
+    // listFilesWs: req => wsInvoke({ funcName: "listFiles", args: [req] }),
+    listFiles: req => httpInvoke("/api/listFiles", req),
     saveFolderSelection: req => httpInvoke("/api/saveFolderSelection", req),
     deleteFolderSelection: req => httpInvoke("/api/deleteFolderSelection", req),
     getAllFolderSelections: () => httpInvoke("/api/getAllFolderSelections"),

@@ -137,15 +137,13 @@ export function FileBrowser() {
 
     const reloadFiles = useCallback(async () => {
         const fetchFiles = async (req: IListFilesReq) => {
-            const res = await api.listFiles(req)
-            setRes(res)
+            setRes(await api.listFiles(req))
         }
         if (req.folderSize) {
-            const req2 = { ...req, FolderSize: false }
-            await fetchFiles(req2)
+            setRes(await api.listFiles({ ...req, folderSize: false }))
         }
         await fetchFiles(req)
-    }, [req, setRes])
+    }, [req])
 
     useEffect(() => {
         setPath(req.path ?? "")
