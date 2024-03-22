@@ -1,14 +1,18 @@
 import { css, cx } from "@emotion/css"
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
 import React, { useCallback } from "react"
+import { SortConfig } from "src/shared/SortConfig"
 import { FolderSelections } from "../../../shared/Api"
 import { IFile } from "../../../shared/IFile"
+import { colors } from "../GlobalStyle"
 import { calcItemsOnScreen } from "../hooks/calcItemsOnScreen"
 import { Selection } from "../lib/Selection"
+import { formatFriendlyDate } from "../lib/formatFriendlyDate"
+import { formatFriendlySize } from "../lib/formatFriendlySize"
 import { c } from "../services/c"
 import { fileRow } from "../services/fileRow"
-import { Grid } from "./Grid"
-import { useGridColumns, visibleGridColumns } from "./gridColumns"
-import { SortConfig } from "src/shared/SortConfig"
+import { icons } from "./gridColumns"
 
 export function Files({
     selectedFiles,
@@ -17,7 +21,6 @@ export function Files({
     files,
     noHead,
     noBody,
-    folderSelections,
     Open,
     orderBy,
     sorting,
@@ -35,7 +38,7 @@ export function Files({
     sorting: SortConfig
     hasInnerSelection: (file: IFile) => boolean
 }) {
-    const onItemMouseDown = useCallback(
+    const onFileMouseDown = useCallback(
         (e: React.MouseEvent, file: IFile) => {
             const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${fileRow}`))
             const selection = new Selection({ all: allFiles, selected: selectedFiles, itemsOnScreen })
@@ -45,7 +48,7 @@ export function Files({
         [allFiles, selectedFiles, setSelectedFiles]
     )
 
-    const onItemClick = useCallback(
+    const onFileClick = useCallback(
         (e: React.MouseEvent, file: IFile) => {
             // const selection = new Selection(allFiles, selectedFiles)
             const target = e.target as HTMLElement
@@ -58,7 +61,7 @@ export function Files({
         [Open]
     )
 
-    const onItemDoubleClick = useCallback(
+    const onFileDoubleClick = useCallback(
         (e: React.MouseEvent, file: IFile) => {
             if (file === null) {
                 return
@@ -69,48 +72,158 @@ export function Files({
         [Open]
     )
 
-    const gridColumns = useGridColumns(folderSelections)
+    const gridColumns = {
+        type: {
+            className: c.type,
+            cell: (file: IFile) => (file.type && icons[file.type] && icons[file.type]) || null,
+            header: "",
+            width: "35px",
+        },
+        name: {
+            className: c.name,
+            width: undefined,
+            header: "Name",
+            cell: (file: IFile) => (
+                <span>
+                    <a className={c.name}>{file.name}</a>
+                </span>
+            ),
+        },
+        modified: {
+            className: undefined,
+            header: "Modified",
+            cell: (file: IFile) => <span>{formatFriendlyDate(file.modified ?? null)}</span>,
+            width: "150px",
+        },
+        size: {
+            className: undefined,
+            header: "Size",
+            cell: (file: IFile) => <span>{formatFriendlySize(file.size)}</span>,
+            width: "150px",
+        },
+        ext: {
+            className: undefined,
+            header: "Ext",
+            cell: (file: IFile) => !file.isFolder && <span>{file.ext}</span>,
+            width: "150px",
+        },
+    }
+
     return (
-        <Grid<IFile>
-            className={GrdFiles}
-            items={files}
-            getHeaderClass={col =>
-                cx(
-                    col,
-                    sorting[col] && c.sorted,
-                    sorting[col] && `${c.sorted}-${Object.keys(sorting).indexOf(col)}`,
-                    sorting[col] === "asc" && c.asc,
-                    sorting[col] === "desc" && c.desc
-                )
-            }
-            orderBy={orderBy}
-            onItemMouseDown={onItemMouseDown}
-            onItemClick={onItemClick}
-            onItemDoubleClick={onItemDoubleClick}
-            getRowClass={file => {
-                const s = cx(
-                    fileRow,
-                    file.isFolder && c.isFolder,
-                    hasInnerSelection(file) && c.hasInnerSelection,
-                    selectedFiles.has(file) && c.selected
-                )
-                return s
-            }}
-            columns={gridColumns}
-            visibleColumns={visibleGridColumns}
-            noHead={noHead}
-            noBody={noBody}
-            sorting={sorting}
-        />
+        <div className={style}>
+            <table>
+                <colgroup>
+                    {Object.entries(gridColumns).map(([key, col]) => (
+                        <col key={key} className={col.className} style={{ width: col.width }}></col>
+                    ))}
+                </colgroup>
+                {!noHead && (
+                    <thead>
+                        <tr>
+                            {Object.entries(gridColumns).map(([key, col]) => (
+                                <th
+                                    key={key}
+                                    className={cx(
+                                        key,
+                                        sorting[key] && c.sorted,
+                                        sorting[key] && `${c.sorted}-${Object.keys(sorting).indexOf(key)}`,
+                                        sorting[key] === "asc" && c.asc,
+                                        sorting[key] === "desc" && c.desc
+                                    )}
+                                    onClick={() => orderBy(key)}
+                                >
+                                    {col.header}
+                                    {sorting?.[key] === "asc" ? (
+                                        <ArrowDropUpIcon viewBox="6 6 12 12" />
+                                    ) : sorting?.[key] === "desc" ? (
+                                        <ArrowDropDownIcon viewBox="6 6 12 12" />
+                                    ) : null}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                )}
+                {!noBody && (
+                    <tbody>
+                        {files.map((file, i) => (
+                            <tr
+                                key={i}
+                                className={cx(
+                                    fileRow,
+                                    file.isFolder && c.isFolder,
+                                    hasInnerSelection(file) && c.hasInnerSelection,
+                                    selectedFiles.has(file) && c.selected
+                                )}
+                                onMouseDown={e => onFileMouseDown(e, file)}
+                                onClick={e => onFileClick(e, file)}
+                                onDoubleClick={e => onFileDoubleClick(e, file)}
+                            >
+                                {Object.entries(gridColumns).map(([key, col]) => (
+                                    <td key={key} className={cx(col.className)}>
+                                        {col.cell(file)}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                )}
+            </table>
+        </div>
     )
 }
 
-const GrdFiles = css`
-    label: GrdFiles;
+const style = css`
+    label: Files;
     user-select: none;
 
     > table {
         width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        border-spacing: 0;
+
+        > thead {
+            > tr {
+                border-bottom: 1px solid ${colors.bg2};
+                background-color: #060606;
+                border-bottom: 1px solid #333;
+                text-align: left;
+
+                > th {
+                    white-space: nowrap;
+                    vertical-align: middle;
+                    box-sizing: border-box;
+                    padding: 10px;
+                    font-size: 10px;
+                    text-transform: uppercase;
+                    -webkit-font-smoothing: antialiased;
+                    letter-spacing: 1px;
+                    color: #999;
+                    font-weight: normal;
+                    text-align: left;
+                    cursor: pointer;
+                    &:hover {
+                        background-color: ${colors.bg1};
+                    }
+                    svg {
+                        font-size: 1em;
+                        margin-left: 4px;
+                    }
+                    &.${c.sorted} {
+                        &-1 svg {
+                            opacity: 0.6;
+                        }
+                        &-2 svg {
+                            opacity: 0.4;
+                        }
+                        &-3 svg {
+                            opacity: 0.2;
+                        }
+                    }
+                }
+            }
+        }
+
         > tbody {
             > tr {
                 transition: all 0.3s ease;
@@ -123,35 +236,13 @@ const GrdFiles = css`
                     text-overflow: ellipsis;
                     box-sizing: border-box;
                     padding: 10px 0px;
-                }
-            }
-        }
-        > thead,
-        > tbody {
-            > tr {
-                > .${c.type} {
-                    svg {
-                        font-size: inherit;
-                        vertical-align: middle;
+                    &.${c.type} {
+                        svg {
+                            font-size: inherit;
+                            vertical-align: middle;
+                        }
+                        padding: 0 5px;
                     }
-                    padding: 0 5px;
-                }
-            }
-        }
-        > thead {
-            > tr {
-                background-color: #060606;
-                border-bottom: 1px solid #333;
-                text-align: left;
-                > th {
-                    padding: 10px;
-                    font-size: 10px;
-                    text-transform: uppercase;
-                    -webkit-font-smoothing: antialiased;
-                    letter-spacing: 1px;
-                    color: #999;
-                    font-weight: normal;
-                    text-align: left;
                 }
             }
         }

@@ -22,7 +22,7 @@ import { GetNavUrl } from "./GetNavUrl"
 import { ColumnKey } from "./Grid"
 import { MainMenu } from "./MainMenu"
 import { QuickFind } from "./QuickFind"
-import { useGridColumns } from "./gridColumns"
+import { descendingFirstColumns } from "./gridColumns"
 import { requestToUrl } from "./parseRequest"
 
 const pageSize = 200
@@ -33,7 +33,6 @@ export function FileBrowser() {
 
     const sorting = useMemo(() => getSortConfig(req), [req])
     const [folderSelections, setFolderSelections] = useState<FolderSelections>({})
-    const gridColumns = useGridColumns(folderSelections)
 
     const [searchText, setSearchText] = useState("")
     const [path, setPath] = useState("")
@@ -106,7 +105,7 @@ export function FileBrowser() {
     }
 
     const getSortBy = (column: ColumnKey) => {
-        const cycle: ("asc" | "desc")[] = gridColumns[column].descendingFirst ? ["desc", "asc"] : ["asc", "desc"]
+        const cycle: ("asc" | "desc")[] = descendingFirstColumns.includes(column) ? ["desc", "asc"] : ["asc", "desc"]
         const current = sorting[column]
         const next = cycle[cycle.indexOf(current) + 1] as "asc" | "desc" | undefined
         const cfg: SortConfig = { ...sorting }
