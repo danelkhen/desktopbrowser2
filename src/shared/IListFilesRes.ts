@@ -6,4 +6,5 @@ export interface IListFilesRes {
     readonly parent?: IFile
     readonly next?: IFile
     readonly prev?: IFile
+    readonly selections?: Record<string, string>
 }

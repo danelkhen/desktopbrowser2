@@ -35,19 +35,24 @@ export const api: Api = {
         }
         const file = await getFile({ path: req.path })
 
-        if (file?.isFolder) {
-            const files = await getFiles(req)
-            const { NextSibling, ParentFolder, PreviousSibling } = await getFileRelatives(req.path)
-            const res: IListFilesRes = {
-                file: file ?? undefined,
-                files: files,
-                next: NextSibling,
-                parent: ParentFolder,
-                prev: PreviousSibling,
-            }
+        if (!file?.isFolder) {
+            const res: IListFilesRes = { file: file ?? undefined }
             return res
         }
-        const res: IListFilesRes = { file: file ?? undefined }
+
+        const files = await getFiles(req)
+        const { next, parent, prev } = await getFileRelatives(req.path)
+        const selections = await db.getFolderSelections(
+            [parent, next, prev, file, ...files].filter(t => !!t).map(t => t!.name)
+        )
+        const res: IListFilesRes = {
+            file: file ?? undefined,
+            files: files,
+            next,
+            parent,
+            prev,
+            selections,
+        }
         return res
     },
     execute: async req => {

@@ -1,8 +1,8 @@
 import { createBrowserRouter } from "react-router-dom"
-import { FileBrowser } from "./components/FileBrowser"
-import { Tray } from "./Tray/Tray"
 import { App } from "./App"
+import { Tray } from "./Tray/Tray"
 import { Version } from "./Version"
+import { FileBrowser } from "./components/FileBrowser"
 
 export const router = createBrowserRouter([
     {

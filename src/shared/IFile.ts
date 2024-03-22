@@ -1,7 +1,7 @@
 export interface IFile {
     isFolder: boolean
     name: string
-    path?: string
+    path: string
     modified?: string
     isHidden?: boolean
     size?: number

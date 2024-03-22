@@ -1,10 +1,7 @@
 import { css } from "@emotion/css"
-import { produce } from "immer"
-import _ from "lodash"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { SortConfig } from "src/shared/SortConfig"
-import { FolderSelections } from "../../../shared/Api"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
@@ -30,9 +27,14 @@ export function FileBrowser() {
     console.log("FileBrowser render")
     const req = useReq()
     const [res, setRes] = useState<IListFilesRes>({})
+    useEffect(() => {
+        return () => {
+            console.log("FileBrowser unmount")
+        }
+    }, [])
 
     const sorting = useMemo(() => getSortConfig(req), [req])
-    const [folderSelections, setFolderSelections] = useState<FolderSelections>({})
+    // const [folderSelections, setFolderSelections] = useState<FolderSelections>({})
 
     const [searchText, setSearchText] = useState("")
     const [path, setPath] = useState("")
@@ -52,32 +54,15 @@ export function FileBrowser() {
     }
 
     const setFolderSelection = async (key: string, value: string | null) => {
-        const meta = await getFolderSelection(key)
-        if (_.isEqual(meta, value)) return
-        console.log({ meta, value })
         if (!value) {
-            if (!meta) {
-                return
-            }
-            const newMd = produce(folderSelections, draft => {
-                delete draft[key]
-            })
-            setFolderSelections(newMd)
-            console.log("deleteFileMeta", key)
             await api.deleteFolderSelection(key)
             return
         }
-        setFolderSelections({ ...folderSelections, [key]: value })
         await api.saveFolderSelection({ key, value })
-    }
-    const getFolderSelection = (key: string): string | null => {
-        const x = folderSelections?.[key]
-        if (!x) return null
-        return x
     }
 
     const hasInnerSelection = (file: IFile) => {
-        return !!folderSelections?.[file.name]
+        return !!res.selections?.[file.name]
     }
 
     const GotoPath = (path: string | undefined) => {
@@ -135,7 +120,7 @@ export function FileBrowser() {
 
     files = usePaging(files, { pageIndex, pageSize })
 
-    const reloadFiles = useCallback(async () => {
+    const reloadFiles = useCallback(async (req: IListFilesReq) => {
         const fetchFiles = async (req: IListFilesReq) => {
             setRes(await api.listFiles(req))
         }
@@ -143,7 +128,7 @@ export function FileBrowser() {
             setRes(await api.listFiles({ ...req, folderSize: false }))
         }
         await fetchFiles(req)
-    }, [req])
+    }, [])
 
     useEffect(() => {
         setPath(req.path ?? "")
@@ -153,20 +138,19 @@ export function FileBrowser() {
         Open,
         setFolderSelection,
         res,
-        folderSelections,
     })
     const selectedFile = useMemo(() => iterableLast(selectedFiles), [selectedFiles])
 
     useEffect(() => {
-        void reloadFiles()
-    }, [reloadFiles])
+        void reloadFiles(req)
+    }, [reloadFiles, req])
 
-    useEffect(() => {
-        void (async () => {
-            const x = await api.getAllFolderSelections()
-            setFolderSelections(x)
-        })()
-    }, [])
+    // useEffect(() => {
+    //     void (async () => {
+    //         const x = await api.getAllFolderSelections()
+    //         setFolderSelections(x)
+    //     })()
+    // }, [])
 
     return (
         <div className={style}>
@@ -178,7 +162,7 @@ export function FileBrowser() {
                     totalPages={totalPages}
                     pageIndex={pageIndex}
                     setPageIndex={setPageIndex}
-                    reloadFiles={reloadFiles}
+                    reloadFiles={() => reloadFiles(req)}
                     isSortedBy={isSortedBy}
                     getNavUrl={getNavUrl}
                     getSortBy={getSortBy}
@@ -190,14 +174,13 @@ export function FileBrowser() {
                     search={searchText}
                     setSearchText={setSearchText}
                 />
-                <QuickFind allFiles={allFiles} onFindFiles={v => setSelectedFiles(new Set(v))} />
+                <QuickFind allFiles={allFiles} onFindFiles={v => setSelectedFiles(v)} />
                 <Files
                     selectedFiles={selectedFiles}
                     allFiles={allFiles}
                     setSelectedFiles={setSelectedFiles}
                     files={files}
                     noBody
-                    folderSelections={folderSelections}
                     Open={Open}
                     orderBy={orderBy}
                     sorting={sorting}
@@ -210,7 +193,6 @@ export function FileBrowser() {
                 setSelectedFiles={setSelectedFiles}
                 files={files}
                 noHead
-                folderSelections={folderSelections}
                 Open={Open}
                 orderBy={orderBy}
                 sorting={sorting}

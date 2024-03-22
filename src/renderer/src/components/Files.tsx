@@ -1,9 +1,8 @@
 import { css, cx } from "@emotion/css"
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
-import React, { useCallback } from "react"
+import React, { useCallback, useMemo } from "react"
 import { SortConfig } from "src/shared/SortConfig"
-import { FolderSelections } from "../../../shared/Api"
 import { IFile } from "../../../shared/IFile"
 import { colors } from "../GlobalStyle"
 import { calcItemsOnScreen } from "../hooks/calcItemsOnScreen"
@@ -26,24 +25,25 @@ export function Files({
     sorting,
     hasInnerSelection,
 }: {
-    setSelectedFiles: (v: Set<IFile>) => void
-    selectedFiles: Set<IFile>
+    setSelectedFiles: (v: IFile[]) => void
+    selectedFiles: IFile[]
     allFiles: IFile[]
     files: IFile[]
     noHead?: boolean
     noBody?: boolean
-    folderSelections: FolderSelections
     Open: (file: IFile) => Promise<void>
     orderBy: (column: string) => void
     sorting: SortConfig
     hasInnerSelection: (file: IFile) => boolean
 }) {
+    const selectedFiles2 = useMemo(() => new Set(selectedFiles), [selectedFiles])
     const onFileMouseDown = useCallback(
         (e: React.MouseEvent, file: IFile) => {
             const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${fileRow}`))
-            const selection = new Selection({ all: allFiles, selected: selectedFiles, itemsOnScreen })
+            const selection = new Selection({ all: allFiles, selected: new Set(selectedFiles), itemsOnScreen })
             const newSelection = selection.click(file, e)
-            setSelectedFiles(newSelection.selected)
+            if (newSelection === selection) return
+            setSelectedFiles(Array.from(newSelection.selected))
         },
         [allFiles, selectedFiles, setSelectedFiles]
     )
@@ -151,7 +151,7 @@ export function Files({
                                     fileRow,
                                     file.isFolder && c.isFolder,
                                     hasInnerSelection(file) && c.hasInnerSelection,
-                                    selectedFiles.has(file) && c.selected
+                                    selectedFiles2.has(file) && c.selected
                                 )}
                                 onMouseDown={e => onFileMouseDown(e, file)}
                                 onClick={e => onFileClick(e, file)}

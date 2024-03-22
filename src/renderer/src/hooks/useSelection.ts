@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { FolderSelections } from "../../../shared/Api"
+import { useCallback, useEffect, useState } from "react"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { Selection } from "../lib/Selection"
@@ -11,34 +10,38 @@ import { calcItemsOnScreen } from "./calcItemsOnScreen"
 
 export function useSelection({
     res,
-    folderSelections,
     setFolderSelection,
     Open,
 }: {
     readonly res: IListFilesRes
-    folderSelections: FolderSelections
     setFolderSelection: (key: string, value: string | null) => Promise<void>
     Open: (file: IFile) => Promise<void>
 }) {
-    const [_extraSelectedFiles, _setExtraSelectedFiles] = useState<IFile[]>([])
-
-    const selectedFiles = useMemo(() => {
-        const fm = res.file?.name ? folderSelections[res.file?.name] : null
+    const [selectedFiles, _setSelectedFiles] = useState<IFile[]>([])
+    useEffect(() => {
+        const fm = res.file?.name ? res.selections?.[res.file?.name] : null
         const selectedFileName = fm ?? null
-        const files = res?.files?.filter(t => t.name === selectedFileName) ?? []
-        return new Set([...files, ..._extraSelectedFiles])
-    }, [_extraSelectedFiles, folderSelections, res.file?.name, res?.files])
+        const file = res?.files?.find(t => t.name === selectedFileName)
+        _setSelectedFiles(file ? [file] : [])
+    }, [res.file?.name, res?.files, res.selections])
 
-    const selectedFile = useMemo(() => iterableLast(selectedFiles), [selectedFiles])
+    // const selectedFiles = useMemo(() => {
+    //     const fm = res.file?.name ? res.selections?.[res.file?.name] : null
+    //     const selectedFileName = fm ?? null
+    //     const files = res?.files?.filter(t => t.name === selectedFileName) ?? []
+    //     return new Set([...files, ..._selectedFiles])
+    // }, [_selectedFiles, res.file?.name, res?.files, res.selections])
+
+    const selectedFile: IFile | null = selectedFiles[selectedFiles.length - 1] ?? null
 
     const setSelectedFiles = useCallback(
-        async (selectedFiles: Set<IFile>) => {
+        async (selectedFiles: IFile[]) => {
             if (!res?.file?.name) {
                 return
             }
             const selectedFile = iterableLast(selectedFiles)
             console.log("saveSelectionAndSetSelectedItems", res.file.name, selectedFile?.name)
-            _setExtraSelectedFiles(Array.from(selectedFiles).slice(0, selectedFiles.size - 1))
+            _setSelectedFiles(Array.from(selectedFiles))
             await setFolderSelection(res.file.name, selectedFile?.name ?? null)
         },
         [res?.file?.name, setFolderSelection]
@@ -62,13 +65,18 @@ export function useSelection({
         function Win_keydown(e: KeyboardEvent): void {
             if (e.defaultPrevented) return
             const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${fileRow}`))
-            const selection = new Selection<IFile>({ all: res?.files ?? [], selected: selectedFiles, itemsOnScreen })
+            const selection = new Selection<IFile>({
+                all: res?.files ?? [],
+                selected: new Set(selectedFiles),
+                itemsOnScreen,
+            })
             const selectedFile = selection.lastSelected
             const target = e.target as HTMLElement
             if (target.matches("input:not(#tbQuickFind),select")) return
             ;(document.querySelector("#tbQuickFind") as HTMLElement).focus()
             const newSelection = selection.keyDown(e)
-            void setSelectedFiles(newSelection.selected)
+            if (newSelection === selection) return
+            void setSelectedFiles(Array.from(newSelection.selected))
             if (e.defaultPrevented) return
             if (e.key === "Enter") {
                 const file = selectedFile
