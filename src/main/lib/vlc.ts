@@ -39,7 +39,7 @@ export async function _vlcPlay(mrl: string) {
     try {
         const auth = `${user}:${pwd}`
         const params = { command: "in_play", input: mrl }
-        const res = await axios(`http://${host}:${port}/requests/status.xml`, {
+        const res = await axios(`http://${host}:${port}/requests/status.json`, {
             headers: { Authorization: `Basic ${btoa(auth)}` },
             params,
         })
