@@ -1,6 +1,6 @@
 import { css } from "@emotion/css"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useLoaderData, useLocation, useNavigate } from "react-router-dom"
 import { SortConfig } from "src/shared/SortConfig"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
@@ -22,10 +22,11 @@ import { isExecutable } from "../../../shared/isMediaFile"
 
 const descendingFirstColumns = [Column.size, Column.modified] as string[]
 const pageSize = 200
+
 export function FileBrowser() {
     console.log("FileBrowser render")
     const req = useReq()
-    const [res, setRes] = useState<IListFilesRes>({})
+    const res = useLoaderData() as IListFilesRes
     useEffect(() => {
         return () => {
             console.log("FileBrowser unmount")
@@ -33,7 +34,6 @@ export function FileBrowser() {
     }, [])
 
     const sorting = useMemo(() => getSortConfig(req), [req])
-    // const [folderSelections, setFolderSelections] = useState<FolderSelections>({})
 
     const [searchText, setSearchText] = useState("")
     const [path, setPath] = useState("")
@@ -124,21 +124,10 @@ export function FileBrowser() {
     let files = allFiles
 
     files = useSearch(searchText, files)
-    // files = useSorting(files, sorting, gridColumns)
 
     const totalPages = Math.ceil(files.length / pageSize)
 
     files = usePaging(files, { pageIndex, pageSize })
-
-    const reloadFiles = useCallback(async (req: IListFilesReq) => {
-        const fetchFiles = async (req: IListFilesReq) => {
-            setRes(await api.listFiles(req))
-        }
-        if (req.folderSize) {
-            setRes(await api.listFiles({ ...req, folderSize: false }))
-        }
-        await fetchFiles(req)
-    }, [])
 
     useEffect(() => {
         setPath(req.path ?? "")
@@ -149,17 +138,6 @@ export function FileBrowser() {
         res,
     })
     const selectedFile = useMemo(() => iterableLast(selectedFiles), [selectedFiles])
-
-    useEffect(() => {
-        void reloadFiles(req)
-    }, [reloadFiles, req])
-
-    // useEffect(() => {
-    //     void (async () => {
-    //         const x = await api.getAllFolderSelections()
-    //         setFolderSelections(x)
-    //     })()
-    // }, [])
 
     useEffect(() => {
         function Win_keydown(e: KeyboardEvent): void {
@@ -174,6 +152,7 @@ export function FileBrowser() {
         return () => window.removeEventListener("keydown", Win_keydown)
     }, [Open, selectedFile])
 
+    const location = useLocation()
     return (
         <div className={style}>
             <header className={style}>
@@ -184,7 +163,7 @@ export function FileBrowser() {
                     totalPages={totalPages}
                     pageIndex={pageIndex}
                     setPageIndex={setPageIndex}
-                    reloadFiles={() => reloadFiles(req)}
+                    reloadFiles={() => navigate({ ...location }, { replace: true, preventScrollReset: true })}
                     isSortedBy={isSortedBy}
                     getNavUrl={getNavUrl}
                     getSortBy={getSortBy}
@@ -240,3 +219,28 @@ const style = css`
         background-color: #111;
     }
 `
+
+// const reloadFiles = useCallback(async (req: IListFilesReq) => {
+//     const fetchFiles = async (req: IListFilesReq) => {
+//         setRes(await api.listFiles(req))
+//     }
+//     if (req.folderSize) {
+//         setRes(await api.listFiles({ ...req, folderSize: false }))
+//     }
+//     await fetchFiles(req)
+// }, [])
+
+// useEffect(() => {
+//     void reloadFiles(req)
+// }, [reloadFiles, req])
+
+// useEffect(() => {
+//     void (async () => {
+//         const x = await api.getAllFolderSelections()
+//         setFolderSelections(x)
+//     })()
+// }, [])
+// useLoaderData() as IListFilesRes
+// const [res, setRes] = useState<IListFilesRes>({})
+// const [folderSelections, setFolderSelections] = useState<FolderSelections>({})
+// files = useSorting(files, sorting, gridColumns)

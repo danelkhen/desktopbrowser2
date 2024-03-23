@@ -3,7 +3,6 @@ import { IFile } from "../../../shared/IFile"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { Selection } from "../lib/Selection"
 import { iterableLast } from "../lib/iterableLast"
-import { sleep } from "../lib/sleep"
 import { c } from "../services/c"
 import { fileRow } from "../services/fileRow"
 import { calcItemsOnScreen } from "./calcItemsOnScreen"
@@ -38,11 +37,10 @@ export function useSelection({
         [res?.file?.name, setFolderSelection]
     )
 
-    useEffect(() => {
-        if (!selectedFiles.length) return
-        void verifySelectionInView()
-        console.log("verifySelectionInView", selectedFiles)
-    }, [selectedFiles])
+    // useLayoutEffect(() => {
+    //     if (!selectedFiles.length) return
+    //     void verifySelectionInView()
+    // }, [selectedFiles])
 
     // Keyboard selection
     useEffect(() => {
@@ -68,31 +66,10 @@ export function useSelection({
     return { selectedFile, setSelectedFiles, selectedFiles }
 }
 
-async function verifySelectionInView() {
-    await sleep(10)
-    const el = document.querySelector(`.${c.selected}`) as HTMLElement
-    if (el === null) return
+export function scrollToSelection() {
     const container = document.documentElement
-    const containerHeight = container.clientHeight - 100
-
-    const top = el.offsetTop - 50
-    const bottom = el.offsetTop + el.offsetHeight
-
-    const top2 = container.scrollTop
-    const bottom2 = container.scrollTop + containerHeight
-
-    console.log({ top, bottom, top2, bottom2, containerHeight })
-
-    let finalTop: number | null = null
-
-    if (top < top2) {
-        finalTop = top
-    } else if (bottom > bottom2) {
-        const finalBottom = bottom
-        finalTop = finalBottom - containerHeight
-    }
-
-    if (finalTop === null) return
-    console.log("scrolling", { finalTop, top, top2, bottom2, bottom })
-    container.scrollTop = finalTop
+    const el = document.querySelector(`.${c.selected}`) as HTMLElement
+    if (!el) return
+    console.log("scrollIntoView", { scrollTop: container.scrollTop, el })
+    el.scrollIntoView({ block: "center" })
 }

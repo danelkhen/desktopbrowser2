@@ -40,12 +40,12 @@ export function Files({
     const onFileMouseDown = useCallback(
         (e: React.MouseEvent, file: IFile) => {
             const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${fileRow}`))
-            const selection = new Selection({ all: allFiles, selected: new Set(selectedFiles), itemsOnScreen })
+            const selection = new Selection({ all: allFiles, selected: selectedFiles2, itemsOnScreen })
             const newSelection = selection.click(file, e)
             if (newSelection === selection) return
             setSelectedFiles(Array.from(newSelection.selected))
         },
-        [allFiles, selectedFiles, setSelectedFiles]
+        [allFiles, selectedFiles2, setSelectedFiles]
     )
 
     const onFileClick = useCallback(
@@ -85,7 +85,9 @@ export function Files({
             header: "Name",
             cell: (file: IFile) => (
                 <span>
-                    <a className={c.name}>{file.name}</a>
+                    <a className={c.name} id={file.name}>
+                        {file.name}
+                    </a>
                 </span>
             ),
         },
@@ -225,6 +227,7 @@ const style = css`
 
         > tbody {
             > tr {
+                scroll-margin-top: 134px;
                 transition: all 0.3s ease;
                 -webkit-font-smoothing: antialiased;
                 border: 1px solid #0c0c0c;

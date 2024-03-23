@@ -1,6 +1,13 @@
 import { css } from "@emotion/css"
+import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined"
+import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined"
+import ArrowUpwardOutlinedIcon from "@mui/icons-material/ArrowUpwardOutlined"
+import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined"
+import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined"
+import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined"
 import QueuePlayNextOutlinedIcon from "@mui/icons-material/QueuePlayNextOutlined"
 import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined"
+import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined"
 import {
     ListItemIcon,
     ListItemText,
@@ -21,16 +28,10 @@ import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { SortConfig } from "../../../shared/SortConfig"
 import { colors } from "../GlobalStyle"
-import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined"
-import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined"
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined"
-import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined"
-import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined"
-import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined"
 import SortIcon from "../assets/icons/sort.svg?react"
 import SubtitleIcon from "../assets/icons/subtitle.svg?react"
 import TrashIcon from "../assets/icons/trash.svg?react"
-import ArrowUpwardOutlinedIcon from "@mui/icons-material/ArrowUpwardOutlined"
+import { scrollToSelection } from "../hooks/useSelection"
 import { getGoogleSearchLink } from "../lib/getGoogleSearchLink"
 import { getSubtitleSearchLink } from "../lib/getSubtitleSearchLink"
 import { api } from "../services/api"
@@ -56,7 +57,7 @@ export function MainMenu({
     totalPages: number | null
     pageIndex: number
     setPageIndex: (v: number) => void
-    reloadFiles: () => Promise<void>
+    reloadFiles: () => unknown
     isSortedBy: (key: string, desc?: boolean | undefined) => boolean
     getSortBy: (column: string) => SortConfig
     getNavUrl: GetNavUrl
@@ -180,6 +181,12 @@ export function MainMenu({
                         <QueuePlayNextOutlinedIcon />
                     </ListItemIcon>
                     <ListItemText>Unwatched</ListItemText>
+                </MenuItem>
+                <MenuItem disabled={!selectedFile} onClick={() => scrollToSelection()}>
+                    <ListItemIcon>
+                        <QueuePlayNextOutlinedIcon />
+                    </ListItemIcon>
+                    <ListItemText>Selection</ListItemText>
                 </MenuItem>
             </MenuList>
             <MenuList>

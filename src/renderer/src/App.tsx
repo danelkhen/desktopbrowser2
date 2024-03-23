@@ -1,5 +1,10 @@
-import { Outlet } from "react-router-dom"
+import { Outlet, ScrollRestoration } from "react-router-dom"
 
 export function App() {
-    return <Outlet />
+    return (
+        <>
+            <ScrollRestoration />
+            <Outlet />
+        </>
+    )
 }
