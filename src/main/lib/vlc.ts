@@ -43,7 +43,7 @@ export async function _vlcPlay(mrl: string) {
             headers: { Authorization: `Basic ${btoa(auth)}` },
             params,
         })
-        log.info("vlcPlay res", params, res)
+        log.info("vlcPlay res", params, res.status, res.data)
         return res
     } catch (e) {
         return (isAxiosError(e) && e.response) ?? null

@@ -1,13 +1,14 @@
 import { Path } from "glob"
-import { IFile } from "../../shared/IFile"
 import path from "path"
-import { Stats } from "fs"
+import { IFile } from "../../shared/IFile"
 
 export function globPathToFile(file: Path): IFile {
     const file2: IFile = {
-        type: getType(file),
+        // type: getType(file),
         name: file.name,
-        isFolder: !!file.isDirectory(),
+        isFolder: file.isDirectory() ? true : undefined,
+        isLink: file.isSymbolicLink() ? true : undefined,
+        isFile: file.isFile() ? true : undefined,
         modified: file.mtime?.toJSON(),
         size: file.isFile() ? file.size : undefined,
         isHidden: file.name?.startsWith("."),
@@ -43,15 +44,15 @@ export function globPathToFile(file: Path): IFile {
 //     }
 //     return file2
 // }
-function getType(stat: Path | Stats | null) {
-    if (stat?.isDirectory()) {
-        return "folder"
-    } else if (stat?.isFile()) {
-        return "file"
-    } else if (stat?.isSymbolicLink()) {
-        return "link"
-    }
-}
+// function getType(stat: Path | Stats | null) {
+//     if (stat?.isDirectory()) {
+//         return "folder"
+//     } else if (stat?.isFile()) {
+//         return "file"
+//     } else if (stat?.isSymbolicLink()) {
+//         return "link"
+//     }
+// }
 
 function normalizeGlobFullpathPosix(s: string) {
     if (s.startsWith("//?")) return s.replace("//?", "")

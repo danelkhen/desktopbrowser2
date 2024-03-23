@@ -48,7 +48,7 @@ export async function setupMainWindow() {
         app.emit("hide-window")
     })
 
-    await win.loadURL(`${baseUrl}/tray`)
+    await win.loadURL(`${baseUrl}/!/tray`)
     console.log("loadURL finished")
     app.on("activate", () => {
         void showMainWindow()

@@ -14,7 +14,7 @@ import { toCurrentPlatformPath } from "./toCurrentPlatformPath"
 import { applyRequest, applyRequest2 } from "./applyRequest"
 import { applyPaging } from "./applyPaging"
 import { IFile } from "../../shared/IFile"
-
+import url from "url"
 export const api: Api = {
     saveFolderSelection: async req => {
         await db.folderSelection.put(req.key, req.value)
@@ -59,7 +59,9 @@ export const api: Api = {
             return
         }
         log.log("shell.openExternal", req.path, filename)
-        await shell.openExternal(filename)
+
+        const url2 = process.platform === "win32" ? filename : url.pathToFileURL(filename).toString()
+        await shell.openExternal(url2)
     },
     explore: async req => {
         const p = toCurrentPlatformPath(req.path)

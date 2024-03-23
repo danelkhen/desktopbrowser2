@@ -1,6 +1,7 @@
 export interface IFile {
     isFolder?: boolean
     isLink?: boolean
+    isFile?: boolean
     name: string
     path: string
     modified?: string
