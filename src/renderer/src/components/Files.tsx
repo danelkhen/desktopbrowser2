@@ -11,7 +11,7 @@ import { formatFriendlyDate } from "../lib/formatFriendlyDate"
 import { formatFriendlySize } from "../lib/formatFriendlySize"
 import { c } from "../services/c"
 import { fileRow } from "../services/fileRow"
-import { icons } from "./gridColumns"
+import { FileIcon } from "./FileIcon"
 
 export function Files({
     selectedFiles,
@@ -75,7 +75,7 @@ export function Files({
     const gridColumns = {
         type: {
             className: c.type,
-            cell: (file: IFile) => (file.type && icons[file.type] && icons[file.type]) || null,
+            cell: (file: IFile) => <FileIcon file={file} />,
             header: "",
             width: "35px",
         },

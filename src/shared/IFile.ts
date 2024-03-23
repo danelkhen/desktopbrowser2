@@ -7,5 +7,4 @@ export interface IFile {
     isHidden?: boolean
     size?: number
     ext?: string
-    type?: "file" | "folder" | "link" | string
 }

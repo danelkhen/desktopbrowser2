@@ -9,7 +9,6 @@ import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { usePaging } from "../hooks/usePaging"
 import { useSearch } from "../hooks/useSearch"
 import { useSelection } from "../hooks/useSelection"
-import { isExecutable } from "../lib/isExecutable"
 import { iterableLast } from "../lib/iterableLast"
 import { api } from "../services/api"
 import { useReq } from "../services/useReq"
@@ -18,9 +17,10 @@ import { Files } from "./Files"
 import { GetNavUrl } from "./GetNavUrl"
 import { MainMenu } from "./MainMenu"
 import { QuickFind } from "./QuickFind"
-import { descendingFirstColumns } from "./gridColumns"
 import { requestToUrl } from "./parseRequest"
+import { isExecutable } from "../../../shared/isMediaFile"
 
+const descendingFirstColumns = [Column.size, Column.modified] as string[]
 const pageSize = 200
 export function FileBrowser() {
     console.log("FileBrowser render")
@@ -78,18 +78,20 @@ export function FileBrowser() {
     const Open = useCallback(
         async (file: IFile) => {
             if (!file?.path) return
-            if (file.isFolder || file.type === "link") {
+            if (file.isFolder || file.isLink) {
                 navToReq(t => ({ ...t, path: file.path }))
                 return
             }
-            const prompt = file.ext ? isExecutable(file.ext) : true
-            if (prompt && !window.confirm("This is an executable file, are you sure you want to run it?")) {
+            if (
+                isExecutable(file.name) &&
+                !window.confirm("This is an executable file, are you sure you want to run it?")
+            ) {
                 return
             }
-            const res = await api.execute({ path: file.path, vlc: new URLSearchParams(location.search).has("vlc") })
+            const res = await api.execute({ path: file.path, vlc: req.vlc })
             console.info(res)
         },
-        [navToReq]
+        [navToReq, req.vlc]
     )
 
     const orderBy = (column: string) => {
