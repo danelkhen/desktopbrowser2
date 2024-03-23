@@ -16,7 +16,6 @@ import { useReq } from "../services/useReq"
 import { AddressBar } from "./AddressBar"
 import { Files } from "./Files"
 import { GetNavUrl } from "./GetNavUrl"
-import { ColumnKey } from "./Grid"
 import { MainMenu } from "./MainMenu"
 import { QuickFind } from "./QuickFind"
 import { descendingFirstColumns } from "./gridColumns"
@@ -93,12 +92,12 @@ export function FileBrowser() {
         [navToReq]
     )
 
-    const orderBy = (column: ColumnKey) => {
+    const orderBy = (column: string) => {
         const sort = getSortBy(column)
         navToReq(t => ({ ...t, sort }))
     }
 
-    const getSortBy = (column: ColumnKey) => {
+    const getSortBy = (column: string) => {
         const cycle: ("asc" | "desc")[] = descendingFirstColumns.includes(column) ? ["desc", "asc"] : ["asc", "desc"]
         const current = sorting[column]
         const next = cycle[cycle.indexOf(current) + 1] as "asc" | "desc" | undefined
@@ -112,7 +111,7 @@ export function FileBrowser() {
         return { [column]: next, ...cfg }
     }
 
-    const isSortedBy = (key: ColumnKey, desc?: boolean): boolean => {
+    const isSortedBy = (key: string, desc?: boolean): boolean => {
         if (!sorting[key]) return false
         if (desc !== undefined) return sorting[key] === (desc ? "desc" : "asc")
         return true
