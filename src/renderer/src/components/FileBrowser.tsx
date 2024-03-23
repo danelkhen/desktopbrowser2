@@ -24,9 +24,9 @@ const descendingFirstColumns = [Column.size, Column.modified] as string[]
 const pageSize = 200
 
 export function FileBrowser() {
-    console.log("FileBrowser render")
     const req = useReq()
     const res = useLoaderData() as IListFilesRes
+    console.log("FileBrowser render", { req, res })
     useEffect(() => {
         return () => {
             console.log("FileBrowser unmount")
@@ -75,7 +75,7 @@ export function FileBrowser() {
         navToReq(t => ({ ...t, path }))
     }
 
-    const Open = useCallback(
+    const open = useCallback(
         async (file: IFile) => {
             if (!file?.path) return
             if (file.isFolder || file.isLink) {
@@ -142,15 +142,17 @@ export function FileBrowser() {
     useEffect(() => {
         function Win_keydown(e: KeyboardEvent): void {
             if (e.defaultPrevented) return
+            const target = e.target as HTMLElement
+            if (target.matches("input:not(#tbQuickFind),select")) return
             if (e.key === "Enter") {
                 if (!selectedFile) return
                 e.preventDefault()
-                void Open(selectedFile)
+                void open(selectedFile)
             }
         }
         window.addEventListener("keydown", Win_keydown)
         return () => window.removeEventListener("keydown", Win_keydown)
-    }, [Open, selectedFile])
+    }, [open, selectedFile])
 
     const location = useLocation()
     return (
@@ -182,7 +184,7 @@ export function FileBrowser() {
                     setSelectedFiles={setSelectedFiles}
                     files={files}
                     noBody
-                    Open={Open}
+                    open={open}
                     orderBy={orderBy}
                     sorting={sorting}
                     hasInnerSelection={hasInnerSelection}
@@ -194,7 +196,7 @@ export function FileBrowser() {
                 setSelectedFiles={setSelectedFiles}
                 files={files}
                 noHead
-                Open={Open}
+                open={open}
                 orderBy={orderBy}
                 sorting={sorting}
                 hasInnerSelection={hasInnerSelection}

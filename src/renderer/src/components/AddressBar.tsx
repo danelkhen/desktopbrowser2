@@ -1,5 +1,5 @@
 import { css } from "@emotion/css"
-import { Box, Input } from "@mui/material"
+import { Input } from "@mui/material"
 
 export function AddressBar({
     gotoPath,
@@ -15,8 +15,13 @@ export function AddressBar({
     gotoPath: () => void
 }) {
     return (
-        <Box className={style}>
-            <Box component="form" onSubmit={gotoPath} sx={{ flex: 1 }}>
+        <div className={style}>
+            <form
+                onSubmit={e => {
+                    e.preventDefault()
+                    gotoPath()
+                }}
+            >
                 <Input
                     disableUnderline
                     fullWidth
@@ -30,7 +35,7 @@ export function AddressBar({
                     autoCapitalize="off"
                     spellCheck="false"
                 />
-            </Box>
+            </form>
             <span className="find">
                 <Input
                     disableUnderline
@@ -41,13 +46,16 @@ export function AddressBar({
                     placeholder="Search"
                 />
             </span>
-        </Box>
+        </div>
     )
 }
 const style = css`
     label: AddressBar;
     display: flex;
     padding: 5px 2px;
+    > form {
+        flex: 1;
+    }
     .tbPath {
         border-radius: 10px;
         padding: 4px 20px;

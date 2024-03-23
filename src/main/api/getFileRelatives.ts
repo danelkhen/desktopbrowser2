@@ -17,7 +17,7 @@ export async function getFileRelatives(p: string): Promise<FileRelativesInfo> {
     const name = pi.name + pi.ext
     // const pathInfo = new IoPath(p)
     const info: FileRelativesInfo = {}
-    info.parent = (await getFile({ path: pi.dir })) ?? undefined
+    info.parent = (await getFile(pi.dir)) ?? undefined
     if (!info.parent?.path) {
         return info
     }

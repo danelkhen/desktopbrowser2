@@ -3,7 +3,7 @@ import { IFile } from "../../shared/IFile"
 import { IListFilesReq } from "../../shared/IListFilesReq"
 import { calculateFoldersSize } from "./calculateFoldersSize"
 
-export async function applyRequest(files: IFile[], req: IListFilesReq): Promise<IFile[]> {
+export async function applyFiltersAndSorting(files: IFile[], req: IListFilesReq): Promise<IFile[]> {
     if (!req.hidden) {
         files = files.filter(t => !t.isHidden)
     }
@@ -19,7 +19,7 @@ export async function applyRequest(files: IFile[], req: IListFilesReq): Promise<
     return files
 }
 
-export async function applyRequest2(
+export async function applySelectionFiltersAndFolderSizes(
     files: IFile[],
     req: IListFilesReq,
     selections: Record<string, string>

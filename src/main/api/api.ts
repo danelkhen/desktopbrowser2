@@ -11,10 +11,12 @@ import { getFile } from "./getFile"
 import { getFileRelatives } from "./getFileRelatives"
 import { getFiles } from "./getFiles"
 import { toCurrentPlatformPath } from "./toCurrentPlatformPath"
-import { applyRequest, applyRequest2 } from "./applyRequest"
+import { applyFiltersAndSorting, applySelectionFiltersAndFolderSizes } from "./applyRequest"
 import { applyPaging } from "./applyPaging"
 import { IFile } from "../../shared/IFile"
 import url from "url"
+import path from "path"
+
 export const api: Api = {
     saveFolderSelection: async req => {
         await db.folderSelection.put(req.key, req.value)
@@ -26,23 +28,39 @@ export const api: Api = {
         if (!req.path) {
             throw new Error("Path is required")
         }
-        const file = await getFile({ path: req.path })
-
-        if (!file?.isFolder) {
-            const res: IListFilesRes = { file: file ?? undefined }
+        const file = await getFile(req.path)
+        if (!file) {
+            const res: IListFilesRes = {
+                fileNotFound: true,
+                file: { name: path.posix.basename(req.path), isFolder: true, path: req.path },
+                files: [],
+                parent: {
+                    name: path.posix.basename(path.posix.dirname(req.path)),
+                    isFolder: true,
+                    path: path.posix.dirname(req.path),
+                },
+            }
             return res
         }
 
+        // if (!file?.isFolder) {
+        //     const res: IListFilesRes = { file: file ?? undefined }
+        //     return res
+        // }
+
         const { next, parent, prev } = await getFileRelatives(req.path)
-        let files = await getFiles(req)
-        files = await applyRequest(files, req)
+        let files: IFile[] = []
+        if (file.isFolder) {
+            files = await getFiles(req)
+            files = await applyFiltersAndSorting(files, req)
+        }
         const contextFiles = [parent, next, prev, file, ...files].filter(t => !!t) as IFile[]
         const selections = await db.getFolderSelections(contextFiles.map(t => t!.name))
-        files = await applyRequest2(files, req, selections)
+        files = await applySelectionFiltersAndFolderSizes(files, req, selections)
         files = applyPaging(files, req)
 
         const res: IListFilesRes = {
-            file: file ?? undefined,
+            file: file,
             files: files,
             next,
             parent,

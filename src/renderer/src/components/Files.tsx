@@ -20,7 +20,7 @@ export function Files({
     files,
     noHead,
     noBody,
-    Open,
+    open,
     orderBy,
     sorting,
     hasInnerSelection,
@@ -31,7 +31,7 @@ export function Files({
     files: IFile[]
     noHead?: boolean
     noBody?: boolean
-    Open: (file: IFile) => Promise<void>
+    open: (file: IFile) => Promise<void>
     orderBy: (column: string) => void
     sorting: SortConfig
     hasInnerSelection: (file: IFile) => boolean
@@ -56,20 +56,20 @@ export function Files({
                 return
             }
             e.preventDefault()
-            void Open(file)
+            void open(file)
         },
-        [Open]
+        [open]
     )
 
     const onFileDoubleClick = useCallback(
         (e: React.MouseEvent, file: IFile) => {
-            if (file === null) {
+            if (!file) {
                 return
             }
             e.preventDefault()
-            void Open(file)
+            void open(file)
         },
-        [Open]
+        [open]
     )
 
     const gridColumns = {

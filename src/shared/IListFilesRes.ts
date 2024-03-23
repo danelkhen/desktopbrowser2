@@ -7,4 +7,5 @@ export interface IListFilesRes {
     readonly next?: IFile
     readonly prev?: IFile
     readonly selections?: Record<string, string>
+    readonly fileNotFound?: boolean
 }
