@@ -20,6 +20,7 @@ import {
     listItemTextClasses,
     menuItemClasses,
     paginationClasses,
+    paginationItemClasses,
 } from "@mui/material"
 import React from "react"
 import { IVlcStatus } from "../../../shared/Api"
@@ -39,6 +40,7 @@ import { api } from "../services/api"
 import { AppLinkBehavior } from "./AppLink"
 import { Clock } from "./Clock"
 import { GetNavUrl } from "./GetNavUrl"
+import { progressMixin, progressStyle } from "./progress"
 
 export function MainMenu({
     req,
@@ -51,6 +53,7 @@ export function MainMenu({
     isSortedBy,
     getNavUrl,
     getSortBy,
+    vlcStatus,
 }: {
     req: IListFilesReq
     res: IListFilesRes
@@ -285,6 +288,18 @@ export function MainMenu({
                     </MenuItem>
                 </Menu>
             </MenuList>
+            {!!vlcStatus.path && (
+                <MenuList>
+                    <MenuItem
+                        component={AppLinkBehavior}
+                        href={getNavUrl(t => ({ ...t, path: getPathPosixDirName(vlcStatus.path!) }))}
+                        style={progressStyle(vlcStatus.position, "10px")}
+                        className="progress"
+                    >
+                        {getPathPosixBaseName(vlcStatus.path)}
+                    </MenuItem>
+                </MenuList>
+            )}
             <Pagination count={totalPages || 1} onChange={(e, v) => setPageIndex(v - 1)} page={pageIndex + 1} />
             <MenuList>
                 <MenuItem>
@@ -302,12 +317,27 @@ const style = css`
     padding: 6px 6px 0 6px;
     font-size: 10px;
     flex-wrap: wrap;
+    .progress.progress {
+        --bg: #a276f8;
+        color: white;
+        max-width: 20ch;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        ${progressMixin}
+    }
     .${paginationClasses.root} {
         display: flex;
         flex: 1;
         justify-content: flex-end;
-        > ul {
+        .${paginationClasses.ul} {
             flex-wrap: nowrap;
+            .${paginationItemClasses.root} {
+                margin: 0;
+                color: #999;
+                &.Mui-selected {
+                    color: white;
+                }
+            }
         }
     }
     > .${listClasses.root} {
@@ -359,3 +389,13 @@ const style = css`
         }
     }
 `
+
+function getPathPosixBaseName(path: string) {
+    return path.split("/").pop()
+}
+
+function getPathPosixDirName(path: string) {
+    const x = path.split("/")
+    x.pop()
+    return x.join("/")
+}

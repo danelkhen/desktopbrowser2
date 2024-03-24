@@ -12,6 +12,7 @@ import { formatFriendlyDate } from "../lib/formatFriendlyDate"
 import { formatFriendlySize } from "../lib/formatFriendlySize"
 import { c } from "../services/c"
 import { FileIcon } from "./FileIcon"
+import { progressMixin, progressStyle } from "./progress"
 
 export function Files({
     selectedFiles,
@@ -75,11 +76,8 @@ export function Files({
         [open]
     )
 
-    function getProgress(file: IFile) {
-        if (vlcStatus.path === file.path) {
-            return Math.round((vlcStatus.position ?? 0) * 100) + "%"
-        }
-        return "0%"
+    function getFileProgressStyle(file: IFile) {
+        return progressStyle(vlcStatus.path === file.path ? vlcStatus.position : undefined, "36px")
     }
     const gridColumns = {
         type: {
@@ -166,10 +164,11 @@ export function Files({
                                     file.path === vlcStatus.path && c.opened,
                                     file.path === vlcStatus.path && vlcStatus.playing && c.playing,
                                     file.path === vlcStatus.path && vlcStatus.paused && c.paused,
-                                    file.path === vlcStatus.path && vlcStatus.stopped && c.stopped
+                                    file.path === vlcStatus.path && vlcStatus.stopped && c.stopped,
+                                    c.progress
                                 )}
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                style={{ "--progress": getProgress(file) } as any}
+                                style={{ ...getFileProgressStyle(file) }}
                                 onMouseDown={e => onFileMouseDown(e, file)}
                                 onClick={e => onFileClick(e, file)}
                                 onDoubleClick={e => onFileDoubleClick(e, file)}
@@ -268,15 +267,7 @@ const style = css`
                 }
                 &.${c.opened} {
                     color: #fff;
-                    background: linear-gradient(
-                        90deg,
-                        #000 0,
-                        #6b9cff 1px,
-                        #6b9cff 36px,
-                        #6b9cff var(--progress),
-                        var(--bg) var(--progress),
-                        var(--bg) 100%
-                    );
+                    ${progressMixin}
                 }
 
                 &.${c.isFolder}.${c.hasInnerSelection}.${c.selected} {

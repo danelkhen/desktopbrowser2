@@ -18,4 +18,5 @@ export const c = {
     stopped: "stopped",
     fileRow: "fileRow",
     small: "small",
+    progress: "progress",
 } as const

@@ -56,8 +56,10 @@ const style = css`
     border: 0;
     background-color: transparent;
     opacity: 0;
+    z-index: -1;
 
     &.HasValue {
         opacity: 1;
+        z-index: 1;
     }
 `
