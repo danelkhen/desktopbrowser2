@@ -12,7 +12,7 @@ export function handleServiceRequest(service: any) {
         else arg = req.query
         console.log(action, req.params, req.query)
         try {
-            const result = await service[action](arg)
+            const result = await service[action!](arg)
             res.json(result ?? null)
         } catch (e) {
             console.log("api action error", e)

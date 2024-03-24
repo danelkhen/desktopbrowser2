@@ -39,7 +39,6 @@ export function Files({
     hasInnerSelection: (file: IFile) => boolean
     vlcStatus: IVlcStatus
 }) {
-    console.log({ vlcStatus })
     const selectedFiles2 = useMemo(() => new Set(selectedFiles), [selectedFiles])
     const onFileMouseDown = useCallback(
         (e: React.MouseEvent, file: IFile) => {

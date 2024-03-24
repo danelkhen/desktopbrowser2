@@ -10,7 +10,6 @@ import { isExecutable } from "../../../shared/isMediaFile"
 import { usePaging } from "../hooks/usePaging"
 import { useSearch } from "../hooks/useSearch"
 import { useSelection } from "../hooks/useSelection"
-import { iterableLast } from "../lib/iterableLast"
 import { api } from "../services/api"
 import { useReq } from "../services/useReq"
 import { AddressBar } from "./AddressBar"
@@ -28,6 +27,13 @@ export function FileBrowser() {
     const req = useReq()
     const res = useLoaderData() as IListFilesRes
     console.log("FileBrowser render", { req, res })
+    const [searchText, setSearchText] = useState("")
+    const [path, setPath] = useState("")
+
+    const location = useLocation()
+    const vlcStatus = useVlcStatus(!!req.vlc)
+    const [pageIndex, setPageIndex] = useState(0)
+
     useEffect(() => {
         return () => {
             console.log("FileBrowser unmount")
@@ -35,9 +41,6 @@ export function FileBrowser() {
     }, [])
 
     const sorting = useMemo(() => getSortConfig(req), [req])
-
-    const [searchText, setSearchText] = useState("")
-    const [path, setPath] = useState("")
 
     const navigate = useNavigate()
     const getNavUrl: GetNavUrl = useCallback<GetNavUrl>(
@@ -58,14 +61,6 @@ export function FileBrowser() {
         },
         [getNavUrl, navigate, req]
     )
-
-    const setFolderSelection = async (key: string, value: string | null) => {
-        if (!value) {
-            await api.deleteFolderSelection(key)
-            return
-        }
-        await api.saveFolderSelection({ key, value })
-    }
 
     const hasInnerSelection = (file: IFile) => {
         return !!res.selections?.[file.name]
@@ -103,7 +98,7 @@ export function FileBrowser() {
     const getSortBy = (column: string) => {
         const cycle: ("asc" | "desc")[] = descendingFirstColumns.includes(column) ? ["desc", "asc"] : ["asc", "desc"]
         const current = sorting[column]
-        const next = cycle[cycle.indexOf(current) + 1] as "asc" | "desc" | undefined
+        const next = cycle[cycle.indexOf(current!) + 1] as "asc" | "desc" | undefined
         const cfg: SortConfig = { ...sorting }
         if (cfg[column]) {
             delete cfg[column]
@@ -119,7 +114,6 @@ export function FileBrowser() {
         if (desc !== undefined) return sorting[key] === (desc ? "desc" : "asc")
         return true
     }
-    const [pageIndex, setPageIndex] = useState(0)
 
     const allFiles = res.files ?? []
     let files = allFiles
@@ -135,10 +129,9 @@ export function FileBrowser() {
     }, [req.path])
 
     const { selectedFiles, setSelectedFiles } = useSelection({
-        setFolderSelection,
         res,
     })
-    const selectedFile = useMemo(() => iterableLast(selectedFiles), [selectedFiles])
+    const selectedFile = selectedFiles[selectedFiles.length - 1]
 
     useEffect(() => {
         function Win_keydown(e: KeyboardEvent): void {
@@ -155,10 +148,6 @@ export function FileBrowser() {
         return () => window.removeEventListener("keydown", Win_keydown)
     }, [open, selectedFile])
 
-    const location = useLocation()
-    const vlcStatus = useVlcStatus(!!req.vlc)
-    // [vlcRes, setVlcRes] = useState<IVlcStatus | null>(null)
-    // const { vlcCurrentFile, vlcCurrentPos, vlcCurrentState } = useVlcRes(vlcRes)
     return (
         <div className={style}>
             <header className={style}>

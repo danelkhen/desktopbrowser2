@@ -77,7 +77,7 @@ export class Selection<T> {
 
         if (!lastActive) {
             e.preventDefault()
-            return this.clone(new Set([this.all[0]]))
+            return this.clone(new Set([this.all[0]!]))
         }
         const sibling = getSiblingOrEdge(this.all, lastActive, offset)
         if (!sibling || sibling === lastActive) {

@@ -33,7 +33,7 @@ export type DirSizeCache = { [path: string]: number }
 
 async function getSize(path: string, cache: DirSizeCache = {}): Promise<number> {
     if (cache[path] !== undefined) {
-        return cache[path]
+        return cache[path]!
     }
     let size = 0
     try {

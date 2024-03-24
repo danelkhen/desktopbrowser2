@@ -15,5 +15,5 @@ export async function getFile(path: string): Promise<IFile | null> {
     const file = res[0]
     if (!file) return null
 
-    return globPathToFile(res[0])
+    return globPathToFile(file)
 }

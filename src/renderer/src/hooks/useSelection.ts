@@ -2,38 +2,30 @@ import { useCallback, useEffect, useState } from "react"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { Selection } from "../lib/Selection"
-import { iterableLast } from "../lib/iterableLast"
+import { api } from "../services/api"
 import { c } from "../services/c"
+import { getSelectedFiles } from "../services/getSelectedFiles"
 import { calcItemsOnScreen } from "./calcItemsOnScreen"
 
-export function useSelection({
-    res,
-    setFolderSelection,
-}: {
-    readonly res: IListFilesRes
-    setFolderSelection: (key: string, value: string | null) => Promise<void>
-}) {
+export function useSelection({ res }: { readonly res: IListFilesRes }) {
     const [selectedFiles, _setSelectedFiles] = useState<IFile[]>([])
-    useEffect(() => {
-        const fm = res.file?.name ? res.selections?.[res.file?.name] : null
-        const selectedFileName = fm ?? null
-        const file = res?.files?.find(t => t.name === selectedFileName)
-        _setSelectedFiles(file ? [file] : [])
-    }, [res.file?.name, res?.files, res.selections])
 
-    const selectedFile: IFile | null = selectedFiles[selectedFiles.length - 1] ?? null
+    useEffect(() => {
+        _setSelectedFiles(getSelectedFiles(res))
+    }, [res])
+
+    const selectedFile = selectedFiles[selectedFiles.length - 1] ?? null
 
     const setSelectedFiles = useCallback(
         async (selectedFiles: IFile[]) => {
             if (!res?.file?.name) {
                 return
             }
-            const selectedFile = iterableLast(selectedFiles)
             console.log("saveSelectionAndSetSelectedItems", res.file.name, selectedFile?.name)
             _setSelectedFiles(Array.from(selectedFiles))
-            await setFolderSelection(res.file.name, selectedFile?.name ?? null)
+            void setFolderSelection(res.file.name, selectedFile?.name ?? null)
         },
-        [res?.file?.name, setFolderSelection]
+        [res.file?.name, selectedFile?.name]
     )
 
     // useLayoutEffect(() => {
@@ -71,4 +63,12 @@ export function scrollToSelection() {
     if (!el) return
     console.log("scrollIntoView", { scrollTop: container.scrollTop, el })
     el.scrollIntoView({ block: "center" })
+}
+
+async function setFolderSelection(key: string, value: string | null) {
+    if (!value) {
+        await api.deleteFolderSelection(key)
+        return
+    }
+    await api.saveFolderSelection({ key, value })
 }
