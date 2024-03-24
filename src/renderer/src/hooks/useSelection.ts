@@ -4,7 +4,6 @@ import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { Selection } from "../lib/Selection"
 import { iterableLast } from "../lib/iterableLast"
 import { c } from "../services/c"
-import { fileRow } from "../services/fileRow"
 import { calcItemsOnScreen } from "./calcItemsOnScreen"
 
 export function useSelection({
@@ -46,7 +45,7 @@ export function useSelection({
     useEffect(() => {
         function Win_keydown(e: KeyboardEvent): void {
             if (e.defaultPrevented) return
-            const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${fileRow}`))
+            const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${c.fileRow}`))
             const selection = new Selection<IFile>({
                 all: res?.files ?? [],
                 selected: new Set(selectedFiles),

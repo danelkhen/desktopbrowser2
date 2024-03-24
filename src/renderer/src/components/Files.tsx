@@ -3,6 +3,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
 import React, { useCallback, useMemo } from "react"
 import { SortConfig } from "src/shared/SortConfig"
+import { IVlcStatus } from "../../../shared/Api"
 import { IFile } from "../../../shared/IFile"
 import { colors } from "../GlobalStyle"
 import { calcItemsOnScreen } from "../hooks/calcItemsOnScreen"
@@ -10,7 +11,6 @@ import { Selection } from "../lib/Selection"
 import { formatFriendlyDate } from "../lib/formatFriendlyDate"
 import { formatFriendlySize } from "../lib/formatFriendlySize"
 import { c } from "../services/c"
-import { fileRow } from "../services/fileRow"
 import { FileIcon } from "./FileIcon"
 
 export function Files({
@@ -24,6 +24,7 @@ export function Files({
     orderBy,
     sorting,
     hasInnerSelection,
+    vlcStatus,
 }: {
     setSelectedFiles: (v: IFile[]) => void
     selectedFiles: IFile[]
@@ -35,11 +36,13 @@ export function Files({
     orderBy: (column: string) => void
     sorting: SortConfig
     hasInnerSelection: (file: IFile) => boolean
+    vlcStatus: IVlcStatus
 }) {
+    console.log({ vlcStatus })
     const selectedFiles2 = useMemo(() => new Set(selectedFiles), [selectedFiles])
     const onFileMouseDown = useCallback(
         (e: React.MouseEvent, file: IFile) => {
-            const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${fileRow}`))
+            const itemsOnScreen = calcItemsOnScreen(document.querySelector(`.${c.fileRow}`))
             const selection = new Selection({ all: allFiles, selected: selectedFiles2, itemsOnScreen })
             const newSelection = selection.click(file, e)
             if (newSelection === selection) return
@@ -72,12 +75,18 @@ export function Files({
         [open]
     )
 
+    function getProgress(file: IFile) {
+        if (vlcStatus.path === file.path) {
+            return Math.round((vlcStatus.position ?? 0) * 100) + "%"
+        }
+        return "0%"
+    }
     const gridColumns = {
         type: {
             className: c.type,
-            cell: (file: IFile) => <FileIcon file={file} />,
+            cell: (file: IFile) => <FileIcon file={file} vlcStatus={vlcStatus} />,
             header: "",
-            width: "35px",
+            width: "40px",
         },
         name: {
             className: c.name,
@@ -150,11 +159,17 @@ export function Files({
                             <tr
                                 key={i}
                                 className={cx(
-                                    fileRow,
+                                    c.fileRow,
                                     file.isFolder && c.isFolder,
                                     hasInnerSelection(file) && c.hasInnerSelection,
-                                    selectedFiles2.has(file) && c.selected
+                                    selectedFiles2.has(file) && c.selected,
+                                    file.path === vlcStatus.path && c.opened,
+                                    file.path === vlcStatus.path && vlcStatus.playing && c.playing,
+                                    file.path === vlcStatus.path && vlcStatus.paused && c.paused,
+                                    file.path === vlcStatus.path && vlcStatus.stopped && c.stopped
                                 )}
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                style={{ "--progress": getProgress(file) } as any}
                                 onMouseDown={e => onFileMouseDown(e, file)}
                                 onClick={e => onFileClick(e, file)}
                                 onDoubleClick={e => onFileDoubleClick(e, file)}
@@ -231,7 +246,46 @@ const style = css`
                 transition: all 0.3s ease;
                 -webkit-font-smoothing: antialiased;
                 border: 1px solid #0c0c0c;
+                transition: all 0.3s ease;
                 color: #999;
+                --bg: transparent;
+                background: var(--bg);
+                &:hover {
+                    --bg: #000;
+                    color: #a276f8;
+                    td .${c.name} {
+                        text-decoration: none;
+                        cursor: pointer;
+                    }
+                }
+                &.${c.selected} {
+                    color: #fff;
+                    --bg: #a276f8;
+                    transition: all 0.3s ease;
+                    &:hover {
+                        --bg: #a97eff;
+                    }
+                }
+                &.${c.opened} {
+                    color: #fff;
+                    background: linear-gradient(
+                        90deg,
+                        #000 0,
+                        #6b9cff 1px,
+                        #6b9cff 36px,
+                        #6b9cff var(--progress),
+                        var(--bg) var(--progress),
+                        var(--bg) 100%
+                    );
+                }
+
+                &.${c.isFolder}.${c.hasInnerSelection}.${c.selected} {
+                    color: rgba(238, 238, 238, 0.7);
+                }
+                &.${c.hasInnerSelection} {
+                    color: rgba(238, 238, 238, 0.3);
+                }
+
                 > td {
                     white-space: nowrap;
                     overflow: hidden;
@@ -239,11 +293,15 @@ const style = css`
                     box-sizing: border-box;
                     padding: 10px 0px;
                     &.${c.type} {
+                        text-align: center;
+                        /* padding: 0 5px; */
                         svg {
-                            font-size: inherit;
                             vertical-align: middle;
+                            font-size: 1.5em;
+                            &.${c.small} {
+                                font-size: 1.25em;
+                            }
                         }
-                        padding: 0 5px;
                     }
                 }
             }

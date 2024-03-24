@@ -22,6 +22,7 @@ import {
     paginationClasses,
 } from "@mui/material"
 import React from "react"
+import { IVlcStatus } from "../../../shared/Api"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
@@ -61,6 +62,7 @@ export function MainMenu({
     isSortedBy: (key: string, desc?: boolean | undefined) => boolean
     getSortBy: (column: string) => SortConfig
     getNavUrl: GetNavUrl
+    vlcStatus: IVlcStatus
 }) {
     const deleteAndRefresh = async (file: IFile) => {
         if (!file.path) return

@@ -2,6 +2,7 @@ import { IListFilesReq } from "./IListFilesReq"
 import { IListFilesRes } from "./IListFilesRes"
 
 export interface Api {
+    vlcStatus(): Promise<IVlcStatus>
     saveFolderSelection(req: { key: string; value: string }): Promise<void>
     deleteFolderSelection(key: string): Promise<void>
     // getAllFolderSelections(): Promise<FolderSelections>
@@ -17,6 +18,14 @@ export interface Api {
     appExit(): Promise<void>
     appGetVersion(): Promise<string>
     appHide(): Promise<void>
+}
+export interface IVlcStatus {
+    path?: string
+    paused?: boolean
+    playing?: boolean
+    stopped?: boolean
+    position?: number
+    running?: boolean
 }
 
 export interface FolderSelections {

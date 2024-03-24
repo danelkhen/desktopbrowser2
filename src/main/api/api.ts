@@ -2,22 +2,47 @@ import { BrowserWindow, app, shell } from "electron"
 import log from "electron-log/main"
 import { autoUpdater } from "electron-updater"
 import fs from "fs/promises"
+import path from "path"
 import { rimraf } from "rimraf"
-import { Api } from "../../shared/Api"
+import url from "url"
+import { Api, IVlcStatus } from "../../shared/Api"
+import { IFile } from "../../shared/IFile"
 import { IListFilesRes } from "../../shared/IListFilesRes"
-import { vlcPlay } from "../lib/vlc"
+import { isMediaFile } from "../../shared/isMediaFile"
+import { VlcPlaylistNode, VlcStatus } from "../../shared/vlc"
+import { connectToVlc, vlcPlay } from "../lib/vlc"
 import { db } from "../services"
+import { applyPaging } from "./applyPaging"
+import { applyFiltersAndSorting, applySelectionFiltersAndFolderSizes } from "./applyRequest"
 import { getFile } from "./getFile"
 import { getFileRelatives } from "./getFileRelatives"
 import { getFiles } from "./getFiles"
 import { toCurrentPlatformPath } from "./toCurrentPlatformPath"
-import { applyFiltersAndSorting, applySelectionFiltersAndFolderSizes } from "./applyRequest"
-import { applyPaging } from "./applyPaging"
-import { IFile } from "../../shared/IFile"
-import url from "url"
-import path from "path"
 
 export const api: Api = {
+    vlcStatus: async () => {
+        const vlc = await connectToVlc()
+        if (!vlc) return {}
+        const [status, playlist] = (await vlc.updateAll()) as [VlcStatus | undefined, VlcPlaylistNode | undefined]
+        if (!status) {
+            return {}
+        }
+        const playlist2 = playlist?.children?.find(t => t.name === "Playlist")?.children
+        const current = playlist2?.find(t => t.current)
+        const path = current?.uri ? url.fileURLToPath(current.uri) : undefined
+        const state = status?.state
+        const position = status?.position
+
+        const res: IVlcStatus = {
+            running: true,
+            path,
+            position,
+            playing: state === "playing",
+            paused: state === "paused",
+            stopped: state === "stopped",
+        }
+        return res
+    },
     saveFolderSelection: async req => {
         await db.folderSelection.put(req.key, req.value)
     },
@@ -71,7 +96,7 @@ export const api: Api = {
     },
     execute: async req => {
         const filename = toCurrentPlatformPath(req.path)
-        if (req.vlc) {
+        if (req.vlc && isMediaFile(filename)) {
             log.log("vlcPlay", req.path, filename)
             await vlcPlay(filename)
             return

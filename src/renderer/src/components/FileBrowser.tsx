@@ -6,6 +6,7 @@ import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
+import { isExecutable } from "../../../shared/isMediaFile"
 import { usePaging } from "../hooks/usePaging"
 import { useSearch } from "../hooks/useSearch"
 import { useSelection } from "../hooks/useSelection"
@@ -18,7 +19,7 @@ import { GetNavUrl } from "./GetNavUrl"
 import { MainMenu } from "./MainMenu"
 import { QuickFind } from "./QuickFind"
 import { requestToUrl } from "./parseRequest"
-import { isExecutable } from "../../../shared/isMediaFile"
+import { useVlcStatus } from "./useVlcStatus"
 
 const descendingFirstColumns = [Column.size, Column.modified] as string[]
 const pageSize = 200
@@ -155,6 +156,9 @@ export function FileBrowser() {
     }, [open, selectedFile])
 
     const location = useLocation()
+    const vlcStatus = useVlcStatus(!!req.vlc)
+    // [vlcRes, setVlcRes] = useState<IVlcStatus | null>(null)
+    // const { vlcCurrentFile, vlcCurrentPos, vlcCurrentState } = useVlcRes(vlcRes)
     return (
         <div className={style}>
             <header className={style}>
@@ -169,6 +173,7 @@ export function FileBrowser() {
                     isSortedBy={isSortedBy}
                     getNavUrl={getNavUrl}
                     getSortBy={getSortBy}
+                    vlcStatus={vlcStatus}
                 />
                 <AddressBar
                     gotoPath={() => GotoPath(path)}
@@ -188,6 +193,7 @@ export function FileBrowser() {
                     orderBy={orderBy}
                     sorting={sorting}
                     hasInnerSelection={hasInnerSelection}
+                    vlcStatus={vlcStatus}
                 />
             </header>
             <Files
@@ -200,6 +206,7 @@ export function FileBrowser() {
                 orderBy={orderBy}
                 sorting={sorting}
                 hasInnerSelection={hasInnerSelection}
+                vlcStatus={vlcStatus}
             />
         </div>
     )
@@ -221,28 +228,3 @@ const style = css`
         background-color: #111;
     }
 `
-
-// const reloadFiles = useCallback(async (req: IListFilesReq) => {
-//     const fetchFiles = async (req: IListFilesReq) => {
-//         setRes(await api.listFiles(req))
-//     }
-//     if (req.folderSize) {
-//         setRes(await api.listFiles({ ...req, folderSize: false }))
-//     }
-//     await fetchFiles(req)
-// }, [])
-
-// useEffect(() => {
-//     void reloadFiles(req)
-// }, [reloadFiles, req])
-
-// useEffect(() => {
-//     void (async () => {
-//         const x = await api.getAllFolderSelections()
-//         setFolderSelections(x)
-//     })()
-// }, [])
-// useLoaderData() as IListFilesRes
-// const [res, setRes] = useState<IListFilesRes>({})
-// const [folderSelections, setFolderSelections] = useState<FolderSelections>({})
-// files = useSorting(files, sorting, gridColumns)

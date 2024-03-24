@@ -14,7 +14,7 @@ const port = 9090
 const host = "127.0.0.1"
 const user = ""
 
-function connectToVlc() {
+export function connectToVlc() {
     return new Promise<VLC | null>(resolve => {
         const vlc = new VLC({ host, port, username: user, password: pwd, autoUpdate: false, maxTries: 1 })
         const handler1 = () => {
@@ -41,13 +41,13 @@ async function connectOrOpenVlc() {
     await openVlc()
     vlc = await connectToVlc()
     if (vlc) return vlc
-    await sleep(200)
+    await sleep(500)
     vlc = await connectToVlc()
     if (vlc) return vlc
-    await sleep(400)
+    await sleep(1000)
     vlc = await connectToVlc()
     if (vlc) return vlc
-    await sleep(800)
+    await sleep(1000)
     vlc = await connectToVlc()
     if (!vlc) {
         throw new Error("Cannot connect or open vlc")

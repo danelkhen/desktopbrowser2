@@ -3,6 +3,7 @@ import { httpInvoke } from "../lib/getHttpInvoker"
 
 export const api: Api = {
     // listFilesWs: req => wsInvoke({ funcName: "listFiles", args: [req] }),
+    vlcStatus: () => httpInvoke("/api/vlcStatus"),
     listFiles: req => httpInvoke("/api/listFiles", req),
     saveFolderSelection: req => httpInvoke("/api/saveFolderSelection", req),
     deleteFolderSelection: req => httpInvoke("/api/deleteFolderSelection", req),

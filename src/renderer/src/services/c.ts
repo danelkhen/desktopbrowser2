@@ -12,4 +12,10 @@ export const c = {
     size: "size",
     modified: "modified",
     ext: "ext",
+    opened: "opened",
+    playing: "playing",
+    paused: "paused",
+    stopped: "stopped",
+    fileRow: "fileRow",
+    small: "small",
 } as const
