@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { Selection } from "../lib/Selection"
@@ -8,13 +8,10 @@ import { getSelectedFiles } from "../services/getSelectedFiles"
 import { calcItemsOnScreen } from "./calcItemsOnScreen"
 
 export function useSelection({ res }: { readonly res: IListFilesRes }) {
-    const [selectedFiles, _setSelectedFiles] = useState<IFile[]>([])
-
-    useEffect(() => {
-        _setSelectedFiles(getSelectedFiles(res))
-    }, [res])
-
-    const selectedFile = selectedFiles[selectedFiles.length - 1] ?? null
+    const [_selectedFiles, _setSelectedFiles] = useState<IFile[] | null>(null)
+    const initialSelectedFiles = useMemo(() => getSelectedFiles(res), [res])
+    const selectedFiles = _selectedFiles ?? initialSelectedFiles
+    const selectedFile = selectedFiles[selectedFiles.length - 1]
 
     const setSelectedFiles = useCallback(
         async (selectedFiles: IFile[]) => {
@@ -27,11 +24,6 @@ export function useSelection({ res }: { readonly res: IListFilesRes }) {
         },
         [res.file?.name, selectedFile?.name]
     )
-
-    // useLayoutEffect(() => {
-    //     if (!selectedFiles.length) return
-    //     void verifySelectionInView()
-    // }, [selectedFiles])
 
     // Keyboard selection
     useEffect(() => {
@@ -53,6 +45,11 @@ export function useSelection({ res }: { readonly res: IListFilesRes }) {
         window.addEventListener("keydown", Win_keydown)
         return () => window.removeEventListener("keydown", Win_keydown)
     }, [res?.files, selectedFiles, setSelectedFiles])
+
+    // useLayoutEffect(() => {
+    //     if (!selectedFiles.length) return
+    //     void verifySelectionInView()
+    // }, [selectedFiles])
 
     return { selectedFile, setSelectedFiles, selectedFiles }
 }
