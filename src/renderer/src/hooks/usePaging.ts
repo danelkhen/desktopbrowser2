@@ -1,6 +1,6 @@
 import { useLayoutEffect, useMemo } from "react"
 
-export const pageSize = 50 // 200
+export const pageSize = 200
 export function usePaging<T>(items: T[], { pageIndex }: { pageIndex: number }) {
     return useMemo(() => {
         const totalPages = Math.ceil(items.length / pageSize)
@@ -21,18 +21,20 @@ export function usePaging<T>(items: T[], { pageIndex }: { pageIndex: number }) {
 export function useShowMore<T>(
     items: T[],
     {
+        _pageIndex,
         pageIndex,
-        pageIndexInView,
+        // pageIndexInView,
         containerSelector,
         setPageIndexInView,
     }: {
+        _pageIndex: number | null
         pageIndex: number
         pageIndexInView: number
         setPageIndexInView: (pageIndex: number) => void
         containerSelector: string
     }
 ) {
-    pageIndex = Math.max(pageIndex, pageIndexInView) + 1
+    pageIndex = pageIndex + 1 // Math.max(pageIndex, pageIndexInView) + 1
     const paged = useMemo(() => {
         const totalPages = Math.ceil(items.length / pageSize)
         let pageIndex2 = pageIndex
@@ -47,20 +49,33 @@ export function useShowMore<T>(
         const paged = items.slice(0, until)
         return paged
     }, [items, pageIndex])
-    usePaged({ containerSelector, setPageIndexInView, items: paged })
+    usePaged({ containerSelector, setPageIndexInView, items: paged, disabled: _pageIndex === null })
     return paged
 }
 
+export function itemsInView<T>(items: T[], containerSelector: string) {
+    const el = document.querySelector(containerSelector)
+    if (!el) return []
+    const res = Array.from(el.children)
+    const scrollingEl = document.documentElement
+    const elRect = el.getBoundingClientRect()
+    const scrollingRect = scrollingEl.getBoundingClientRect()
+    console.log("itemsInView", { elRect, scrollingRect })
+    return res
+}
 export function usePaged<T>({
     containerSelector,
     setPageIndexInView,
     items,
+    disabled,
 }: {
     containerSelector: string
     setPageIndexInView: (pageIndex: number) => void
     items: T[]
+    disabled?: boolean
 }) {
     useLayoutEffect(() => {
+        if (disabled) return
         if (!items.length) return
         const el = document.querySelector(containerSelector)
         if (!el) return

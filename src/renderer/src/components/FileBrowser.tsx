@@ -1,5 +1,4 @@
 import { css } from "@emotion/css"
-import _ from "lodash"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLoaderData, useLocation, useNavigate } from "react-router-dom"
 import { SortConfig } from "src/shared/SortConfig"
@@ -34,6 +33,7 @@ export function FileBrowser() {
     const vlcStatus = useVlcStatus(!!req.vlc)
     const [pageIndex, setPageIndex] = useState(0)
     // const [pageIndexInView, setPageIndexInView] = useState(0)
+    // const pageIndex = _pageIndex !== null ? _pageIndex : pageIndexInView
 
     useEffect(() => {
         return () => {
@@ -132,6 +132,7 @@ export function FileBrowser() {
         pageIndex,
     })
     // files = useShowMore(files, {
+    //     _pageIndex,
     //     pageIndex,
     //     pageIndexInView,
     //     setPageIndexInView,
@@ -147,20 +148,20 @@ export function FileBrowser() {
     //     const avgHeight = listEl.offsetHeight / listEl.childNodes.length ?? 1
     // })
 
-    useEffect(() => {
-        const showMore = () => {
-            console.log("showMore", { totalPages })
-            setPageIndex(t => (t + 1 < totalPages ? t + 1 : t))
-        }
-        const scrollEl = document.documentElement
-        const handler = _.debounce(() => {
-            if (scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 200) {
-                showMore()
-            }
-        }, 200)
-        window.addEventListener("scrollend", handler)
-        return () => window.removeEventListener("scrollend", handler)
-    }, [totalPages])
+    // useEffect(() => {
+    //     const showMore = () => {
+    //         console.log("showMore", { totalPages })
+    //         setPageIndex(t => (t + 1 < totalPages ? t + 1 : t))
+    //     }
+    //     const scrollEl = document.documentElement
+    //     const handler = _.debounce(() => {
+    //         if (scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 200) {
+    //             showMore()
+    //         }
+    //     }, 200)
+    //     window.addEventListener("scrollend", handler)
+    //     return () => window.removeEventListener("scrollend", handler)
+    // }, [totalPages])
 
     useEffect(() => {
         setPath(req.path ?? "")
@@ -185,6 +186,12 @@ export function FileBrowser() {
         window.addEventListener("keydown", Win_keydown)
         return () => window.removeEventListener("keydown", Win_keydown)
     }, [open, selectedFile])
+
+    // useLayoutEffect(() => {
+    //     window.addEventListener("scroll", () => {
+    //         itemsInView(files, "tbody")
+    //     })
+    // }, [files])
 
     return (
         <div className={style}>
