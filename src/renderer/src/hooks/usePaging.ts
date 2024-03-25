@@ -22,11 +22,17 @@ export function useShowMore<T>(
     items: T[],
     {
         pageIndex,
+        pageIndexInView,
         containerSelector,
-        setPageIndex,
-    }: { pageIndex: number; setPageIndex: (pageIndex: number) => void; containerSelector: string }
+        setPageIndexInView,
+    }: {
+        pageIndex: number
+        pageIndexInView: number
+        setPageIndexInView: (pageIndex: number) => void
+        containerSelector: string
+    }
 ) {
-    pageIndex++
+    pageIndex = Math.max(pageIndex, pageIndexInView) + 1
     const paged = useMemo(() => {
         const totalPages = Math.ceil(items.length / pageSize)
         let pageIndex2 = pageIndex
@@ -41,30 +47,40 @@ export function useShowMore<T>(
         const paged = items.slice(0, until)
         return paged
     }, [items, pageIndex])
-    usePaged({ containerSelector, onPageIndexInView: setPageIndex, items: [paged] })
+    usePaged({ containerSelector, setPageIndexInView, items: paged })
     return paged
 }
 
 export function usePaged<T>({
     containerSelector,
-    onPageIndexInView,
+    setPageIndexInView,
     items,
 }: {
     containerSelector: string
-    onPageIndexInView: (pageIndex: number) => void
+    setPageIndexInView: (pageIndex: number) => void
     items: T[]
 }) {
     useLayoutEffect(() => {
         if (!items.length) return
         const el = document.querySelector(containerSelector)
         if (!el) return
+        console.log(items.length, el.children.length)
+        if (items.length !== el.children.length) return
+        let unmounted = false
+        let first = true
         const observer = new IntersectionObserver(
             entries => {
+                if (unmounted) return
+                if (first) {
+                    first = false
+                    return
+                }
                 const entry = entries.find(t => t.isIntersecting)
                 if (!entry) return
                 const pageIndex = res.indexOf(entry.target)
                 if (pageIndex === -1) return
-                onPageIndexInView(pageIndex)
+                console.log("onPageIndexInView", pageIndex)
+                setPageIndexInView(pageIndex)
             },
             { rootMargin: "0px", threshold: 1.0 }
         )
@@ -72,9 +88,10 @@ export function usePaged<T>({
         console.log("observe", res.length, items.length)
         res.forEach(t => observer.observe(t))
         return () => {
+            unmounted = true
             console.log("unobserve")
             observer.disconnect()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [containerSelector, onPageIndexInView, items])
+    }, [containerSelector, setPageIndexInView, items])
 }

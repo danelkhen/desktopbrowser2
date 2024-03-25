@@ -49,7 +49,7 @@ export function useSelection({ res }: { readonly res: IListFilesRes }) {
 
     // useLayoutEffect(() => {
     //     if (!selectedFiles.length) return
-    //     void verifySelectionInView()
+    //     void scrollToSelection()
     // }, [selectedFiles])
 
     return { selectedFile, setSelectedFiles, selectedFiles }

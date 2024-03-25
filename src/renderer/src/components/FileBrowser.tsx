@@ -8,7 +8,7 @@ import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { isExecutable } from "../../../shared/isMediaFile"
-import { pageSize, useShowMore } from "../hooks/usePaging"
+import { pageSize, usePaging } from "../hooks/usePaging"
 import { useSearch } from "../hooks/useSearch"
 import { useSelection } from "../hooks/useSelection"
 import { api } from "../services/api"
@@ -33,6 +33,7 @@ export function FileBrowser() {
     const location = useLocation()
     const vlcStatus = useVlcStatus(!!req.vlc)
     const [pageIndex, setPageIndex] = useState(0)
+    // const [pageIndexInView, setPageIndexInView] = useState(0)
 
     useEffect(() => {
         return () => {
@@ -127,8 +128,16 @@ export function FileBrowser() {
         setPageIndex(0)
     }, [files])
 
-    files = useShowMore(files, { pageIndex, setPageIndex, containerSelector: "tbody" })
-    console.log({ pageIndex, totalPages })
+    files = usePaging(files, {
+        pageIndex,
+    })
+    // files = useShowMore(files, {
+    //     pageIndex,
+    //     pageIndexInView,
+    //     setPageIndexInView,
+    //     containerSelector: "tbody",
+    // })
+    // console.log({ pageIndex, totalPages })
     // useLayoutEffect(() => {
     //     const listEl = document.querySelector<HTMLElement>("tbody")
     //     if (!listEl) return
