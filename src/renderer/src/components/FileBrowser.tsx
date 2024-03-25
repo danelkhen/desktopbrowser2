@@ -1,4 +1,5 @@
 import { css } from "@emotion/css"
+import _ from "lodash"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLoaderData, useLocation, useNavigate } from "react-router-dom"
 import { SortConfig } from "src/shared/SortConfig"
@@ -7,7 +8,7 @@ import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { isExecutable } from "../../../shared/isMediaFile"
-import { usePaging } from "../hooks/usePaging"
+import { pageSize, useShowMore } from "../hooks/usePaging"
 import { useSearch } from "../hooks/useSearch"
 import { useSelection } from "../hooks/useSelection"
 import { api } from "../services/api"
@@ -21,7 +22,6 @@ import { requestToUrl } from "./parseRequest"
 import { useVlcStatus } from "./useVlcStatus"
 
 const descendingFirstColumns = [Column.size, Column.modified] as string[]
-const pageSize = 200
 
 export function FileBrowser() {
     const req = useReq()
@@ -122,7 +122,36 @@ export function FileBrowser() {
 
     const totalPages = Math.ceil(files.length / pageSize)
 
-    files = usePaging(files, { pageIndex, pageSize })
+    useEffect(() => {
+        if (!files) return
+        setPageIndex(0)
+    }, [files])
+
+    files = useShowMore(files, { pageIndex, setPageIndex, containerSelector: "tbody" })
+    console.log({ pageIndex, totalPages })
+    // useLayoutEffect(() => {
+    //     const listEl = document.querySelector<HTMLElement>("tbody")
+    //     if (!listEl) return
+    //     const listRect = listEl.getBoundingClientRect()
+    //     const scrollEl = document.documentElement.getBoundingClientRect()
+    //     const scrollRect = scrollEl.getBoundingClientRect()
+    //     const avgHeight = listEl.offsetHeight / listEl.childNodes.length ?? 1
+    // })
+
+    useEffect(() => {
+        const showMore = () => {
+            console.log("showMore", { totalPages })
+            setPageIndex(t => (t + 1 < totalPages ? t + 1 : t))
+        }
+        const scrollEl = document.documentElement
+        const handler = _.debounce(() => {
+            if (scrollEl.scrollTop + scrollEl.clientHeight >= scrollEl.scrollHeight - 200) {
+                showMore()
+            }
+        }, 200)
+        window.addEventListener("scrollend", handler)
+        return () => window.removeEventListener("scrollend", handler)
+    }, [totalPages])
 
     useEffect(() => {
         setPath(req.path ?? "")

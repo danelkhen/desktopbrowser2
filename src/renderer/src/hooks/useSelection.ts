@@ -18,11 +18,12 @@ export function useSelection({ res }: { readonly res: IListFilesRes }) {
             if (!res?.file?.name) {
                 return
             }
+            const selectedFile = selectedFiles[selectedFiles.length - 1]
             console.log("saveSelectionAndSetSelectedItems", res.file.name, selectedFile?.name)
             _setSelectedFiles(Array.from(selectedFiles))
             void setFolderSelection(res.file.name, selectedFile?.name ?? null)
         },
-        [res.file?.name, selectedFile?.name]
+        [res.file?.name]
     )
 
     // Keyboard selection

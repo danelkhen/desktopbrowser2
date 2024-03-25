@@ -19,4 +19,6 @@ export const c = {
     fileRow: "fileRow",
     small: "small",
     progress: "progress",
+    firstItemInPage: "firstItemInPage",
+    lastItemInPage: "lastItemInPage",
 } as const

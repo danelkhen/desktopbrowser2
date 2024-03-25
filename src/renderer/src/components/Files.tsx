@@ -13,6 +13,7 @@ import { formatFriendlySize } from "../lib/formatFriendlySize"
 import { c } from "../services/c"
 import { FileIcon } from "./FileIcon"
 import { progressMixin, progressStyle } from "./progress"
+import { pageSize } from "../hooks/usePaging"
 
 export function Files({
     selectedFiles,
@@ -116,6 +117,14 @@ export function Files({
             width: "150px",
         },
     }
+    function isFirstItemInPage(i: number) {
+        const pageIndex = Math.floor(i / pageSize)
+        return i === pageSize * pageIndex
+    }
+    function isLastItemInPage(i: number) {
+        const pageIndex = Math.floor(i / pageSize)
+        return i === pageSize * pageIndex + pageSize - 1
+    }
 
     return (
         <div className={style}>
@@ -164,7 +173,10 @@ export function Files({
                                     file.path === vlcStatus.path && vlcStatus.playing && c.playing,
                                     file.path === vlcStatus.path && vlcStatus.paused && c.paused,
                                     file.path === vlcStatus.path && vlcStatus.stopped && c.stopped,
-                                    c.progress
+                                    c.progress,
+                                    `pageIndex-${Math.floor(i / pageSize)}`,
+                                    isFirstItemInPage(i) && c.firstItemInPage,
+                                    isLastItemInPage(i) && c.lastItemInPage
                                 )}
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 style={{ ...getFileProgressStyle(file) }}
