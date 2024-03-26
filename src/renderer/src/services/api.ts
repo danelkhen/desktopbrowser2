@@ -1,8 +1,9 @@
 import { Api } from "../../../shared/Api"
 import { httpInvoke } from "../lib/getHttpInvoker"
+import { wsInvoke } from "../lib/wsInvoke"
 
 export const api: Api = {
-    // listFilesWs: req => wsInvoke({ funcName: "listFiles", args: [req] }),
+    whenVlcStatusChange: () => wsInvoke("whenVlcStatusChange"),
     vlcStatus: () => httpInvoke("/api/vlcStatus"),
     listFiles: req => httpInvoke("/api/listFiles", req),
     saveFolderSelection: req => httpInvoke("/api/saveFolderSelection", req),

@@ -11,7 +11,8 @@ export function useVlcStatus(vlc: boolean) {
         let unmounted = false
         void (async () => {
             while (!unmounted) {
-                const res = (await api.vlcStatus().catch(() => null)) ?? {}
+                // const res = (await api.vlcStatus().catch(() => null)) ?? {}
+                const res = (await api.whenVlcStatusChange().catch(() => null)) ?? {}
                 setVlcStatus(t => (_.isEqual(res, t) ? t : res))
                 await sleep(5000)
             }

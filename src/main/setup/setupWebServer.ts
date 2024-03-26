@@ -3,7 +3,7 @@ import proxy from "express-http-proxy"
 import http from "http"
 import os from "os"
 import { join } from "path"
-import { api } from "../api/api"
+import { WsApi, api } from "../api/api"
 import { config } from "../config"
 import { handleServiceRequest } from "../lib/handleServiceRequest"
 import { setupWebsockets } from "../lib/websocket"
@@ -32,7 +32,7 @@ export async function setupWebServer() {
     }
 
     const server = http.createServer(exp)
-    setupWebsockets(server, api)
+    setupWebsockets(server, () => new WsApi())
 
     await new Promise<void>(resolve => server.listen(7779, resolve))
 
