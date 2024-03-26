@@ -1,4 +1,4 @@
-import { css } from "@emotion/css"
+import { css, cx } from "@emotion/css"
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined"
 import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined"
 import ArrowUpwardOutlinedIcon from "@mui/icons-material/ArrowUpwardOutlined"
@@ -11,7 +11,6 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined"
 import {
     ListItemIcon,
     ListItemText,
-    Menu,
     MenuItem,
     MenuList,
     Pagination,
@@ -21,6 +20,8 @@ import {
     menuItemClasses,
     paginationClasses,
     paginationItemClasses,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material"
 import React from "react"
 import { IVlcStatus } from "../../../shared/Api"
@@ -29,7 +30,6 @@ import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { SortConfig } from "../../../shared/SortConfig"
-import { breakpoints, colors } from "../GlobalStyle"
 import SortIcon from "../assets/icons/sort.svg?react"
 import SubtitleIcon from "../assets/icons/subtitle.svg?react"
 import TrashIcon from "../assets/icons/trash.svg?react"
@@ -37,11 +37,12 @@ import { scrollToSelection } from "../hooks/useSelection"
 import { getGoogleSearchLink } from "../lib/getGoogleSearchLink"
 import { getSubtitleSearchLink } from "../lib/getSubtitleSearchLink"
 import { api } from "../services/api"
+import { colors } from "../theme"
 import { AppLinkBehavior } from "./AppLink"
 import { Clock } from "./Clock"
 import { GetNavUrl } from "./GetNavUrl"
+import { MenuListGroup } from "./MenuListGroup"
 import { progressMixin, progressStyle } from "./progress"
-import { useTheme } from "@emotion/react"
 
 export function MainMenu({
     req,
@@ -68,7 +69,10 @@ export function MainMenu({
     getNavUrl: GetNavUrl
     vlcStatus: IVlcStatus
 }) {
-    console.log(useTheme())
+    const theme = useTheme()
+    const lg = useMediaQuery(theme.breakpoints.up("lg"))
+    const group = !lg
+
     const deleteAndRefresh = async (file: IFile) => {
         if (!file.path) return
         const fileOrFolder = file.isFolder ? "folder" : "file"
@@ -96,11 +100,11 @@ export function MainMenu({
 
     const contextFile = selectedFile ?? res.file ?? null
 
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-    const [anchorEl2, setAnchorEl2] = React.useState<null | HTMLElement>(null)
+    // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+    // const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null)
 
     return (
-        <div className={style}>
+        <div className={cx("mainMenu", style)}>
             <MenuList>
                 <MenuItem
                     component={AppLinkBehavior}
@@ -139,7 +143,7 @@ export function MainMenu({
                     <ListItemText>Refresh</ListItemText>
                 </MenuItem>
             </MenuList>
-            <MenuList>
+            <MenuListGroup group={group} header={"More"} className={style}>
                 <MenuItem
                     component={AppLinkBehavior}
                     href={getNavUrl(t => ({ ...t, folderSize: !req.folderSize }))}
@@ -179,119 +183,118 @@ export function MainMenu({
                     </ListItemIcon>
                     <ListItemText>Explore</ListItemText>
                 </MenuItem>
-                <MenuItem
-                    component={AppLinkBehavior}
-                    href={getNavUrl(t => ({ ...t, hideWatched: !req.hideWatched }))}
-                    selected={!!req.hideWatched}
-                >
-                    <ListItemIcon>
-                        <QueuePlayNextOutlinedIcon />
-                    </ListItemIcon>
-                    <ListItemText>Unwatched</ListItemText>
-                </MenuItem>
                 <MenuItem disabled={!selectedFile} onClick={() => scrollToSelection()}>
                     <ListItemIcon>
                         <QueuePlayNextOutlinedIcon />
                     </ListItemIcon>
                     <ListItemText>Selection</ListItemText>
                 </MenuItem>
-            </MenuList>
-            <MenuList>
                 <MenuItem onClick={() => Delete()}>
                     <ListItemIcon>
                         <TrashIcon />
                     </ListItemIcon>
                     <ListItemText>Delete</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={e => setAnchorEl(e.currentTarget)}>
-                    <ListItemIcon>
-                        <SortIcon />
-                    </ListItemIcon>
-                    <ListItemText>Sort</ListItemText>
+            </MenuListGroup>
+            <MenuListGroup
+                group
+                header={
+                    <>
+                        <ListItemIcon>
+                            <SortIcon />
+                        </ListItemIcon>
+                        <ListItemText>Sort</ListItemText>
+                    </>
+                }
+                className={style}
+            >
+                <MenuItem
+                    component={AppLinkBehavior}
+                    href={getNavUrl(t => ({ ...t, sort: getSortBy(Column.hasInnerSelection) }))}
+                    selected={isSortedBy(Column.hasInnerSelection)}
+                >
+                    Watched
                 </MenuItem>
-                <Menu anchorEl={anchorEl} open={!!anchorEl} onClose={() => setAnchorEl(null)} className={style}>
-                    <MenuItem
-                        component={AppLinkBehavior}
-                        href={getNavUrl(t => ({ ...t, sort: getSortBy(Column.hasInnerSelection) }))}
-                        selected={isSortedBy(Column.hasInnerSelection)}
-                    >
-                        Watched
-                    </MenuItem>
-                    <MenuItem
-                        component={AppLinkBehavior}
-                        href={getNavUrl(t => ({ ...t, foldersFirst: !req.foldersFirst }))}
-                        selected={!!req.foldersFirst}
-                    >
-                        Folders first
-                    </MenuItem>
-                    <MenuItem
-                        component={AppLinkBehavior}
-                        href={getNavUrl(t => ({ ...t, sort: getSortBy(Column.name) }))}
-                        selected={isSortedBy(Column.name)}
-                    >
-                        Name
-                    </MenuItem>
-                    <MenuItem
-                        component={AppLinkBehavior}
-                        href={getNavUrl(t => ({ ...t, foldersFirst: undefined, sort: undefined }))}
-                        disabled={!req.foldersFirst && !req.sort}
-                    >
-                        Clear sorting
-                    </MenuItem>
-                </Menu>
-                <MenuItem onClick={e => setAnchorEl2(e.currentTarget)}>
-                    <ListItemIcon>
-                        <MoreHorizOutlinedIcon />
-                    </ListItemIcon>
-                    <ListItemText>More</ListItemText>
+                <MenuItem
+                    component={AppLinkBehavior}
+                    href={getNavUrl(t => ({ ...t, foldersFirst: !req.foldersFirst }))}
+                    selected={!!req.foldersFirst}
+                >
+                    Folders first
                 </MenuItem>
-                <Menu anchorEl={anchorEl2} open={!!anchorEl2} onClose={() => setAnchorEl2(null)} className={style}>
-                    <MenuItem
-                        component={AppLinkBehavior}
-                        href={getNavUrl(t => ({ ...t, hideFolders: !req.hideFolders }))}
-                        selected={!!req.hideFolders}
-                    >
-                        Hide folders
-                    </MenuItem>
-                    <MenuItem
-                        component={AppLinkBehavior}
-                        href={getNavUrl(t => ({ ...t, hideFiles: !req.hideFiles }))}
-                        selected={!!req.hideFiles}
-                    >
-                        Hide files
-                    </MenuItem>
-                    <MenuItem
-                        component={AppLinkBehavior}
-                        href={getNavUrl(t => ({ ...t, recursive: !req.recursive }))}
-                        selected={!!req.recursive}
-                    >
-                        Recursive
-                    </MenuItem>
-                    <MenuItem
-                        component={AppLinkBehavior}
-                        href={getNavUrl(t => ({ ...t, keepView: !req.keepView }))}
-                        selected={!!req.keepView}
-                    >
-                        Keep view
-                    </MenuItem>
-                    <MenuItem
-                        component={AppLinkBehavior}
-                        href={getNavUrl(t => ({ ...t, hidden: !req.hidden }))}
-                        selected={!!req.hidden}
-                    >
-                        Hidden
-                    </MenuItem>
-                    <MenuItem
-                        component={AppLinkBehavior}
-                        href={getNavUrl(t => ({ ...t, vlc: !req.vlc }))}
-                        selected={!!req.vlc}
-                    >
-                        VLC
-                    </MenuItem>
-                </Menu>
-            </MenuList>
-            {!!vlcStatus.path && (
-                <MenuList>
+                <MenuItem
+                    component={AppLinkBehavior}
+                    href={getNavUrl(t => ({ ...t, sort: getSortBy(Column.name) }))}
+                    selected={isSortedBy(Column.name)}
+                >
+                    Name
+                </MenuItem>
+                <MenuItem
+                    component={AppLinkBehavior}
+                    href={getNavUrl(t => ({ ...t, foldersFirst: undefined, sort: undefined }))}
+                    disabled={!req.foldersFirst && !req.sort}
+                >
+                    Clear sorting
+                </MenuItem>
+            </MenuListGroup>
+            <MenuListGroup
+                group
+                header={
+                    <>
+                        <ListItemIcon>
+                            <MoreHorizOutlinedIcon />
+                        </ListItemIcon>
+                        <ListItemText>More</ListItemText>
+                    </>
+                }
+                className={style}
+            >
+                <MenuItem
+                    component={AppLinkBehavior}
+                    href={getNavUrl(t => ({ ...t, hideWatched: !req.hideWatched }))}
+                    selected={!!req.hideWatched}
+                >
+                    <ListItemText>Unwatched</ListItemText>
+                </MenuItem>
+
+                <MenuItem
+                    component={AppLinkBehavior}
+                    href={getNavUrl(t => ({ ...t, hideFolders: !req.hideFolders }))}
+                    selected={!!req.hideFolders}
+                >
+                    Hide folders
+                </MenuItem>
+                <MenuItem
+                    component={AppLinkBehavior}
+                    href={getNavUrl(t => ({ ...t, hideFiles: !req.hideFiles }))}
+                    selected={!!req.hideFiles}
+                >
+                    Hide files
+                </MenuItem>
+                <MenuItem
+                    component={AppLinkBehavior}
+                    href={getNavUrl(t => ({ ...t, recursive: !req.recursive }))}
+                    selected={!!req.recursive}
+                >
+                    Recursive
+                </MenuItem>
+                <MenuItem
+                    component={AppLinkBehavior}
+                    href={getNavUrl(t => ({ ...t, keepView: !req.keepView }))}
+                    selected={!!req.keepView}
+                >
+                    Keep view
+                </MenuItem>
+                <MenuItem
+                    component={AppLinkBehavior}
+                    href={getNavUrl(t => ({ ...t, hidden: !req.hidden }))}
+                    selected={!!req.hidden}
+                >
+                    Hidden
+                </MenuItem>
+            </MenuListGroup>
+            <MenuList>
+                {vlcStatus.path ? (
                     <MenuItem
                         component={AppLinkBehavior}
                         href={getNavUrl(t => ({ ...t, path: getPathPosixDirName(vlcStatus.path!) }))}
@@ -300,8 +303,16 @@ export function MainMenu({
                     >
                         {getPathPosixBaseName(vlcStatus.path)}
                     </MenuItem>
-                </MenuList>
-            )}
+                ) : (
+                    <MenuItem
+                        component={AppLinkBehavior}
+                        href={getNavUrl(t => ({ ...t, vlc: !req.vlc }))}
+                        selected={!!req.vlc}
+                    >
+                        VLC
+                    </MenuItem>
+                )}
+            </MenuList>
             <Pagination count={totalPages || 1} onChange={(e, v) => setPageIndex(v - 1)} page={pageIndex + 1} />
             <MenuList>
                 <MenuItem>
@@ -314,13 +325,11 @@ export function MainMenu({
 
 const style = css`
     label: MainMenu;
-    display: flex;
-    gap: 6px;
-    padding: 6px 6px 0 6px;
-    font-size: 10px;
-    flex-wrap: wrap;
-    ${breakpoints.lg} {
-        flex-wrap: nowrap;
+    &.mainMenu {
+        display: flex;
+        gap: 6px;
+        padding: 6px 6px 0 6px;
+        font-size: 10px;
     }
     .progress.progress {
         --bg: #a276f8;

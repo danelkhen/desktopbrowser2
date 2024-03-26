@@ -1,7 +1,7 @@
 import { css, cx } from "@emotion/css"
 import React, { ReactElement, ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
-import { colors } from "../GlobalStyle"
+import { colors } from "../theme"
 import { c } from "../services/c"
 
 export function Dropdown({ toggler, popup }: { toggler: ReactElement<HTMLButtonElement>; popup: ReactNode }) {
