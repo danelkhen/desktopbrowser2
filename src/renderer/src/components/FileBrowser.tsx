@@ -31,7 +31,8 @@ export function FileBrowser() {
 
     const location = useLocation()
     const vlcStatus = useVlcStatus(!!req.vlc)
-    const [pageIndex, setPageIndex] = useState(0)
+    const pageIndex = (req.page ?? 1) - 1
+    // const [pageIndex, setPageIndex] = useState(0)
     // const [pageIndexInView, setPageIndexInView] = useState(0)
     // const pageIndex = _pageIndex !== null ? _pageIndex : pageIndexInView
 
@@ -61,6 +62,13 @@ export function FileBrowser() {
             navigate?.(newUrl)
         },
         [getNavUrl, navigate, req]
+    )
+
+    const setPageIndex = useCallback(
+        (v: number) => {
+            navToReq(t => ({ ...t, page: v + 1 }))
+        },
+        [navToReq]
     )
 
     const hasInnerSelection = (file: IFile) => {
@@ -123,10 +131,10 @@ export function FileBrowser() {
 
     const totalPages = Math.ceil(files.length / pageSize)
 
-    useEffect(() => {
-        if (!files) return
-        setPageIndex(0)
-    }, [files])
+    // useEffect(() => {
+    //     if (!files) return
+    //     setPageIndex(0)
+    // }, [files])
 
     files = usePaging(files, {
         pageIndex,

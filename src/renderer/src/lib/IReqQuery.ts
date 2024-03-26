@@ -1,4 +1,5 @@
 export interface IReqQuery {
+    page?: string
     foldersFirst?: ""
     search?: string
     recursive?: ""

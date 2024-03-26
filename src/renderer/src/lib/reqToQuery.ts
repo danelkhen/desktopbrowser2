@@ -1,10 +1,11 @@
-import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { sortToUrl } from "@renderer/lib/sortToUrl"
 import { IReqQuery } from "./IReqQuery"
+import { IFileBrowserQuery } from "./queryToReq"
 
-export function reqToQuery(rest: IListFilesReq) {
+export function reqToQuery(rest: IFileBrowserQuery) {
     // console.log("reqToQuery", rest)
     const obj: IReqQuery = {
+        page: rest.page !== 1 ? rest.page?.toString() : undefined,
         foldersFirst: rest.foldersFirst ? "" : undefined,
         search: rest.searchPattern ? rest.searchPattern : undefined,
         recursive: rest.recursive ? "" : undefined,
