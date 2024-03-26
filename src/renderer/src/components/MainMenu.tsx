@@ -29,7 +29,7 @@ import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
 import { SortConfig } from "../../../shared/SortConfig"
-import { colors } from "../GlobalStyle"
+import { breakpoints, colors } from "../GlobalStyle"
 import SortIcon from "../assets/icons/sort.svg?react"
 import SubtitleIcon from "../assets/icons/subtitle.svg?react"
 import TrashIcon from "../assets/icons/trash.svg?react"
@@ -41,6 +41,7 @@ import { AppLinkBehavior } from "./AppLink"
 import { Clock } from "./Clock"
 import { GetNavUrl } from "./GetNavUrl"
 import { progressMixin, progressStyle } from "./progress"
+import { useTheme } from "@emotion/react"
 
 export function MainMenu({
     req,
@@ -67,6 +68,7 @@ export function MainMenu({
     getNavUrl: GetNavUrl
     vlcStatus: IVlcStatus
 }) {
+    console.log(useTheme())
     const deleteAndRefresh = async (file: IFile) => {
         if (!file.path) return
         const fileOrFolder = file.isFolder ? "folder" : "file"
@@ -317,6 +319,9 @@ const style = css`
     padding: 6px 6px 0 6px;
     font-size: 10px;
     flex-wrap: wrap;
+    ${breakpoints.lg} {
+        flex-wrap: nowrap;
+    }
     .progress.progress {
         --bg: #a276f8;
         color: white;

@@ -28,6 +28,13 @@ export const darkTheme = {
 
 export const colors = darkTheme
 
+export const breakpoints = {
+    xs: "@media only screen and (max-width: 600px)",
+    sm: "@media only screen and (min-width: 600px)",
+    md: "@media only screen and (min-width: 900px)",
+    lg: "@media only screen and (min-width: 1200px)",
+    xl: "@media only screen and (min-width: 1536px)",
+}
 // const globalStyle = css`
 //     @font-face {
 //         font-family: "FreightSansProBook-Regular";
