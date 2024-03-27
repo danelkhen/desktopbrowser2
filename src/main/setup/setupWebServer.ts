@@ -32,7 +32,7 @@ export async function setupWebServer() {
     }
 
     const server = http.createServer(exp)
-    setupWebsockets(server, () => new WsApi())
+    setupWebsockets(server, t => new WsApi(t))
 
     await new Promise<void>(resolve => server.listen(7779, resolve))
 

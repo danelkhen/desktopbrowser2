@@ -1,7 +1,15 @@
-import { Api } from "../../../shared/Api"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Api, IVlcStatus } from "../../../shared/Api"
 import { httpInvoke } from "../lib/getHttpInvoker"
-import { wsInvoke, wsInvokeAsyncIterable } from "../lib/wsInvoke"
+import { wsInvoke, wsInvokeAsyncIterable, wsSetup } from "../lib/wsInvoke"
 
+const wsClient = wsSetup()
+
+export const wsApi = {
+    vlcStatus: () => wsInvoke<IVlcStatus>("/api/vlcStatus"),
+    onVlcStatusChanged: (e: IVlcStatus) => console.log("ws callback onVlcStatusChanged", e),
+}
+wsClient.onCallback = (name, args) => (wsApi as any)[name]?.(...args)
 export const api: Api = {
     whenVlcStatusChange: () => wsInvoke("whenVlcStatusChange"),
     onVlcStatusChange: () => wsInvokeAsyncIterable("onVlcStatusChange"),

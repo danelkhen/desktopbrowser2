@@ -4,63 +4,46 @@ import http from "http"
 import * as ws from "ws"
 import { IWsReq, IWsRes } from "../../shared/IWsReq"
 
-type IWsListener = (pc: IWsReq) => unknown
-export function setupWebsockets<T>(server: http.Server, serviceFactory: () => T) {
+export interface IWsClientSocket {
+    invoke: (name: string, args: unknown[]) => unknown
+    callback(name: string, args: unknown[]): void
+    destroy?: () => unknown
+}
+
+export function setupWebsockets(server: http.Server, onClient: (client: IWsClientSocket) => void) {
     log.info("setupWebsockets")
     const wss = new ws.WebSocketServer({ noServer: true })
 
     wss.on("connection", (ws, req) => {
-        const service = serviceFactory() as unknown as { [key: string]: (...args: unknown[]) => unknown }
+        let id = 0
+        const client: IWsClientSocket = {
+            invoke: null as any,
+            callback: (name, args) => {
+                const req: IWsReq = { type: "req", name, args, oneWay: true, id: (++id).toString() }
+                ws.send(JSON.stringify(req))
+            },
+        }
+        onClient(client)
         log.info("wss.onconnection", req.url)
 
-        let listeners: IWsListener[] = []
-        function addOnReq(listener: IWsListener) {
-            listeners = [...listeners, listener]
-            return () => {
-                listeners = listeners.filter(x => x !== listener)
-            }
-        }
-        async function onReq(pc: IWsReq) {
-            for (const listener of listeners) {
-                await listener(pc)
-            }
-        }
-        addOnReq(async pc => {
-            if (pc.return) return
-            const res = await service[pc.name]!(...pc.args)
-            const res2: IWsRes = { id: pc.id, value: res }
-            if (isAsyncIterable(res)) {
-                let pc2 = null as IWsReq | null
-                const off = addOnReq(pc => {
-                    if (pc.id === pc.id) {
-                        pc2 = pc
-                    }
-                })
-                for await (const item of res) {
-                    const res3: IWsRes = { id: pc.id, value: item, asyncIterable: true, done: false }
-                    ws.send(JSON.stringify(res3))
-                    if (pc2?.return) break
-                }
-                off()
-                const res4: IWsRes = { id: pc.id, value: null, asyncIterable: true, done: true }
-                ws.send(JSON.stringify(res4))
-            } else {
-                ws.send(JSON.stringify(res2))
-            }
-        })
         ws.on("message", async message => {
             try {
                 const data = String(message)
                 log.info("ws.message received", data)
                 const pc = JSON.parse(data) as IWsReq // extractFunctionCall(data)
-                await onReq(pc)
+                if (pc.type === "req") {
+                    const res = await client.invoke(pc.name, pc.args)
+                    if (pc.oneWay) return
+                    const res2: IWsRes = { type: "res", id: pc.id, value: res }
+                    ws.send(JSON.stringify(res2))
+                }
             } catch (err) {
                 log.warn(err)
                 ws.send("ERROR: " + JSON.stringify(err))
             }
         })
         ws.on("close", async () => {
-            await service["destroy"]?.()
+            await client.destroy?.()
             log.info("ws.close")
         })
         ws.on("error", e => log.info("ws.error", e))
@@ -117,3 +100,39 @@ export function isAsyncIterable(obj: any): obj is AsyncIterable<unknown> {
 //         if (i > 10) return
 //     }
 // }
+
+// let listeners: IWsListener[] = []
+// function addOnReq(listener: IWsListener) {
+//     listeners = [...listeners, listener]
+//     return () => {
+//         listeners = listeners.filter(x => x !== listener)
+//     }
+// }
+// async function onReq(pc: IWsReq) {
+//     for (const listener of listeners) {
+//         await listener(pc)
+//     }
+// }
+// addOnReq(async pc => {
+//     if (pc.return) return
+//     const res = await service[pc.name]!(...pc.args)
+//     const res2: IWsRes = { type: "res", id: pc.id, value: res }
+//     if (isAsyncIterable(res)) {
+//         let pc2 = null as IWsReq | null
+//         const off = addOnReq(pc => {
+//             if (pc.id === pc.id) {
+//                 pc2 = pc
+//             }
+//         })
+//         for await (const item of res) {
+//             const res3: IWsRes = { type: "res", id: pc.id, value: item, asyncIterable: true, done: false }
+//             ws.send(JSON.stringify(res3))
+//             if (pc2?.return) break
+//         }
+//         off()
+//         const res4: IWsRes = { type: "res", id: pc.id, value: null, asyncIterable: true, done: true }
+//         ws.send(JSON.stringify(res4))
+//     } else {
+//         ws.send(JSON.stringify(res2))
+//     }
+// })

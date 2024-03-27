@@ -18,7 +18,6 @@ import { GetNavUrl } from "./GetNavUrl"
 import { MainMenu } from "./MainMenu"
 import { QuickFind } from "./QuickFind"
 import { requestToUrl } from "./parseRequest"
-import { useVlcStatus } from "./useVlcStatus"
 
 const descendingFirstColumns = [Column.size, Column.modified] as string[]
 
@@ -30,7 +29,6 @@ export function FileBrowser() {
     const [path, setPath] = useState("")
 
     const location = useLocation()
-    const vlcStatus = useVlcStatus(!!req.vlc)
     const pageIndex = (req.page ?? 1) - 1
     // const [pageIndex, setPageIndex] = useState(0)
     // const [pageIndexInView, setPageIndexInView] = useState(0)
@@ -215,7 +213,6 @@ export function FileBrowser() {
                     isSortedBy={isSortedBy}
                     getNavUrl={getNavUrl}
                     getSortBy={getSortBy}
-                    vlcStatus={vlcStatus}
                 />
                 <AddressBar
                     gotoPath={() => GotoPath(path)}
@@ -235,7 +232,6 @@ export function FileBrowser() {
                     orderBy={orderBy}
                     sorting={sorting}
                     hasInnerSelection={hasInnerSelection}
-                    vlcStatus={vlcStatus}
                 />
             </header>
             <Files
@@ -248,7 +244,6 @@ export function FileBrowser() {
                 orderBy={orderBy}
                 sorting={sorting}
                 hasInnerSelection={hasInnerSelection}
-                vlcStatus={vlcStatus}
             />
         </div>
     )

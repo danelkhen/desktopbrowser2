@@ -1,21 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import ReconnectingWebSocket from "reconnecting-websocket"
-import { IWsReq, IWsRes } from "../../../shared/IWsReq"
+import { IWsClient, IWsMessage, IWsReq, IWsRes } from "../../../shared/IWsReq"
 
 let webSocket: ReconnectingWebSocket
 
-main()
-export function main() {
+export function wsSetup(): IWsClient {
+    const client: IWsClient = {
+        invoke: wsInvoke,
+    }
     const url = new URL(location.href)
     url.search = ""
     url.protocol = "ws:"
     url.pathname = "/api"
     webSocket = new ReconnectingWebSocket(url.toString(), ["protocolOne", "protocolTwo"])
+    webSocket.addEventListener("message", e => {
+        void (async () => {
+            const msg = JSON.parse(e.data) as IWsMessage
+            if (msg.type === "req") {
+                const res = client.onCallback?.(msg.name, msg.args)
+                if (msg.oneWay) return
+                const res2: IWsRes = { type: "res", id: msg.id, value: res }
+                webSocket.send(JSON.stringify(res2))
+            }
+        })()
+    })
+    return client
 }
 
 let id = 0
 export async function wsInvoke<T>(name: string, arg?: unknown): Promise<T> {
-    const pc: IWsReq = { name, args: arg === undefined ? [] : [arg], id: (++id).toString() }
+    const pc: IWsReq = { type: "req", name, args: arg === undefined ? [] : [arg], id: (++id).toString() }
     webSocket.send(JSON.stringify(pc))
     const res = await new Promise<IWsRes<T>>(resolve => {
         const onMessage = (e: MessageEvent) => {
@@ -30,7 +44,13 @@ export async function wsInvoke<T>(name: string, arg?: unknown): Promise<T> {
 }
 
 export async function* wsInvokeAsyncIterable<T>(name: string, arg?: unknown): AsyncIterable<T> {
-    const pc: IWsReq = { name, args: arg === undefined ? [] : [arg], id: (++id).toString(), asyncIterable: true }
+    const pc: IWsReq = {
+        type: "req",
+        name,
+        args: arg === undefined ? [] : [arg],
+        id: (++id).toString(),
+        asyncIterable: true,
+    }
     webSocket.send(JSON.stringify(pc))
 
     let resolve: (value: IWsRes<T>) => void

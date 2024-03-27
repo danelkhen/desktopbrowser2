@@ -24,7 +24,6 @@ import {
     useTheme,
 } from "@mui/material"
 import React from "react"
-import { IVlcStatus } from "../../../shared/Api"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
@@ -43,6 +42,7 @@ import { Clock } from "./Clock"
 import { GetNavUrl } from "./GetNavUrl"
 import { MenuListGroup } from "./MenuListGroup"
 import { progressMixin, progressStyle } from "./progress"
+import { useVlcStatus } from "./useVlcStatus"
 
 export function MainMenu({
     req,
@@ -55,7 +55,6 @@ export function MainMenu({
     isSortedBy,
     getNavUrl,
     getSortBy,
-    vlcStatus,
 }: {
     req: IListFilesReq
     res: IListFilesRes
@@ -67,7 +66,6 @@ export function MainMenu({
     isSortedBy: (key: string, desc?: boolean | undefined) => boolean
     getSortBy: (column: string) => SortConfig
     getNavUrl: GetNavUrl
-    vlcStatus: IVlcStatus
 }) {
     const theme = useTheme()
     const lg = useMediaQuery(theme.breakpoints.up("lg"))
@@ -100,6 +98,7 @@ export function MainMenu({
 
     const contextFile = selectedFile ?? res.file ?? null
 
+    const vlcStatus = useVlcStatus()
     // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     // const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null)
 

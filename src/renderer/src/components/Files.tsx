@@ -3,17 +3,17 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
 import React, { useCallback, useMemo } from "react"
 import { SortConfig } from "src/shared/SortConfig"
-import { IVlcStatus } from "../../../shared/Api"
 import { IFile } from "../../../shared/IFile"
-import { colors } from "../theme"
 import { calcItemsOnScreen } from "../hooks/calcItemsOnScreen"
+import { pageSize } from "../hooks/usePaging"
 import { Selection } from "../lib/Selection"
 import { formatFriendlyDate } from "../lib/formatFriendlyDate"
 import { formatFriendlySize } from "../lib/formatFriendlySize"
 import { c } from "../services/c"
+import { colors } from "../theme"
 import { FileIcon } from "./FileIcon"
 import { progressMixin, progressStyle } from "./progress"
-import { pageSize } from "../hooks/usePaging"
+import { useVlcStatus } from "./useVlcStatus"
 
 export function Files({
     selectedFiles,
@@ -26,7 +26,6 @@ export function Files({
     orderBy,
     sorting,
     hasInnerSelection,
-    vlcStatus,
 }: {
     setSelectedFiles: (v: IFile[]) => void
     selectedFiles: IFile[]
@@ -38,7 +37,6 @@ export function Files({
     orderBy: (column: string) => void
     sorting: SortConfig
     hasInnerSelection: (file: IFile) => boolean
-    vlcStatus: IVlcStatus
 }) {
     const selectedFiles2 = useMemo(() => new Set(selectedFiles), [selectedFiles])
     const onFileMouseDown = useCallback(
@@ -75,6 +73,7 @@ export function Files({
         },
         [open]
     )
+    const vlcStatus = useVlcStatus()
 
     function getFileProgressStyle(file: IFile) {
         return progressStyle(vlcStatus.path === file.path ? vlcStatus.position : undefined, "36px")
