@@ -5,8 +5,12 @@ import { IWsClient, IWsMessage, IWsReq, IWsRes } from "../../../shared/IWsReq"
 let webSocket: ReconnectingWebSocket
 
 export function wsSetup(): IWsClient {
+    const handlers: Record<string, (arg: unknown) => void> = {}
     const client: IWsClient = {
         invoke: wsInvoke,
+        onCallback: (name, handler) => {
+            handlers[name] = handler
+        },
     }
     const url = new URL(location.href)
     url.search = ""
@@ -17,7 +21,7 @@ export function wsSetup(): IWsClient {
         void (async () => {
             const msg = JSON.parse(e.data) as IWsMessage
             if (msg.type === "req") {
-                const res = client.onCallback?.(msg.name, msg.args)
+                const res = handlers[msg.name]?.(msg.arg)
                 if (msg.oneWay) return
                 const res2: IWsRes = { type: "res", id: msg.id, value: res }
                 webSocket.send(JSON.stringify(res2))
@@ -29,7 +33,7 @@ export function wsSetup(): IWsClient {
 
 let id = 0
 export async function wsInvoke<T>(name: string, arg?: unknown): Promise<T> {
-    const pc: IWsReq = { type: "req", name, args: arg === undefined ? [] : [arg], id: (++id).toString() }
+    const pc: IWsReq = { type: "req", name, arg, id: (++id).toString() }
     webSocket.send(JSON.stringify(pc))
     const res = await new Promise<IWsRes<T>>(resolve => {
         const onMessage = (e: MessageEvent) => {
@@ -47,7 +51,7 @@ export async function* wsInvokeAsyncIterable<T>(name: string, arg?: unknown): As
     const pc: IWsReq = {
         type: "req",
         name,
-        args: arg === undefined ? [] : [arg],
+        arg,
         id: (++id).toString(),
         asyncIterable: true,
     }

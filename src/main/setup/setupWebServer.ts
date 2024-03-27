@@ -32,7 +32,13 @@ export async function setupWebServer() {
     }
 
     const server = http.createServer(exp)
-    setupWebsockets(server, t => new WsApi(t))
+    setupWebsockets(server, socket => {
+        const client = new WsApi()
+        client.onVlcStatusChanged = t => socket.callback("onVlcStatusChanged", t)
+        socket.invoke("vlcStatus", () => client.vlcStatus())
+        socket.destroy = () => client.destroy()
+        void client.monitorVlcStatus()
+    })
 
     await new Promise<void>(resolve => server.listen(7779, resolve))
 

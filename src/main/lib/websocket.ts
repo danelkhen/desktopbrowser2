@@ -5,8 +5,8 @@ import * as ws from "ws"
 import { IWsReq, IWsRes } from "../../shared/IWsReq"
 
 export interface IWsClientSocket {
-    invoke: (name: string, args: unknown[]) => unknown
-    callback(name: string, args: unknown[]): void
+    invoke(name: string, handler: (arg: unknown) => unknown): void
+    callback(name: string, arg?: unknown): void
     destroy?: () => unknown
 }
 
@@ -16,10 +16,13 @@ export function setupWebsockets(server: http.Server, onClient: (client: IWsClien
 
     wss.on("connection", (ws, req) => {
         let id = 0
+        const handlers: Record<string, (arg: unknown) => unknown> = {}
         const client: IWsClientSocket = {
-            invoke: null as any,
-            callback: (name, args) => {
-                const req: IWsReq = { type: "req", name, args, oneWay: true, id: (++id).toString() }
+            invoke: (name, handler) => {
+                handlers[name] = handler
+            },
+            callback: (name, arg) => {
+                const req: IWsReq = { type: "req", name, arg, oneWay: true, id: (++id).toString() }
                 ws.send(JSON.stringify(req))
             },
         }
@@ -32,7 +35,7 @@ export function setupWebsockets(server: http.Server, onClient: (client: IWsClien
                 log.info("ws.message received", data)
                 const pc = JSON.parse(data) as IWsReq // extractFunctionCall(data)
                 if (pc.type === "req") {
-                    const res = await client.invoke(pc.name, pc.args)
+                    const res = await handlers[pc.name]?.(pc.arg)
                     if (pc.oneWay) return
                     const res2: IWsRes = { type: "res", id: pc.id, value: res }
                     ws.send(JSON.stringify(res2))

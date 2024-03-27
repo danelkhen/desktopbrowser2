@@ -13,7 +13,6 @@ import { isMediaFile } from "../../shared/isMediaFile"
 import { VlcPlaylistNode, VlcStatus } from "../../shared/vlc"
 import { sleep } from "../lib/sleep"
 import { connectToVlc, vlcPlay } from "../lib/vlc"
-import { IWsClientSocket } from "../lib/websocket"
 import { db } from "../services"
 import { applyPaging } from "./applyPaging"
 import { applyFiltersAndSorting, applySelectionFiltersAndFolderSizes } from "./applyRequest"
@@ -23,28 +22,25 @@ import { getFiles } from "./getFiles"
 import { toCurrentPlatformPath } from "./toCurrentPlatformPath"
 
 export class WsApi {
-    constructor(private client: IWsClientSocket) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this.client.invoke = (name, args) => (this as any)[name]?.(...args)
-        this.client.destroy = () => (this.destroyed = true)
-        void this.onVlcStatusChanged()
-    }
     lastStatus: IVlcStatus | null = null
     vlcStatus() {
         return api.vlcStatus()
     }
-    async onVlcStatusChanged() {
+    onVlcStatusChanged?: (e: IVlcStatus) => void
+    async monitorVlcStatus() {
         while (!this.destroyed) {
             const status = await api.vlcStatus()
             if (!_.isEqual(status, this.lastStatus)) {
                 this.lastStatus = status
-                // console.log("onVlcStatusChanged", status)
-                this.client.callback("onVlcStatusChanged", [this.lastStatus])
+                this.onVlcStatusChanged?.(this.lastStatus)
             }
             await sleep(500)
         }
     }
     destroyed = false
+    destroy() {
+        this.destroyed = true
+    }
 }
 export const api: Api = {
     whenVlcStatusChange: async () => {
