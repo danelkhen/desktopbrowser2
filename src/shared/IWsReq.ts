@@ -3,13 +3,14 @@ export interface IWsReq {
     name: string
     args: unknown[]
     asyncIterable?: boolean
+    return?: boolean
 }
 
 export interface IWsRes<T = unknown> {
     id?: string
     value: T
     asyncIterable?: boolean
-    hasMore?: boolean
+    done?: boolean
 }
 export interface IWsService {
     destroy(): unknown

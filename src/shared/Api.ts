@@ -3,6 +3,7 @@ import { IListFilesRes } from "./IListFilesRes"
 
 export interface Api {
     whenVlcStatusChange(): Promise<IVlcStatus>
+    onVlcStatusChange(): AsyncIterable<IVlcStatus>
     vlcStatus(): Promise<IVlcStatus>
     saveFolderSelection(req: { key: string; value: string }): Promise<void>
     deleteFolderSelection(key: string): Promise<void>

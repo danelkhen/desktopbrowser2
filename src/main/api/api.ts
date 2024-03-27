@@ -22,9 +22,21 @@ import { getFileRelatives } from "./getFileRelatives"
 import { getFiles } from "./getFiles"
 import { toCurrentPlatformPath } from "./toCurrentPlatformPath"
 
-type IWsApi = IWsService & Pick<Api, "whenVlcStatusChange">
+type IWsApi = IWsService & Pick<Api, "whenVlcStatusChange" | "onVlcStatusChange">
 export class WsApi implements IWsApi {
     lastStatus: IVlcStatus | null = null
+    async *onVlcStatusChange() {
+        while (!this.destroyed) {
+            const status = await api.vlcStatus()
+            if (!_.isEqual(status, this.lastStatus)) {
+                this.lastStatus = status
+                console.log("onVlcStatusChange", status)
+                yield this.lastStatus
+            }
+            await sleep(500)
+        }
+        return this.lastStatus ?? {}
+    }
     whenVlcStatusChange = async () => {
         while (!this.destroyed) {
             const status = await api.vlcStatus()
@@ -43,6 +55,9 @@ export class WsApi implements IWsApi {
 }
 export const api: Api = {
     whenVlcStatusChange: async () => {
+        throw new Error("Not supported")
+    },
+    onVlcStatusChange: () => {
         throw new Error("Not supported")
     },
     vlcStatus: async () => {

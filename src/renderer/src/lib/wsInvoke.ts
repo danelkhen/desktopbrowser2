@@ -29,6 +29,29 @@ export async function wsInvoke<T>(name: string, arg?: unknown): Promise<T> {
     return res.value
 }
 
+export async function* wsInvokeAsyncIterable<T>(name: string, arg?: unknown): AsyncIterable<T> {
+    const pc: IWsReq = { name, args: arg === undefined ? [] : [arg], id: (++id).toString(), asyncIterable: true }
+    webSocket.send(JSON.stringify(pc))
+
+    let resolve: (value: IWsRes<T>) => void
+    let promise = new Promise<IWsRes<T>>(r => (resolve = r))
+    const onMessage = (e: MessageEvent) => {
+        const res = JSON.parse(e.data) as IWsRes<T>
+        if (res.id !== pc.id) return
+        const resolve2 = resolve
+        promise = new Promise<IWsRes<T>>(r => (resolve = r))
+        resolve2(res)
+    }
+    while (true) {
+        webSocket.addEventListener("message", onMessage)
+        const res = await promise
+        yield res.value
+        if (!res.asyncIterable) break
+        if (res.done) break
+    }
+    webSocket.removeEventListener("message", onMessage)
+}
+
 // export async function wsInvoke<T>(pc: IWsReq): Promise<T> {
 //     for await (const res of invokeStreaming(pc)) {
 //         return res as any
