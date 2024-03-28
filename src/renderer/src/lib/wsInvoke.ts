@@ -2,12 +2,28 @@
 import ReconnectingWebSocket from "reconnecting-websocket"
 import { IWsClient, IWsMessage, IWsReq, IWsRes } from "../../../shared/IWsReq"
 
-let webSocket: ReconnectingWebSocket
-
 export function wsSetup(): IWsClient {
     const handlers: Record<string, (arg: unknown) => void> = {}
+    let id = 0
+
     const client: IWsClient = {
-        invoke: wsInvoke,
+        invoke: async (name, arg) => {
+            const pc: IWsReq = { type: "req", name, arg, id: (++id).toString() }
+            webSocket.send(JSON.stringify(pc))
+            const res = await new Promise<IWsRes<any>>(resolve => {
+                const onMessage = (e: MessageEvent) => {
+                    const res = JSON.parse(e.data) as IWsRes<any>
+                    if (res.id !== pc.id) return
+                    webSocket.removeEventListener("message", onMessage)
+                    resolve(res)
+                }
+                webSocket.addEventListener("message", onMessage)
+            })
+            if (res.error) {
+                throw res.error
+            }
+            return res.value
+        },
         onCallback: (name, handler) => {
             handlers[name] = handler
         },
@@ -16,12 +32,12 @@ export function wsSetup(): IWsClient {
     url.search = ""
     url.protocol = "ws:"
     url.pathname = "/api"
-    webSocket = new ReconnectingWebSocket(url.toString(), ["protocolOne", "protocolTwo"])
+    const webSocket = new ReconnectingWebSocket(url.toString(), ["protocolOne", "protocolTwo"])
     webSocket.addEventListener("message", e => {
         void (async () => {
             const msg = JSON.parse(e.data) as IWsMessage
             if (msg.type === "req") {
-                const res = handlers[msg.name]?.(msg.arg)
+                const res = await handlers[msg.name]?.(msg.arg)
                 if (msg.oneWay) return
                 const res2: IWsRes = { type: "res", id: msg.id, value: res }
                 webSocket.send(JSON.stringify(res2))
@@ -31,50 +47,34 @@ export function wsSetup(): IWsClient {
     return client
 }
 
-let id = 0
-export async function wsInvoke<T>(name: string, arg?: unknown): Promise<T> {
-    const pc: IWsReq = { type: "req", name, arg, id: (++id).toString() }
-    webSocket.send(JSON.stringify(pc))
-    const res = await new Promise<IWsRes<T>>(resolve => {
-        const onMessage = (e: MessageEvent) => {
-            const res = JSON.parse(e.data) as IWsRes<T>
-            if (res.id !== pc.id) return
-            webSocket.removeEventListener("message", onMessage)
-            resolve(res)
-        }
-        webSocket.addEventListener("message", onMessage)
-    })
-    return res.value
-}
+// export async function* wsInvokeAsyncIterable<T>(name: string, arg?: unknown): AsyncIterable<T> {
+//     const pc: IWsReq = {
+//         type: "req",
+//         name,
+//         arg,
+//         id: (++id).toString(),
+//         asyncIterable: true,
+//     }
+//     webSocket.send(JSON.stringify(pc))
 
-export async function* wsInvokeAsyncIterable<T>(name: string, arg?: unknown): AsyncIterable<T> {
-    const pc: IWsReq = {
-        type: "req",
-        name,
-        arg,
-        id: (++id).toString(),
-        asyncIterable: true,
-    }
-    webSocket.send(JSON.stringify(pc))
-
-    let resolve: (value: IWsRes<T>) => void
-    let promise = new Promise<IWsRes<T>>(r => (resolve = r))
-    const onMessage = (e: MessageEvent) => {
-        const res = JSON.parse(e.data) as IWsRes<T>
-        if (res.id !== pc.id) return
-        const resolve2 = resolve
-        promise = new Promise<IWsRes<T>>(r => (resolve = r))
-        resolve2(res)
-    }
-    while (true) {
-        webSocket.addEventListener("message", onMessage)
-        const res = await promise
-        yield res.value
-        if (!res.asyncIterable) break
-        if (res.done) break
-    }
-    webSocket.removeEventListener("message", onMessage)
-}
+//     let resolve: (value: IWsRes<T>) => void
+//     let promise = new Promise<IWsRes<T>>(r => (resolve = r))
+//     const onMessage = (e: MessageEvent) => {
+//         const res = JSON.parse(e.data) as IWsRes<T>
+//         if (res.id !== pc.id) return
+//         const resolve2 = resolve
+//         promise = new Promise<IWsRes<T>>(r => (resolve = r))
+//         resolve2(res)
+//     }
+//     while (true) {
+//         webSocket.addEventListener("message", onMessage)
+//         const res = await promise
+//         yield res.value
+//         if (!res.asyncIterable) break
+//         if (res.done) break
+//     }
+//     webSocket.removeEventListener("message", onMessage)
+// }
 
 // export async function wsInvoke<T>(pc: IWsReq): Promise<T> {
 //     for await (const res of invokeStreaming(pc)) {

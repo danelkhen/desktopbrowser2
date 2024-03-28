@@ -2,7 +2,6 @@ import { BrowserWindow, app, shell } from "electron"
 import log from "electron-log/main"
 import { autoUpdater } from "electron-updater"
 import fs from "fs/promises"
-import _ from "lodash"
 import path from "path"
 import { rimraf } from "rimraf"
 import url from "url"
@@ -11,7 +10,6 @@ import { IFile } from "../../shared/IFile"
 import { IListFilesRes } from "../../shared/IListFilesRes"
 import { isMediaFile } from "../../shared/isMediaFile"
 import { VlcPlaylistNode, VlcStatus } from "../../shared/vlc"
-import { sleep } from "../lib/sleep"
 import { connectToVlc, vlcPlay } from "../lib/vlc"
 import { db } from "../services"
 import { applyPaging } from "./applyPaging"
@@ -21,34 +19,7 @@ import { getFileRelatives } from "./getFileRelatives"
 import { getFiles } from "./getFiles"
 import { toCurrentPlatformPath } from "./toCurrentPlatformPath"
 
-export class WsApi {
-    lastStatus: IVlcStatus | null = null
-    vlcStatus() {
-        return api.vlcStatus()
-    }
-    onVlcStatusChanged?: (e: IVlcStatus) => void
-    async monitorVlcStatus() {
-        while (!this.destroyed) {
-            const status = await api.vlcStatus()
-            if (!_.isEqual(status, this.lastStatus)) {
-                this.lastStatus = status
-                this.onVlcStatusChanged?.(this.lastStatus)
-            }
-            await sleep(500)
-        }
-    }
-    destroyed = false
-    destroy() {
-        this.destroyed = true
-    }
-}
 export const api: Api = {
-    whenVlcStatusChange: async () => {
-        throw new Error("Not supported")
-    },
-    onVlcStatusChange: () => {
-        throw new Error("Not supported")
-    },
     vlcStatus: async () => {
         const vlc = await connectToVlc()
         if (!vlc) return {}

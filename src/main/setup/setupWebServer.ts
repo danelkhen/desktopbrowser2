@@ -3,7 +3,8 @@ import proxy from "express-http-proxy"
 import http from "http"
 import os from "os"
 import { join } from "path"
-import { WsApi, api } from "../api/api"
+import { api } from "../api/api"
+import { WsApi } from "../api/WsApi"
 import { config } from "../config"
 import { handleServiceRequest } from "../lib/handleServiceRequest"
 import { setupWebsockets } from "../lib/websocket"
@@ -35,9 +36,8 @@ export async function setupWebServer() {
     setupWebsockets(server, socket => {
         const client = new WsApi()
         client.onVlcStatusChanged = t => socket.callback("onVlcStatusChanged", t)
-        socket.invoke("vlcStatus", () => client.vlcStatus())
+        socket.invoke("monitorVlcStatus", t => client.monitorVlcStatus(!!t))
         socket.destroy = () => client.destroy()
-        void client.monitorVlcStatus()
     })
 
     await new Promise<void>(resolve => server.listen(7779, resolve))

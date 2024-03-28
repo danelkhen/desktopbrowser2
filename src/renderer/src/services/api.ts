@@ -1,24 +1,25 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Api, IVlcStatus, IWsApi } from "../../../shared/Api"
 import { httpInvoke } from "../lib/getHttpInvoker"
-import { wsInvoke, wsInvokeAsyncIterable, wsSetup } from "../lib/wsInvoke"
+import { wsSetup } from "../lib/wsInvoke"
+import { EventSource } from "./EventSource"
 
 const wsClient = wsSetup()
 
+const vlcStatusChanged = new EventSource<IWsApi["onVlcStatusChanged"]>(t => wsApi.monitorVlcStatus(!!t.length))
 export const wsApi: IWsApi = {
-    vlcStatus: () => wsClient.invoke("vlcStatus"),
-    onVlcStatusChanged: (e: IVlcStatus) => console.log("ws callback onVlcStatusChanged", e),
+    monitorVlcStatus: t => wsClient.invoke("monitorVlcStatus", t),
+    onVlcStatusChanged: (e: IVlcStatus) => {
+        vlcStatusChanged.emit(e)
+    },
 }
 wsClient.onCallback("onVlcStatusChanged", t => wsApi.onVlcStatusChanged(t))
+
 export const api: Api = {
-    whenVlcStatusChange: () => wsInvoke("whenVlcStatusChange"),
-    onVlcStatusChange: () => wsInvokeAsyncIterable("onVlcStatusChange"),
     vlcStatus: () => httpInvoke("/api/vlcStatus"),
     listFiles: req => httpInvoke("/api/listFiles", req),
     saveFolderSelection: req => httpInvoke("/api/saveFolderSelection", req),
     deleteFolderSelection: req => httpInvoke("/api/deleteFolderSelection", req),
-    // getAllFolderSelections: () => httpInvoke("/api/getAllFolderSelections"),
-    // getFolderSelection: req => httpInvoke("/api/getFolderSelection", req),
     execute: req => httpInvoke("/api/execute", req),
     explore: req => httpInvoke("/api/explore", req),
     del: req => httpInvoke("/api/del", req),

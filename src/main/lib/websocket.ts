@@ -2,13 +2,7 @@
 import log from "electron-log/main"
 import http from "http"
 import * as ws from "ws"
-import { IWsReq, IWsRes } from "../../shared/IWsReq"
-
-export interface IWsClientSocket {
-    invoke(name: string, handler: (arg: unknown) => unknown): void
-    callback(name: string, arg?: unknown): void
-    destroy?: () => unknown
-}
+import { IWsClientSocket, IWsReq, IWsRes } from "../../shared/IWsReq"
 
 export function setupWebsockets(server: http.Server, onClient: (client: IWsClientSocket) => void) {
     log.info("setupWebsockets")
@@ -35,10 +29,15 @@ export function setupWebsockets(server: http.Server, onClient: (client: IWsClien
                 log.info("ws.message received", data)
                 const pc = JSON.parse(data) as IWsReq // extractFunctionCall(data)
                 if (pc.type === "req") {
-                    const res = await handlers[pc.name]?.(pc.arg)
-                    if (pc.oneWay) return
-                    const res2: IWsRes = { type: "res", id: pc.id, value: res }
-                    ws.send(JSON.stringify(res2))
+                    const res: IWsRes = { type: "res", id: pc.id }
+                    try {
+                        const value = await handlers[pc.name]?.(pc.arg)
+                        if (pc.oneWay) return
+                        res.value = value
+                    } catch (err) {
+                        res.error = err
+                    }
+                    ws.send(JSON.stringify(res))
                 }
             } catch (err) {
                 log.warn(err)

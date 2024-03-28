@@ -3,16 +3,12 @@ import { IListFilesRes } from "./IListFilesRes"
 
 export interface IWsApi {
     onVlcStatusChanged(e: IVlcStatus): void
-    vlcStatus(): Promise<IVlcStatus>
+    monitorVlcStatus(enabled: boolean): Promise<IVlcStatus>
 }
 export interface Api {
-    whenVlcStatusChange(): Promise<IVlcStatus>
-    onVlcStatusChange(): AsyncIterable<IVlcStatus>
     vlcStatus(): Promise<IVlcStatus>
     saveFolderSelection(req: { key: string; value: string }): Promise<void>
     deleteFolderSelection(key: string): Promise<void>
-    // getAllFolderSelections(): Promise<FolderSelections>
-    // getFolderSelection(key: string): Promise<string>
     listFiles(req: IListFilesReq): Promise<IListFilesRes>
     execute(req: { path: string; vlc?: boolean }): void
     explore(req: { path: string }): void
