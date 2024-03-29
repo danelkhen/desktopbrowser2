@@ -2,8 +2,10 @@ import { IListFilesReq } from "./IListFilesReq"
 import { IListFilesRes } from "./IListFilesRes"
 
 export interface IWsApi {
-    onVlcStatusChanged(e: IVlcStatus): void
-    monitorVlcStatus(enabled: boolean): Promise<IVlcStatus>
+    monitorVlcStatus(enabled: boolean): Promise<void>
+}
+export interface IWsApiCallbacks {
+    vlcStatusChanged(e: IVlcStatus): void
 }
 export interface Api {
     vlcStatus(): Promise<IVlcStatus>

@@ -1,3 +1,5 @@
+import EventEmitter from "events"
+
 export interface IWsReq {
     type: "req"
     id?: string
@@ -21,10 +23,14 @@ export interface IWsService {
     destroy(): unknown
 }
 
-export interface IWsClient {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type EventMap<T> = Record<keyof T, any[]> | DefaultEventMap
+export type DefaultEventMap = [never]
+export interface IWsClient<T extends EventMap<T> = DefaultEventMap> extends EventEmitter<T> {
     invoke<T>(name: string, arg?: unknown): Promise<T>
+    invokeOneWay(name: string, arg?: unknown): void
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onCallback(name: string, handler: (arg: any) => void): void
+    // onCallback(name: string, handler: (arg: any) => void): void
 }
 
 export interface IWsClientSocket {

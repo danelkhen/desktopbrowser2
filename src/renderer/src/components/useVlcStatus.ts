@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react"
 import { IVlcStatus } from "../../../shared/Api"
-import { wsApi } from "../services/api"
+import { wsApi, wsClient } from "../services/api"
 
 interface State {
     vlcStatus: IVlcStatus
@@ -9,8 +9,10 @@ const store = {
     state: { vlcStatus: {} as IVlcStatus } as State,
     subscribe: (cb: () => void) => {
         store.listeners = [...store.listeners, cb]
+        void wsApi.monitorVlcStatus(!!store.listeners.length)
         return () => {
             store.listeners = store.listeners.filter(t => t !== cb)
+            void wsApi.monitorVlcStatus(!!store.listeners.length)
         }
     },
     getSnapshot: () => {
@@ -22,9 +24,9 @@ const store = {
         this.listeners.forEach(t => t())
     },
 }
-wsApi.onVlcStatusChanged = (e: IVlcStatus) => {
+wsClient.on("vlcStatusChanged", e => {
     store.set({ ...store.state, vlcStatus: e })
-}
+})
 
 export function useVlcStatus() {
     const { vlcStatus } = useSyncExternalStore(store.subscribe, store.getSnapshot)

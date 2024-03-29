@@ -1,12 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import ReconnectingWebSocket from "reconnecting-websocket"
-import { IWsClient, IWsMessage, IWsReq, IWsRes } from "../../../shared/IWsReq"
+import { DefaultEventMap, EventMap, IWsClient, IWsMessage, IWsReq, IWsRes } from "../../../shared/IWsReq"
+import EventEmitter from "events"
 
-export function wsSetup(): IWsClient {
-    const handlers: Record<string, (arg: unknown) => void> = {}
+export function wsSetup<T extends EventMap<T> = DefaultEventMap>(): IWsClient<T> {
+    // const handlers: Record<string, (arg: unknown) => void> = {}
     let id = 0
 
-    const client: IWsClient = {
+    const client2: Partial<IWsClient> = {
+        invokeOneWay: async (name, arg) => {
+            const pc: IWsReq = { type: "req", name, arg, id: (++id).toString(), oneWay: true }
+            webSocket.send(JSON.stringify(pc))
+        },
         invoke: async (name, arg) => {
             const pc: IWsReq = { type: "req", name, arg, id: (++id).toString() }
             webSocket.send(JSON.stringify(pc))
@@ -24,10 +29,8 @@ export function wsSetup(): IWsClient {
             }
             return res.value
         },
-        onCallback: (name, handler) => {
-            handlers[name] = handler
-        },
     }
+    const client = Object.assign(new EventEmitter(), client2) as IWsClient<any>
     const url = new URL(location.href)
     url.search = ""
     url.protocol = "ws:"
@@ -37,7 +40,7 @@ export function wsSetup(): IWsClient {
         void (async () => {
             const msg = JSON.parse(e.data) as IWsMessage
             if (msg.type === "req") {
-                const res = await handlers[msg.name]?.(msg.arg)
+                const res = await client.emit(msg.name, msg.arg)
                 if (msg.oneWay) return
                 const res2: IWsRes = { type: "res", id: msg.id, value: res }
                 webSocket.send(JSON.stringify(res2))
