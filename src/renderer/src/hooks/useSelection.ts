@@ -9,6 +9,10 @@ import { calcItemsOnScreen } from "./calcItemsOnScreen"
 
 export function useSelection({ res }: { readonly res: IListFilesRes }) {
     const [_selectedFiles, _setSelectedFiles] = useState<IFile[] | null>(null)
+    useEffect(() => {
+        if (!res) return
+        _setSelectedFiles(null)
+    }, [res])
     const initialSelectedFiles = useMemo(() => getSelectedFiles(res), [res])
     const selectedFiles = _selectedFiles ?? initialSelectedFiles
     const selectedFile = selectedFiles[selectedFiles.length - 1]
