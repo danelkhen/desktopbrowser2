@@ -8,6 +8,7 @@ export interface IWsApiCallbacks {
     vlcStatusChanged(e: IVlcStatus): void
 }
 export interface Api {
+    openVlc(): Promise<IVlcStatus>
     vlcStatus(): Promise<IVlcStatus>
     saveFolderSelection(req: { key: string; value: string }): Promise<void>
     deleteFolderSelection(key: string): Promise<void>

@@ -21,4 +21,8 @@ export const c = {
     progress: "progress",
     firstItemInPage: "firstItemInPage",
     lastItemInPage: "lastItemInPage",
+
+    selectionDark: "#6241a6",
+    selection: "#a276f8",
+    selectionLight: "#a97eff",
 } as const

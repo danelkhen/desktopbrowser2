@@ -43,6 +43,7 @@ import { GetNavUrl } from "./GetNavUrl"
 import { MenuListGroup } from "./MenuListGroup"
 import { progressMixin, progressStyle } from "./progress"
 import { useVlcStatus } from "./useVlcStatus"
+import { c } from "../services/c"
 
 export function MainMenu({
     req,
@@ -99,6 +100,7 @@ export function MainMenu({
     const contextFile = selectedFile ?? res.file ?? null
 
     const vlcStatus = useVlcStatus()
+    // console.log(vlcStatus)
     // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     // const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null)
 
@@ -292,17 +294,8 @@ export function MainMenu({
                     Hidden
                 </MenuItem>
             </MenuListGroup>
-            <MenuList>
-                {vlcStatus.path ? (
-                    <MenuItem
-                        component={AppLinkBehavior}
-                        href={getNavUrl(t => ({ ...t, path: getPathPosixDirName(vlcStatus.path!) }))}
-                        style={progressStyle(vlcStatus.position, "10px")}
-                        className="progress"
-                    >
-                        {getPathPosixBaseName(vlcStatus.path)}
-                    </MenuItem>
-                ) : (
+            {!req.vlc ? (
+                <MenuList>
                     <MenuItem
                         component={AppLinkBehavior}
                         href={getNavUrl(t => ({ ...t, vlc: !req.vlc }))}
@@ -310,8 +303,44 @@ export function MainMenu({
                     >
                         VLC
                     </MenuItem>
-                )}
-            </MenuList>
+                </MenuList>
+            ) : (
+                <MenuListGroup
+                    group
+                    renderHeader={props => (
+                        <MenuItem
+                            {...props}
+                            style={progressStyle({ position: vlcStatus.position })}
+                            className={cx(c.progress, {
+                                playing: vlcStatus.playing,
+                                paused: vlcStatus.paused,
+                            })}
+                            selected={!!req.vlc}
+                        >
+                            {vlcStatus.path ? getPathPosixBaseName(vlcStatus.path) : "VLC"}
+                        </MenuItem>
+                    )}
+                >
+                    <MenuItem
+                        component={AppLinkBehavior}
+                        href={
+                            vlcStatus.path ? getNavUrl(t => ({ ...t, path: getPathPosixDirName(vlcStatus.path!) })) : ""
+                        }
+                        disabled={!vlcStatus.path}
+                        style={progressStyle({ position: vlcStatus.position, start: "10px" })}
+                        className={c.progress}
+                    >
+                        Open folder
+                    </MenuItem>
+                    <MenuItem
+                        component={AppLinkBehavior}
+                        href={getNavUrl(t => ({ ...t, vlc: !req.vlc }))}
+                        selected={!!req.vlc}
+                    >
+                        Disable
+                    </MenuItem>
+                </MenuListGroup>
+            )}
             <Pagination count={totalPages || 1} onChange={(e, v) => setPageIndex(v - 1)} page={pageIndex + 1} />
             <MenuList>
                 <MenuItem>
@@ -330,13 +359,18 @@ const style = css`
         padding: 6px 6px 0 6px;
         font-size: 10px;
     }
-    .progress.progress {
-        --bg: #a276f8;
-        color: white;
+    .${c.progress} {
+        --bg: #6241a6;
+        &.${c.progress} {
+            color: white;
+        }
         max-width: 20ch;
         overflow: hidden;
         text-overflow: ellipsis;
-        ${progressMixin}
+        &.playing,
+        &.paused {
+            ${progressMixin}
+        }
     }
     .${paginationClasses.root} {
         display: flex;
@@ -387,9 +421,9 @@ const style = css`
         }
         &.Mui-selected {
             color: white;
-            background-color: #a276f8;
+            background-color: ${c.selection};
             &:hover {
-                background-color: #a97eff;
+                background-color: ${c.selectionLight};
             }
         }
 

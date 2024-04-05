@@ -32,7 +32,7 @@ export function connectToVlc() {
     })
 }
 
-async function connectOrOpenVlc() {
+export async function connectOrOpenVlc() {
     let vlc = await connectToVlc()
     if (vlc) return vlc
     await sleep(100)
@@ -57,8 +57,8 @@ async function connectOrOpenVlc() {
 
 export async function openVlc() {
     const cmd = `"${exe}" --extraintf http --http-host ${host} --http-port ${port} --http-password ${pwd}`
-    const res = await child_process.spawn(cmd, { detached: true, shell: true })
-    log.info("openVlc", cmd, res.pid, res.exitCode)
+    const { pid, exitCode } = await child_process.spawn(cmd, { detached: true, shell: true })
+    log.info("openVlc", { cmd, pid, exitCode })
 }
 
 export async function vlcPlay(file: string) {

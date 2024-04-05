@@ -10,7 +10,7 @@ import { IFile } from "../../shared/IFile"
 import { IListFilesRes } from "../../shared/IListFilesRes"
 import { isMediaFile } from "../../shared/isMediaFile"
 import { VlcPlaylistNode, VlcStatus } from "../../shared/vlc"
-import { connectToVlc, vlcPlay } from "../lib/vlc"
+import { connectOrOpenVlc, connectToVlc, vlcPlay } from "../lib/vlc"
 import { db } from "../services"
 import { applyPaging } from "./applyPaging"
 import { applyFiltersAndSorting, applySelectionFiltersAndFolderSizes } from "./applyRequest"
@@ -20,6 +20,10 @@ import { getFiles } from "./getFiles"
 import { toCurrentPlatformPath } from "./toCurrentPlatformPath"
 
 export const api: Api = {
+    openVlc: async () => {
+        await connectOrOpenVlc()
+        return await api.vlcStatus()
+    },
     vlcStatus: async () => {
         const vlc = await connectToVlc()
         if (!vlc) return {}
@@ -37,9 +41,9 @@ export const api: Api = {
             running: true,
             path,
             position,
-            playing: state === "playing",
-            paused: state === "paused",
-            stopped: state === "stopped",
+            playing: state === "playing" || undefined,
+            paused: state === "paused" || undefined,
+            stopped: state === "stopped" || undefined,
         }
         return res
     },

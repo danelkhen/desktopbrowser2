@@ -35,7 +35,7 @@ export async function setupWebServer() {
     const server = http.createServer(exp)
     setupWebsockets(server, socket => {
         const client = createWsApi({
-            vlcStatusChanged: t => socket.callback("onVlcStatusChanged", t),
+            vlcStatusChanged: t => socket.callback("vlcStatusChanged", t),
         })
         socket.invoke("monitorVlcStatus", t => client.monitorVlcStatus(!!t))
         socket.destroy = () => client.destroy()

@@ -76,7 +76,7 @@ export function Files({
     const vlcStatus = useVlcStatus()
 
     function getFileProgressStyle(file: IFile) {
-        return progressStyle(vlcStatus.path === file.path ? vlcStatus.position : undefined, "36px")
+        return progressStyle({ position: vlcStatus.path === file.path ? vlcStatus.position : undefined, start: "36px" })
     }
     const gridColumns = {
         type: {
@@ -261,7 +261,7 @@ const style = css`
                 background: var(--bg);
                 &:hover {
                     --bg: #000;
-                    color: #a276f8;
+                    color: ${c.selection};
                     td .${c.name} {
                         text-decoration: none;
                         cursor: pointer;
@@ -269,10 +269,10 @@ const style = css`
                 }
                 &.${c.selected} {
                     color: #fff;
-                    --bg: #a276f8;
+                    --bg: ${c.selection};
                     transition: all 0.3s ease;
                     &:hover {
-                        --bg: #a97eff;
+                        --bg: ${c.selectionLight};
                     }
                 }
                 &.${c.opened} {

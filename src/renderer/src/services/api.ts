@@ -21,6 +21,7 @@ export const wsApi: IWsApi = {
 // wsClient.on("vlcStatusChanged", t => wsApiCallbacks.vlcStatusChanged(t))
 
 export const api: Api = {
+    openVlc: () => httpInvoke("/api/openVlc"),
     vlcStatus: () => httpInvoke("/api/vlcStatus"),
     listFiles: req => httpInvoke("/api/listFiles", req),
     saveFolderSelection: req => httpInvoke("/api/saveFolderSelection", req),
