@@ -12,3 +12,7 @@ export function isAudioFile(name: string) {
 export function isExecutable(name: string) {
     return /\.(exe|bat|com|cmd|sh)$/i.test(name)
 }
+
+export function isSubtitlesFile(name: string) {
+    return /\.(srt|idx|sub)$/i.test(name)
+}

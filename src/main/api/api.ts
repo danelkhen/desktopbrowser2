@@ -8,9 +8,9 @@ import url from "url"
 import { Api, IVlcStatus } from "../../shared/Api"
 import { IFile } from "../../shared/IFile"
 import { IListFilesRes } from "../../shared/IListFilesRes"
-import { isMediaFile } from "../../shared/isMediaFile"
+import { isMediaFile, isSubtitlesFile } from "../../shared/isMediaFile"
 import { VlcPlaylistNode, VlcStatus } from "../../shared/vlc"
-import { connectOrOpenVlc, connectToVlc, vlcPlay } from "../lib/vlc"
+import { connectOrOpenVlc, connectToVlc, vlcAddSubtitles, vlcPlay } from "../lib/vlc"
 import { db } from "../services"
 import { applyPaging } from "./applyPaging"
 import { applyFiltersAndSorting, applySelectionFiltersAndFolderSizes } from "./applyRequest"
@@ -100,10 +100,17 @@ export const api: Api = {
     },
     execute: async req => {
         const filename = toCurrentPlatformPath(req.path)
-        if (req.vlc && isMediaFile(filename)) {
-            log.log("vlcPlay", req.path, filename)
-            await vlcPlay(filename)
-            return
+        if (req.vlc) {
+            if (isMediaFile(filename)) {
+                log.log("vlcPlay", req.path, filename)
+                await vlcPlay(filename)
+                return
+            }
+            if (isSubtitlesFile(filename)) {
+                log.info("vlcAddSubtitles", req.path, filename)
+                await vlcAddSubtitles(filename)
+                return
+            }
         }
         log.log("shell.openExternal", req.path, filename)
 

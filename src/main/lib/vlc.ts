@@ -61,6 +61,11 @@ export async function openVlc() {
     log.info("openVlc", { cmd, pid, exitCode })
 }
 
+export async function vlcAddSubtitles(file: string) {
+    const mrl = pathToFileURL(file).toString()
+    const vlc = await connectOrOpenVlc()
+    await vlc.addSubtitle(mrl)
+}
 export async function vlcPlay(file: string) {
     const mrl = pathToFileURL(file).toString()
     const vlc = await connectOrOpenVlc()
