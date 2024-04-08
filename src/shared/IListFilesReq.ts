@@ -1,7 +1,7 @@
-import { SortConfig } from "./SortConfig"
+import { ISorting } from "./ISorting"
 
 export interface IListFilesReq {
-    readonly sort?: SortConfig
+    readonly sort?: ISorting
     readonly foldersFirst?: boolean
     readonly searchPattern?: string
     readonly recursive?: boolean

@@ -28,7 +28,7 @@ import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
 import { IListFilesRes } from "../../../shared/IListFilesRes"
-import { SortConfig } from "../../../shared/SortConfig"
+import { ISorting } from "../../../shared/ISorting"
 import SortIcon from "../assets/icons/sort.svg?react"
 import SubtitleIcon from "../assets/icons/subtitle.svg?react"
 import TrashIcon from "../assets/icons/trash.svg?react"
@@ -65,7 +65,7 @@ export function MainMenu({
     setPageIndex: (v: number) => void
     reloadFiles: () => unknown
     isSortedBy: (key: string, desc?: boolean | undefined) => boolean
-    getSortBy: (column: string) => SortConfig
+    getSortBy: (column: string) => ISorting
     getNavUrl: GetNavUrl
 }) {
     const theme = useTheme()

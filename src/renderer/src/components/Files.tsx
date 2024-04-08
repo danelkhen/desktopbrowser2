@@ -2,7 +2,7 @@ import { css, cx } from "@emotion/css"
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
 import React, { useCallback, useMemo } from "react"
-import { SortConfig } from "src/shared/SortConfig"
+import { ISorting } from "src/shared/ISorting"
 import { IFile } from "../../../shared/IFile"
 import { calcItemsOnScreen } from "../hooks/calcItemsOnScreen"
 import { pageSize } from "../hooks/usePaging"
@@ -35,7 +35,7 @@ export function Files({
     noBody?: boolean
     open: (file: IFile) => Promise<void>
     orderBy: (column: string) => void
-    sorting: SortConfig
+    sorting: ISorting
     hasInnerSelection: (file: IFile) => boolean
 }) {
     const selectedFiles2 = useMemo(() => new Set(selectedFiles), [selectedFiles])

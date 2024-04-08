@@ -1,7 +1,7 @@
 import { css } from "@emotion/css"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLoaderData, useLocation, useNavigate } from "react-router-dom"
-import { SortConfig } from "src/shared/SortConfig"
+import { ISorting } from "src/shared/ISorting"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
 import { IListFilesReq } from "../../../shared/IListFilesReq"
@@ -106,7 +106,7 @@ export function FileBrowser() {
         const cycle: ("asc" | "desc")[] = descendingFirstColumns.includes(column) ? ["desc", "asc"] : ["asc", "desc"]
         const current = sorting[column]
         const next = cycle[cycle.indexOf(current!) + 1] as "asc" | "desc" | undefined
-        const cfg: SortConfig = { ...sorting }
+        const cfg: ISorting = { ...sorting }
         if (cfg[column]) {
             delete cfg[column]
         }
@@ -249,7 +249,7 @@ export function FileBrowser() {
     )
 }
 
-function getSortConfig(req: IListFilesReq): SortConfig {
+function getSortConfig(req: IListFilesReq): ISorting {
     const cols = req.sort ?? {}
     if (req.foldersFirst && !cols[Column.type]) {
         return { [Column.type]: "asc", ...cols }
