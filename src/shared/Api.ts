@@ -11,7 +11,7 @@ export interface Api {
     openVlc(): Promise<IVlcStatus>
     vlcStatus(): Promise<IVlcStatus>
     saveFolderSelection(req: { key: string; value: string }): Promise<void>
-    deleteFolderSelection(key: string): Promise<void>
+    deleteFolderSelection(req: { key: string }): Promise<void>
     listFiles(req: IListFilesReq): Promise<IListFilesRes>
     execute(req: { path: string; vlc?: boolean }): void
     explore(req: { path: string }): void

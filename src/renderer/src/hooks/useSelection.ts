@@ -69,7 +69,7 @@ export function scrollToSelection() {
 
 async function setFolderSelection(key: string, value: string | null) {
     if (!value) {
-        await api.deleteFolderSelection(key)
+        await api.deleteFolderSelection({ key })
         return
     }
     await api.saveFolderSelection({ key, value })

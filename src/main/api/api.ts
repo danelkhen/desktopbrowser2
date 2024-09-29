@@ -50,7 +50,7 @@ export const api: Api = {
     saveFolderSelection: async req => {
         await db.folderSelection.put(req.key, req.value)
     },
-    deleteFolderSelection: async key => {
+    deleteFolderSelection: async ({ key }) => {
         await db.folderSelection.del(key)
     },
     listFiles: async req => {
