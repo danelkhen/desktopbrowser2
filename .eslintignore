@@ -4,3 +4,4 @@ out
 .gitignore
 .eslintrc.cjs
 tailwind.config.js
+postcss.config.js

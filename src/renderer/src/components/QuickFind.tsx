@@ -1,8 +1,7 @@
-import { useRef, useState } from "react"
-import { sleep } from "../lib/sleep"
-import { IFile } from "../../../shared/IFile"
-import { css, cx } from "@emotion/css"
 import { Input } from "@mui/material"
+import { useRef, useState } from "react"
+import { IFile } from "../../../shared/IFile"
+import { sleep } from "../lib/sleep"
 
 export function QuickFind({ allFiles, onFindFiles }: QuickFindProps) {
     const [value, setValue] = useState("")
@@ -36,7 +35,7 @@ export function QuickFind({ allFiles, onFindFiles }: QuickFindProps) {
             id="tbQuickFind"
             value={value}
             onChange={e => onChange(e.currentTarget.value)}
-            className={cx(style, value.length > 0 && "HasValue")}
+            className={`!absolute top-0 right-0 border-0 bg-transparent ${value ? "opacity-1 z-1" : "opacity-0 -z-1"}`}
         />
     )
 }
@@ -46,20 +45,21 @@ export interface QuickFindProps {
     onFindFiles(files: IFile[]): void
 }
 
-const style = css`
-    label: QuickFind;
-    && {
-        position: absolute;
-    }
-    top: 0;
-    right: 0;
-    border: 0;
-    background-color: transparent;
-    opacity: 0;
-    z-index: -1;
+// const style2 = "absolute top-0 right-0 border-0 bg-transparent opacity-0 z-0 opacity-0 -z-1"
+// const style = css`
+//     label: QuickFind;
+//     && {
+//         position: absolute;
+//     }
+//     top: 0;
+//     right: 0;
+//     border: 0;
+//     background-color: transparent;
+//     opacity: 0;
+//     z-index: -1;
 
-    &.HasValue {
-        opacity: 1;
-        z-index: 1;
-    }
-`
+//     &.HasValue {
+//         opacity: 1;
+//         z-index: 1;
+//     }
+// `
