@@ -18,14 +18,5 @@ export function Clock() {
             run = false
         }
     }, [])
-    return <span className={style}>{time}</span>
+    return <span className="flex-row text-gray-400 text-base">{time}</span>
 }
-
-const style = css`
-    label: Clock;
-    display: flex;
-    flex-direction: row;
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-    color: #999;
-`

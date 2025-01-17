@@ -256,12 +256,3 @@ function getSortConfig(req: IListFilesReq): ISorting {
     }
     return cols
 }
-
-// const style = css`
-//     label: FileBrowser;
-//     header {
-//         position: sticky;
-//         top: 0;
-//         background-color: rgb(17, 17, 17);
-//     }
-// `

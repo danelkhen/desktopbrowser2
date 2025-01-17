@@ -12,9 +12,9 @@ export function Version() {
         }
     }, [])
     return (
-        <div className={style}>
+        <div>
             Current version: <span id="version">v{APP_VERSION}</span>
-            <div className="messages">
+            <div className="overflow-auto max-h-52">
                 {messages.map((message, i) => (
                     <div key={i}>{message}</div>
                 ))}
@@ -22,10 +22,3 @@ export function Version() {
         </div>
     )
 }
-
-const style = css`
-    .messages {
-        overflow: auto;
-        max-height: 200px;
-    }
-`
