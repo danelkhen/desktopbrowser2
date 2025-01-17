@@ -5,6 +5,7 @@ import { Version } from "./Version"
 import { FileBrowser } from "./components/FileBrowser"
 import { parseRequest, toListFilesReq } from "./components/parseRequest"
 import { api } from "./services/api"
+import "./global.css"
 
 export const router = createBrowserRouter([
     {

@@ -1,4 +1,3 @@
-import { css } from "@emotion/css"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useLoaderData, useLocation, useNavigate } from "react-router-dom"
 import { ISorting } from "src/shared/ISorting"
@@ -199,6 +198,7 @@ export function FileBrowser() {
     //     })
     // }, [files])
 
+    const style = "sticky top-0 bg-neutral-950"
     return (
         <div className={style}>
             <header className={style}>
@@ -257,11 +257,11 @@ function getSortConfig(req: IListFilesReq): ISorting {
     return cols
 }
 
-const style = css`
-    label: FileBrowser;
-    header {
-        position: sticky;
-        top: 0;
-        background-color: #111;
-    }
-`
+// const style = css`
+//     label: FileBrowser;
+//     header {
+//         position: sticky;
+//         top: 0;
+//         background-color: rgb(17, 17, 17);
+//     }
+// `
