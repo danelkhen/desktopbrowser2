@@ -10,7 +10,6 @@ import { Selection } from "../lib/Selection"
 import { formatFriendlyDate } from "../lib/formatFriendlyDate"
 import { formatFriendlySize } from "../lib/formatFriendlySize"
 import { c } from "../services/c"
-import { colors } from "../theme"
 import { FileIcon } from "./FileIcon"
 // import { progressMixin, progressStyle } from "./progress"
 import { useVlcStatus } from "./useVlcStatus"
@@ -126,8 +125,8 @@ export function Files({
     }
 
     return (
-        <div className={style}>
-            <table>
+        <div className={`select-none ${style}`}>
+            <table className="table-fixed w-full border-collapse border-spacing-0">
                 <colgroup>
                     {Object.entries(gridColumns).map(([key, col]) => (
                         <col key={key} className={col.className} style={{ width: col.width }}></col>
@@ -135,26 +134,30 @@ export function Files({
                 </colgroup>
                 {!noHead && (
                     <thead>
-                        <tr>
-                            {Object.entries(gridColumns).map(([key, col]) => (
-                                <th
-                                    key={key}
-                                    className={cx(
-                                        sorting[key] && c.sorted,
-                                        sorting[key] && `${c.sorted}-${Object.keys(sorting).indexOf(key)}`,
-                                        sorting[key] === "asc" && c.asc,
-                                        sorting[key] === "desc" && c.desc
-                                    )}
-                                    onClick={() => orderBy(key)}
-                                >
-                                    {col.header}
-                                    {sorting?.[key] === "asc" ? (
-                                        <ArrowDropUpIcon viewBox="6 6 12 12" />
-                                    ) : sorting?.[key] === "desc" ? (
-                                        <ArrowDropDownIcon viewBox="6 6 12 12" />
-                                    ) : null}
-                                </th>
-                            ))}
+                        <tr className="border-b border-solid border-neutral-700 bg-neutral-950">
+                            {Object.entries(gridColumns).map(([key, col]) => {
+                                const sortIndex = Object.keys(sorting).indexOf(key)
+                                return (
+                                    <th
+                                        key={key}
+                                        className="whitespace-nowrap align-middle box-border p-2 text-xs uppercase antialiased tracking-wide text-neutral-400 font-normal text-left cursor-pointer hover:bg-neutral-900"
+                                        onClick={() => orderBy(key)}
+                                    >
+                                        {col.header}
+                                        {sorting?.[key] === "asc" ? (
+                                            <ArrowDropUpIcon
+                                                viewBox="6 6 12 12"
+                                                className={`ml-1 !text-base ${sortIndex === 0 ? "" : "!opacity-25"}`}
+                                            />
+                                        ) : sorting?.[key] === "desc" ? (
+                                            <ArrowDropDownIcon
+                                                viewBox="6 6 12 12"
+                                                className={`ml-1 !text-base ${sortIndex === 0 ? "" : "!opacity-25"}`}
+                                            />
+                                        ) : null}
+                                    </th>
+                                )
+                            })}
                         </tr>
                     </thead>
                 )}
@@ -197,58 +200,12 @@ export function Files({
     )
 }
 
+// const tableStyle = "table-fixed w-full border-collapse border-spacing-0"
+// const theadTrStyle = "border-b-1 border-solid border-gray-300 bg-gray-100"
 const style = css`
     label: Files;
-    user-select: none;
 
     > table {
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: fixed;
-        border-spacing: 0;
-
-        > thead {
-            > tr {
-                border-bottom: 1px solid ${colors.bg2};
-                background-color: #060606;
-                border-bottom: 1px solid #333;
-                text-align: left;
-
-                > th {
-                    white-space: nowrap;
-                    vertical-align: middle;
-                    box-sizing: border-box;
-                    padding: 10px;
-                    font-size: 10px;
-                    text-transform: uppercase;
-                    -webkit-font-smoothing: antialiased;
-                    letter-spacing: 1px;
-                    color: #999;
-                    font-weight: normal;
-                    text-align: left;
-                    cursor: pointer;
-                    &:hover {
-                        background-color: ${colors.bg1};
-                    }
-                    svg {
-                        font-size: 1em;
-                        margin-left: 4px;
-                    }
-                    &.${c.sorted} {
-                        &-1 svg {
-                            opacity: 0.6;
-                        }
-                        &-2 svg {
-                            opacity: 0.4;
-                        }
-                        &-3 svg {
-                            opacity: 0.2;
-                        }
-                    }
-                }
-            }
-        }
-
         > tbody {
             > tr {
                 scroll-margin-top: 134px;
