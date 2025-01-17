@@ -8,6 +8,7 @@ interface State {
 const store = {
     state: { vlcStatus: {} as IVlcStatus } as State,
     subscribe: (cb: () => void) => {
+        console.log("subscribe")
         store.listeners = [...store.listeners, cb]
         void wsApi.monitorVlcStatus(!!store.listeners.length)
         return () => {
@@ -25,6 +26,7 @@ const store = {
     },
 }
 wsClient.on("vlcStatusChanged", e => {
+    console.log("vlcStatusChanged", e)
     store.set({ ...store.state, vlcStatus: e })
 })
 

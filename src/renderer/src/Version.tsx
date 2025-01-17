@@ -1,10 +1,9 @@
-import { css } from "@emotion/css"
 import { useEffect, useState } from "react"
 
 export function Version() {
     const [messages, setMessages] = useState<string[]>([])
     useEffect(() => {
-        const off = window.electron.ipcRenderer.on("message", (event, text) => {
+        const off = window.electron.ipcRenderer.on("message", (event: any, text: any) => {
             setMessages(t => [...t, text])
         })
         return () => {

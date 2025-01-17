@@ -41,7 +41,6 @@ import { AppLinkBehavior } from "./AppLink"
 import { Clock } from "./Clock"
 import { GetNavUrl } from "./GetNavUrl"
 import { MenuListGroup } from "./MenuListGroup"
-import { progressMixin, progressStyle } from "./progress"
 import { useVlcStatus } from "./useVlcStatus"
 import { c } from "../services/c"
 
@@ -99,13 +98,16 @@ export function MainMenu({
 
     const contextFile = selectedFile ?? res.file ?? null
 
+    console.log("MainMenu")
     const vlcStatus = useVlcStatus()
-    // console.log(vlcStatus)
+    const progressPct = Math.round((vlcStatus?.position ?? 0) * 100) + "%"
+
+    console.log(vlcStatus)
     // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     // const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null)
 
     return (
-        <div className={cx("mainMenu", style)}>
+        <div className={cx("flex gap-1.5 p-1.5 pb-0 text-sm", style)}>
             <MenuList>
                 <MenuItem
                     component={AppLinkBehavior}
@@ -310,12 +312,8 @@ export function MainMenu({
                     renderHeader={props => (
                         <MenuItem
                             {...props}
-                            style={progressStyle({ position: vlcStatus.position })}
-                            className={cx(c.progress, {
-                                playing: vlcStatus.playing,
-                                paused: vlcStatus.paused,
-                            })}
-                            selected={!!req.vlc}
+                            style={{ "--tw-gradient-to-position": progressPct }}
+                            className="bg-purple-700 text-white max-w-20 truncate bg-gradient-to-r from-purple-500 to-0%"
                         >
                             {vlcStatus.path ? getPathPosixBaseName(vlcStatus.path) : "VLC"}
                         </MenuItem>
@@ -327,7 +325,7 @@ export function MainMenu({
                             vlcStatus.path ? getNavUrl(t => ({ ...t, path: getPathPosixDirName(vlcStatus.path!) })) : ""
                         }
                         disabled={!vlcStatus.path}
-                        style={progressStyle({ position: vlcStatus.position, start: "10px" })}
+                        // style={progressStyle({ position: vlcStatus.position, start: "10px" })}
                         className={c.progress}
                     >
                         Open folder
@@ -353,25 +351,6 @@ export function MainMenu({
 
 const style = css`
     label: MainMenu;
-    &.mainMenu {
-        display: flex;
-        gap: 6px;
-        padding: 6px 6px 0 6px;
-        font-size: 10px;
-    }
-    .${c.progress} {
-        --bg: #6241a6;
-        &.${c.progress} {
-            color: white;
-        }
-        max-width: 20ch;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        &.playing,
-        &.paused {
-            ${progressMixin}
-        }
-    }
     .${paginationClasses.root} {
         display: flex;
         flex: 1;

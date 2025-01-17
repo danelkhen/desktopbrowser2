@@ -22,7 +22,7 @@ export async function applyFiltersAndSorting(files: IFile[], req: IListFilesReq)
 export async function applySelectionFiltersAndFolderSizes(
     files: IFile[],
     req: IListFilesReq,
-    selections: Record<string, string>
+    selections: Record<string, string | undefined>
 ): Promise<IFile[]> {
     if (req.hideWatched) {
         files = files.filter(t => !selections[t.name])

@@ -12,7 +12,7 @@ import { formatFriendlySize } from "../lib/formatFriendlySize"
 import { c } from "../services/c"
 import { colors } from "../theme"
 import { FileIcon } from "./FileIcon"
-import { progressMixin, progressStyle } from "./progress"
+// import { progressMixin, progressStyle } from "./progress"
 import { useVlcStatus } from "./useVlcStatus"
 
 export function Files({
@@ -75,9 +75,9 @@ export function Files({
     )
     const vlcStatus = useVlcStatus()
 
-    function getFileProgressStyle(file: IFile) {
-        return progressStyle({ position: vlcStatus.path === file.path ? vlcStatus.position : undefined, start: "36px" })
-    }
+    // function getFileProgressStyle(file: IFile) {
+    //     return "" //progressStyle({ position: vlcStatus.path === file.path ? vlcStatus.position : undefined, start: "36px" })
+    // }
     const gridColumns = {
         type: {
             className: c.type,
@@ -178,7 +178,7 @@ export function Files({
                                     isLastItemInPage(i) && c.lastItemInPage
                                 )}
                                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                style={{ ...getFileProgressStyle(file) }}
+                                // style={{ ...getFileProgressStyle(file) }}
                                 onMouseDown={e => onFileMouseDown(e, file)}
                                 onClick={e => onFileClick(e, file)}
                                 onDoubleClick={e => onFileDoubleClick(e, file)}
@@ -277,7 +277,7 @@ const style = css`
                 }
                 &.${c.opened} {
                     color: #fff;
-                    ${progressMixin}
+                    /* {progressMixin} */
                 }
 
                 &.${c.isFolder}.${c.hasInnerSelection}.${c.selected} {

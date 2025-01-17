@@ -56,7 +56,7 @@ export function FileBrowser() {
             const newUrl = getNavUrl(v)
             if (prevUrl === newUrl) return
             console.log("navigateToReq", newUrl)
-            navigate?.(newUrl)
+            void navigate?.(newUrl)
         },
         [getNavUrl, navigate, req]
     )
@@ -199,6 +199,8 @@ export function FileBrowser() {
     // }, [files])
 
     const style = "sticky top-0 bg-neutral-950"
+    console.log("FileBrowser3")
+
     return (
         <div className={style}>
             <header className={style}>

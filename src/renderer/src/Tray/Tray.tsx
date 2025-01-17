@@ -14,7 +14,7 @@ export function Tray() {
     }, [])
 
     return (
-        <div className={style}>
+        <div className="flex-col">
             <List>
                 <ListItem>
                     <Button fullWidth LinkComponent={Link} href="/" target="_blank" rel="noreferrer">
@@ -44,8 +44,3 @@ export function Tray() {
 }
 
 // window.electron.ipcRenderer.send("ping")
-
-const style = css`
-    display: flex;
-    flex-direction: column;
-`
