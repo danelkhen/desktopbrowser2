@@ -1,6 +1,6 @@
 import { LinkProps, Link as MuiLink } from "@mui/material"
 import { forwardRef } from "react"
-import { Link as RouterLink, LinkProps as RouterLinkProps } from "react-router-dom"
+import { Link as RouterLink, LinkProps as RouterLinkProps } from "react-router"
 
 // eslint-disable-next-line react/display-name
 export const AppLinkBehavior = forwardRef<

@@ -1,5 +1,5 @@
 import { useMemo } from "react"
-import { useLocation } from "react-router-dom"
+import { useLocation } from "react-router"
 import { parseRequest } from "../components/parseRequest"
 
 // export const dispatcher = new Dispatcher()
