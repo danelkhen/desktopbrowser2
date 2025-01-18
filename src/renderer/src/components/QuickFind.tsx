@@ -44,22 +44,3 @@ export interface QuickFindProps {
     allFiles: IFile[]
     onFindFiles(files: IFile[]): void
 }
-
-// const style2 = "absolute top-0 right-0 border-0 bg-transparent opacity-0 z-0 opacity-0 -z-1"
-// const style = css`
-//     label: QuickFind;
-//     && {
-//         position: absolute;
-//     }
-//     top: 0;
-//     right: 0;
-//     border: 0;
-//     background-color: transparent;
-//     opacity: 0;
-//     z-index: -1;
-
-//     &.HasValue {
-//         opacity: 1;
-//         z-index: 1;
-//     }
-// `

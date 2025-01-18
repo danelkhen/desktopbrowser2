@@ -1,4 +1,4 @@
-import { css, cx } from "@emotion/css"
+import { cx } from "@emotion/css"
 import ArrowBackOutlinedIcon from "@mui/icons-material/ArrowBackOutlined"
 import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined"
 import ArrowUpwardOutlinedIcon from "@mui/icons-material/ArrowUpwardOutlined"
@@ -8,21 +8,7 @@ import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined"
 import QueuePlayNextOutlinedIcon from "@mui/icons-material/QueuePlayNextOutlined"
 import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined"
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined"
-import {
-    ListItemIcon,
-    ListItemText,
-    MenuItem,
-    MenuList,
-    Pagination,
-    listClasses,
-    listItemIconClasses,
-    listItemTextClasses,
-    menuItemClasses,
-    paginationClasses,
-    paginationItemClasses,
-    useMediaQuery,
-    useTheme,
-} from "@mui/material"
+import { ListItemIcon, ListItemText, MenuItem, MenuList, Pagination, useMediaQuery, useTheme } from "@mui/material"
 import React from "react"
 import { Column } from "../../../shared/Column"
 import { IFile } from "../../../shared/IFile"
@@ -36,13 +22,12 @@ import { scrollToSelection } from "../hooks/useSelection"
 import { getGoogleSearchLink } from "../lib/getGoogleSearchLink"
 import { getSubtitleSearchLink } from "../lib/getSubtitleSearchLink"
 import { api } from "../services/api"
-import { colors } from "../theme"
+import { c } from "../services/c"
 import { AppLinkBehavior } from "./AppLink"
 import { Clock } from "./Clock"
 import { GetNavUrl } from "./GetNavUrl"
 import { MenuListGroup } from "./MenuListGroup"
 import { useVlcStatus } from "./useVlcStatus"
-import { c } from "../services/c"
 
 export function MainMenu({
     req,
@@ -349,72 +334,7 @@ export function MainMenu({
     )
 }
 
-const style = css`
-    label: MainMenu;
-    .${paginationClasses.root} {
-        display: flex;
-        flex: 1;
-        justify-content: flex-end;
-        .${paginationClasses.ul} {
-            flex-wrap: nowrap;
-            .${paginationItemClasses.root} {
-                margin: 0;
-                color: #999;
-                &.Mui-selected {
-                    color: white;
-                }
-            }
-        }
-    }
-    > .${listClasses.root} {
-        display: flex;
-        padding: 0;
-        .${menuItemClasses.root} {
-            border: 1px solid #282828;
-            margin-left: -1px;
-            /* padding: 0; */
-            &:first-child {
-                border-radius: 25px 0 0 25px;
-                padding-left: 20px;
-                margin-left: 0;
-            }
-            &:last-child {
-                border-radius: 0 25px 25px 0;
-                padding-right: 20px;
-            }
-            &:first-child:last-child {
-                border-radius: 25px;
-            }
-            .${listItemIconClasses.root} {
-                min-width: 0;
-                padding-right: 10px;
-            }
-        }
-    }
-    .${menuItemClasses.root} {
-        font-size: inherit;
-        line-height: 1.75;
-        color: ${colors.fg3};
-        &:hover {
-            /* background-color: #864aff; */
-        }
-        &.Mui-selected {
-            color: white;
-            background-color: ${c.selection};
-            &:hover {
-                background-color: ${c.selectionLight};
-            }
-        }
-
-        .${listItemTextClasses.primary} {
-            font-size: inherit;
-            color: inherit;
-        }
-        svg {
-            font-size: 1.5em;
-        }
-    }
-`
+const style = "MainMenu"
 
 function getPathPosixBaseName(path: string) {
     return path.split("/").pop()

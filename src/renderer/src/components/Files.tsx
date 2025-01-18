@@ -11,7 +11,6 @@ import { formatFriendlyDate } from "../lib/formatFriendlyDate"
 import { formatFriendlySize } from "../lib/formatFriendlySize"
 import { c } from "../services/c"
 import { FileIcon } from "./FileIcon"
-// import { progressMixin, progressStyle } from "./progress"
 import { useVlcStatus } from "./useVlcStatus"
 
 export function Files({
@@ -208,72 +207,3 @@ export function Files({
         </div>
     )
 }
-
-// const tableStyle = "table-fixed w-full border-collapse border-spacing-0"
-// const theadTrStyle = "border-b-1 border-solid border-gray-300 bg-gray-100"
-// const trStyle =
-//     "scroll-mt-36 transition-all-0.3s-ease border-1 border-solid border-black transition-all-0.3s-ease color-gray-600 bg-transparent"
-// const style = css`
-//     label: Files;
-
-//     > table {
-//         > tbody {
-//             > tr {
-//                 /* scroll-margin-top: 134px;
-//                 transition: all 0.3s ease;
-//                 -webkit-font-smoothing: antialiased;
-//                 border: 1px solid #0c0c0c;
-//                 transition: all 0.3s ease;
-//                 color: #999;
-//                 --bg: transparent;
-//                 background: var(--bg); */
-//                 &:hover {
-//                     --bg: #000;
-//                     color: ${c.selection};
-//                     td .${c.name} {
-//                         text-decoration: none;
-//                         cursor: pointer;
-//                     }
-//                 }
-//                 &.${c.selected} {
-//                     color: #fff;
-//                     --bg: ${c.selection};
-//                     transition: all 0.3s ease;
-//                     &:hover {
-//                         --bg: ${c.selectionLight};
-//                     }
-//                 }
-//                 &.${c.opened} {
-//                     color: #fff;
-//                     /* {progressMixin} */
-//                 }
-
-//                 &.${c.isFolder}.${c.hasInnerSelection}.${c.selected} {
-//                     color: rgba(238, 238, 238, 0.7);
-//                 }
-//                 &.${c.hasInnerSelection} {
-//                     color: rgba(238, 238, 238, 0.3);
-//                 }
-
-//                 > td {
-//                     white-space: nowrap;
-//                     overflow: hidden;
-//                     text-overflow: ellipsis;
-//                     box-sizing: border-box;
-//                     padding: 10px 0px;
-//                     &.${c.type} {
-//                         text-align: center;
-//                         /* padding: 0 5px; */
-//                         svg {
-//                             vertical-align: middle;
-//                             font-size: 1.5em;
-//                             &.${c.small} {
-//                                 font-size: 1.25em;
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// `

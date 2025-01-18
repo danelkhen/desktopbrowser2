@@ -1,3 +1,69 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.MainMenu {
+    .MuiPagination-root {
+        display: flex;
+        flex: 1;
+        justify-content: flex-end;
+        .MuiPagination-ul {
+            flex-wrap: nowrap;
+            .MuiPaginationItem-root {
+                margin: 0;
+                color: #999;
+                &.Mui-selected {
+                    color: white;
+                }
+            }
+        }
+    }
+    > .MuiList-root {
+        display: flex;
+        padding: 0;
+        .MuiMenuItem-root {
+            border: 1px solid #282828;
+            margin-left: -1px;
+            /* padding: 0; */
+            &:first-child {
+                border-radius: 25px 0 0 25px;
+                padding-left: 20px;
+                margin-left: 0;
+            }
+            &:last-child {
+                border-radius: 0 25px 25px 0;
+                padding-right: 20px;
+            }
+            &:first-child:last-child {
+                border-radius: 25px;
+            }
+            .MuiListItemIcon-root {
+                min-width: 0;
+                padding-right: 10px;
+            }
+        }
+    }
+    .MuiMenuItem-root {
+        font-size: inherit;
+        line-height: 1.75;
+        color: #bbb;
+        &:hover {
+            /* background-color: #864aff; */
+        }
+        &.Mui-selected {
+            color: white;
+            background-color: #a276f8; /*c.selection*/
+            &:hover {
+                background-color: #a97eff; /*c.selectionLight*/
+            }
+        }
+
+        .MuiListItemText-primary {
+            font-size: inherit;
+            color: inherit;
+        }
+        svg {
+            font-size: 1.5em;
+        }
+    }
+}
