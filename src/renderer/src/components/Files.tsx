@@ -165,12 +165,14 @@ export function Files({
                         {files.map((file, i) => {
                             const active = selectedFiles2.has(file)
                             const seen = hasInnerSelection(file)
+                            const isFolder = !file.isFile
                             return (
                                 <tr
                                     key={i}
                                     className={cx(
                                         "scroll-mt-36 transition-all-0.3s-ease border-1 border-solid transition-all-0.3s-ease",
-                                        !active && !seen && "text-white hover:text-purple-300",
+                                        isFolder && !active && !seen && "text-white hover:text-purple-300",
+                                        !isFolder && !active && !seen && "text-neutral-300 hover:text-purple-300",
                                         active && !seen && "text-white bg-purple-600 hover:bg-purple-700",
                                         !active && seen && "text-neutral-500 hover:hover:text-purple-400/50",
                                         active &&
