@@ -1,4 +1,4 @@
-import { css, cx } from "@emotion/css"
+import { cx } from "@emotion/css"
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown"
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp"
 import React, { useCallback, useMemo } from "react"
@@ -79,7 +79,7 @@ export function Files({
     // }
     const gridColumns = {
         type: {
-            className: c.type,
+            className: `${c.type} text-center`,
             cell: (file: IFile) => <FileIcon file={file} vlcStatus={vlcStatus} />,
             header: "",
             width: "40px",
@@ -90,7 +90,7 @@ export function Files({
             header: "Name",
             cell: (file: IFile) => (
                 <span>
-                    <a className={c.name} id={file.name}>
+                    <a className={`cursor-pointer ${c.name}`} id={file.name}>
                         {file.name}
                     </a>
                 </span>
@@ -123,9 +123,9 @@ export function Files({
         const pageIndex = Math.floor(i / pageSize)
         return i === pageSize * pageIndex + pageSize - 1
     }
-
+    //{`select-none ${style}`}
     return (
-        <div className={`select-none ${style}`}>
+        <div className="select-none">
             <table className="table-fixed w-full border-collapse border-spacing-0">
                 <colgroup>
                     {Object.entries(gridColumns).map(([key, col]) => (
@@ -163,36 +163,45 @@ export function Files({
                 )}
                 {!noBody && (
                     <tbody>
-                        {files.map((file, i) => (
-                            <tr
-                                key={i}
-                                className={cx(
-                                    c.fileRow,
-                                    file.isFolder && c.isFolder,
-                                    hasInnerSelection(file) && c.hasInnerSelection,
-                                    selectedFiles2.has(file) && c.selected,
-                                    file.path === vlcStatus.path && c.opened,
-                                    file.path === vlcStatus.path && vlcStatus.playing && c.playing,
-                                    file.path === vlcStatus.path && vlcStatus.paused && c.paused,
-                                    file.path === vlcStatus.path && vlcStatus.stopped && c.stopped,
-                                    c.progress,
-                                    `pageIndex-${Math.floor(i / pageSize)}`,
-                                    isFirstItemInPage(i) && c.firstItemInPage,
-                                    isLastItemInPage(i) && c.lastItemInPage
-                                )}
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                // style={{ ...getFileProgressStyle(file) }}
-                                onMouseDown={e => onFileMouseDown(e, file)}
-                                onClick={e => onFileClick(e, file)}
-                                onDoubleClick={e => onFileDoubleClick(e, file)}
-                            >
-                                {Object.entries(gridColumns).map(([key, col]) => (
-                                    <td key={key} className={cx(col.className)}>
-                                        {col.cell(file)}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
+                        {files.map((file, i) => {
+                            const active = selectedFiles2.has(file)
+                            const seen = hasInnerSelection(file)
+                            return (
+                                <tr
+                                    key={i}
+                                    className={cx(
+                                        "scroll-mt-36 transition-all-0.3s-ease border-1 border-solid transition-all-0.3s-ease",
+                                        !active && !seen && "text-white hover:text-purple-300",
+                                        active && !seen && "text-white bg-purple-600 hover:bg-purple-700",
+                                        !active && seen && "text-neutral-500 hover:hover:text-purple-400/50",
+                                        active &&
+                                            seen &&
+                                            "text-neutral-300 hover:text-neutral-200 bg-purple-600 hover:bg-purple-700",
+                                        c.fileRow,
+                                        file.isFolder && c.isFolder,
+                                        seen && c.hasInnerSelection,
+                                        selectedFiles2.has(file) && c.selected,
+                                        file.path === vlcStatus.path && c.opened,
+                                        file.path === vlcStatus.path && vlcStatus.playing && c.playing,
+                                        file.path === vlcStatus.path && vlcStatus.paused && c.paused,
+                                        file.path === vlcStatus.path && vlcStatus.stopped && c.stopped,
+                                        c.progress,
+                                        `pageIndex-${Math.floor(i / pageSize)}`,
+                                        isFirstItemInPage(i) && c.firstItemInPage,
+                                        isLastItemInPage(i) && c.lastItemInPage
+                                    )}
+                                    onMouseDown={e => onFileMouseDown(e, file)}
+                                    onClick={e => onFileClick(e, file)}
+                                    onDoubleClick={e => onFileDoubleClick(e, file)}
+                                >
+                                    {Object.entries(gridColumns).map(([key, col]) => (
+                                        <td key={key} className={cx(col.className, "truncate py-2.5")}>
+                                            {col.cell(file)}
+                                        </td>
+                                    ))}
+                                </tr>
+                            )
+                        })}
                     </tbody>
                 )}
             </table>
@@ -202,67 +211,69 @@ export function Files({
 
 // const tableStyle = "table-fixed w-full border-collapse border-spacing-0"
 // const theadTrStyle = "border-b-1 border-solid border-gray-300 bg-gray-100"
-const style = css`
-    label: Files;
+// const trStyle =
+//     "scroll-mt-36 transition-all-0.3s-ease border-1 border-solid border-black transition-all-0.3s-ease color-gray-600 bg-transparent"
+// const style = css`
+//     label: Files;
 
-    > table {
-        > tbody {
-            > tr {
-                scroll-margin-top: 134px;
-                transition: all 0.3s ease;
-                -webkit-font-smoothing: antialiased;
-                border: 1px solid #0c0c0c;
-                transition: all 0.3s ease;
-                color: #999;
-                --bg: transparent;
-                background: var(--bg);
-                &:hover {
-                    --bg: #000;
-                    color: ${c.selection};
-                    td .${c.name} {
-                        text-decoration: none;
-                        cursor: pointer;
-                    }
-                }
-                &.${c.selected} {
-                    color: #fff;
-                    --bg: ${c.selection};
-                    transition: all 0.3s ease;
-                    &:hover {
-                        --bg: ${c.selectionLight};
-                    }
-                }
-                &.${c.opened} {
-                    color: #fff;
-                    /* {progressMixin} */
-                }
+//     > table {
+//         > tbody {
+//             > tr {
+//                 /* scroll-margin-top: 134px;
+//                 transition: all 0.3s ease;
+//                 -webkit-font-smoothing: antialiased;
+//                 border: 1px solid #0c0c0c;
+//                 transition: all 0.3s ease;
+//                 color: #999;
+//                 --bg: transparent;
+//                 background: var(--bg); */
+//                 &:hover {
+//                     --bg: #000;
+//                     color: ${c.selection};
+//                     td .${c.name} {
+//                         text-decoration: none;
+//                         cursor: pointer;
+//                     }
+//                 }
+//                 &.${c.selected} {
+//                     color: #fff;
+//                     --bg: ${c.selection};
+//                     transition: all 0.3s ease;
+//                     &:hover {
+//                         --bg: ${c.selectionLight};
+//                     }
+//                 }
+//                 &.${c.opened} {
+//                     color: #fff;
+//                     /* {progressMixin} */
+//                 }
 
-                &.${c.isFolder}.${c.hasInnerSelection}.${c.selected} {
-                    color: rgba(238, 238, 238, 0.7);
-                }
-                &.${c.hasInnerSelection} {
-                    color: rgba(238, 238, 238, 0.3);
-                }
+//                 &.${c.isFolder}.${c.hasInnerSelection}.${c.selected} {
+//                     color: rgba(238, 238, 238, 0.7);
+//                 }
+//                 &.${c.hasInnerSelection} {
+//                     color: rgba(238, 238, 238, 0.3);
+//                 }
 
-                > td {
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    box-sizing: border-box;
-                    padding: 10px 0px;
-                    &.${c.type} {
-                        text-align: center;
-                        /* padding: 0 5px; */
-                        svg {
-                            vertical-align: middle;
-                            font-size: 1.5em;
-                            &.${c.small} {
-                                font-size: 1.25em;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-`
+//                 > td {
+//                     white-space: nowrap;
+//                     overflow: hidden;
+//                     text-overflow: ellipsis;
+//                     box-sizing: border-box;
+//                     padding: 10px 0px;
+//                     &.${c.type} {
+//                         text-align: center;
+//                         /* padding: 0 5px; */
+//                         svg {
+//                             vertical-align: middle;
+//                             font-size: 1.5em;
+//                             &.${c.small} {
+//                                 font-size: 1.25em;
+//                             }
+//                         }
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// `
