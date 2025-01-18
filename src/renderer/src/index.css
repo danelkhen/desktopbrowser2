@@ -51,7 +51,7 @@
             /* background-color: #864aff; */
         }
         &.Mui-selected {
-            color: white;
+            @apply text-white;
             background-color: #a276f8; /*c.selection*/
             &:hover {
                 background-color: #a97eff; /*c.selectionLight*/

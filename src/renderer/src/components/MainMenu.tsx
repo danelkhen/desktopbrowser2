@@ -87,12 +87,12 @@ export function MainMenu({
     const vlcStatus = useVlcStatus()
     const progressPct = Math.round((vlcStatus?.position ?? 0) * 100) + "%"
 
-    console.log(vlcStatus)
+    // console.log(vlcStatus)
     // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     // const [anchorEl2, setAnchorEl2] = useState<null | HTMLElement>(null)
 
     return (
-        <div className={cx("flex gap-1.5 p-1.5 pb-0 text-sm", style)}>
+        <div className={cx("flex gap-1.5 p-1.5 pb-0 text-xs", style)}>
             <MenuList>
                 <MenuItem
                     component={AppLinkBehavior}
